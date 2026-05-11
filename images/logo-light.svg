@@ -1,7 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" width="200" height="40">
-  <rect x="0" y="4" width="32" height="32" rx="8" fill="#11452A"/>
-  <path d="M16 27.5c-.4 0-.8-.15-1.1-.45L8.6 20.85a4.5 4.5 0 0 1 6.36-6.36L16 15.5l1.04-1.01a4.5 4.5 0 0 1 6.36 6.36l-6.3 6.2c-.3.3-.7.45-1.1.45Z" fill="#E5C46A"/>
-  <text x="42" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-weight="600" font-size="20" letter-spacing="-0.5">
-    <tspan fill="#0F1512">Donor</tspan><tspan fill="#11452A">Press</tspan>
-  </text>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 48">
+  <rect x="4" y="8" width="32" height="32" rx="8" fill="#11452A"/>
+  <path d="M20 31.5c-.4 0-.8-.15-1.1-.45L12.6 24.85a4.5 4.5 0 0 1 6.36-6.36L20 19.5l1.04-1.01a4.5 4.5 0 0 1 6.36 6.36l-6.3 6.2c-.3.3-.7.45-1.1.45Z" fill="#E5C46A"/>
+  <text x="48" y="32" font-family="sans-serif" font-weight="700" font-size="22" fill="#0F1512">Donor<tspan fill="#11452A">Press</tspan></text>
 </svg>
