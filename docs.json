@@ -4,22 +4,29 @@
 	"name": "DonorPress",
 	"description": "The complete fundraising platform for WordPress — donations, donors, recurring giving, campaigns, and more.",
 	"colors": {
-		"primary": "#3858e9",
-		"light": "#5a78f0",
-		"dark": "#2845c0"
+		"primary": "#11452A",
+		"light": "#1E8348",
+		"dark": "#0D3320"
+	},
+	"appearance": {
+		"default": "system",
+		"strict": false
 	},
 	"favicon": "/favicon.svg",
 	"logo": {
 		"light": "/images/logo-light.svg",
-		"dark": "/images/logo-dark.svg"
+		"dark": "/images/logo-dark.svg",
+		"href": "https://donorpress.org"
 	},
 	"navigation": {
 		"tabs": [
 			{
 				"tab": "Documentation",
+				"icon": "book-open",
 				"groups": [
 					{
 						"group": "Get Started",
+						"icon": "rocket",
 						"pages": [
 							"introduction",
 							"getting-started/installation",
@@ -30,6 +37,7 @@
 					},
 					{
 						"group": "Core Concepts",
+						"icon": "compass",
 						"pages": [
 							"core-concepts/overview",
 							"core-concepts/donations-vs-subscriptions",
@@ -40,6 +48,7 @@
 					},
 					{
 						"group": "Donation Forms",
+						"icon": "file-pen",
 						"pages": [
 							"forms/overview",
 							"forms/creating-a-form",
@@ -52,6 +61,7 @@
 					},
 					{
 						"group": "Donations & Donors",
+						"icon": "users",
 						"pages": [
 							"donations/managing-donations",
 							"donations/refunds",
@@ -62,6 +72,7 @@
 					},
 					{
 						"group": "Recurring Donations",
+						"icon": "repeat",
 						"pages": [
 							"subscriptions/overview",
 							"subscriptions/managing-subscriptions",
@@ -71,6 +82,7 @@
 					},
 					{
 						"group": "Campaigns",
+						"icon": "bullhorn",
 						"pages": [
 							"campaigns/creating-campaigns",
 							"campaigns/categories-and-tags",
@@ -80,6 +92,7 @@
 					},
 					{
 						"group": "Payment Gateways",
+						"icon": "credit-card",
 						"pages": [
 							"gateways/overview",
 							"gateways/stripe",
@@ -90,6 +103,7 @@
 					},
 					{
 						"group": "Premium Modules",
+						"icon": "crown",
 						"pages": [
 							"modules/overview",
 							"modules/pdf-invoices",
@@ -102,6 +116,7 @@
 					},
 					{
 						"group": "Email Notifications",
+						"icon": "envelope",
 						"pages": [
 							"emails/overview",
 							"emails/templates",
@@ -111,6 +126,7 @@
 					},
 					{
 						"group": "Reports & Analytics",
+						"icon": "chart-line",
 						"pages": [
 							"reports/overview",
 							"reports/revenue-reports",
@@ -119,6 +135,7 @@
 					},
 					{
 						"group": "Shortcodes",
+						"icon": "code",
 						"pages": [
 							"shortcodes/overview",
 							"shortcodes/donation-form",
@@ -132,6 +149,7 @@
 					},
 					{
 						"group": "Settings",
+						"icon": "gear",
 						"pages": [
 							"settings/general",
 							"settings/payment",
@@ -143,6 +161,7 @@
 					},
 					{
 						"group": "FAQ",
+						"icon": "circle-question",
 						"pages": [
 							"faq/general",
 							"faq/payments",
@@ -155,9 +174,11 @@
 			},
 			{
 				"tab": "Developers",
+				"icon": "code",
 				"groups": [
 					{
 						"group": "Architecture",
+						"icon": "diagram-project",
 						"pages": [
 							"developers/architecture-overview",
 							"developers/service-providers",
@@ -166,6 +187,7 @@
 					},
 					{
 						"group": "REST API",
+						"icon": "server",
 						"pages": [
 							"rest-api/overview",
 							"rest-api/authentication",
@@ -180,6 +202,7 @@
 					},
 					{
 						"group": "Hooks & Filters",
+						"icon": "plug",
 						"pages": [
 							"hooks/actions",
 							"hooks/filters",
@@ -188,6 +211,7 @@
 					},
 					{
 						"group": "Custom Development",
+						"icon": "wand-magic-sparkles",
 						"pages": [
 							"developers/custom-gateways",
 							"developers/custom-modules",
@@ -198,14 +222,30 @@
 			},
 			{
 				"tab": "Changelog",
+				"icon": "clock-rotate-left",
 				"groups": [
 					{
 						"group": "Releases",
+						"icon": "tag",
 						"pages": ["changelog"]
 					}
 				]
 			}
-		]
+		],
+		"global": {
+			"anchors": [
+				{
+					"anchor": "Community",
+					"href": "https://donorpress.org/community",
+					"icon": "people-group"
+				},
+				{
+					"anchor": "Get DonorPress",
+					"href": "https://donorpress.org/pricing",
+					"icon": "download"
+				}
+			]
+		}
 	},
 	"navbar": {
 		"links": [
@@ -222,7 +262,9 @@
 	},
 	"footer": {
 		"socials": {
-			"website": "https://donorpress.org"
+			"website": "https://donorpress.org",
+			"x": "https://x.com/donorpress",
+			"github": "https://github.com/donorpress"
 		}
 	}
 }
