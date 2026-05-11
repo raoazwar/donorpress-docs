@@ -1,0 +1,82 @@
+---
+title: "Donor Dashboard Settings"
+description: "Site-wide options for the donor-facing dashboard."
+---
+
+The **Donor Dashboard** tab in **DonorPress → Settings** controls how the donor-facing dashboard behaves.
+
+## Page assignment
+
+| Setting | Description |
+| --- | --- |
+| Dashboard page | The page containing `[donorpress_dashboard]`. Used to generate dashboard links in emails. |
+| Login page | The page containing `[donorpress_login]`. Where unauthenticated dashboard visitors get redirected. |
+| Sign-up page | The page containing `[donorpress_signup]`. Linked from the login page and from email receipts. |
+
+## What donors see
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Default tab | select | Which tab opens by default — Overview, Donations, Subscriptions, Annual Receipts, or Profile. |
+| Donation history limit | number | Maximum donations shown in the history tab (default 50). Older donations are paginated below. |
+| Show recurring tab | toggle | Whether to show the Recurring tab when the donor has at least one subscription. |
+| Allow profile editing | toggle | Whether donors can edit their first/last name from the dashboard. |
+| Allow donation note editing | toggle | Whether donors can edit notes attached to their donations. |
+| Show share buttons | toggle | Whether donation history rows include share buttons. |
+
+## Branding
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Default accent color | color | Used when the shortcode is added without an explicit `accent_color` attribute. |
+| Show donor avatar | toggle | Whether to fetch a Gravatar for the dashboard header. |
+| Show "Member since" stat | toggle | Whether to include a "Member since" tile in the Overview. |
+
+## Receipt access
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Receipt download method | select | `Inline link` (open in browser) or `Download PDF` (force download). |
+| Allow receipt resend | toggle | Whether donors can re-send their receipt to themselves from the dashboard. |
+
+## Subscription management
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Allow subscription cancellation | toggle | Whether donors can cancel their own subscriptions from the dashboard. (Coming in a future release.) |
+| Allow payment method update | toggle | Whether donors can update their payment method from the dashboard. (Coming in a future release.) |
+
+## Annual receipts integration
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Show in donor dashboard | toggle | Adds an "Annual Receipts" tab when the [Annual Receipts module](/modules/annual-receipts) is active. This setting also lives in the Annual Receipts module settings — both panels reflect the same value. |
+
+## Privacy
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Hide donor IDs | toggle | Display donations as `Donation #DP-2025-0042` instead of `Donation #42`, masking the internal sequence. |
+| Hide gateway transaction IDs | toggle | Don't expose the underlying Stripe / PayPal IDs to donors. |
+| Hide payment method details | toggle | Don't show "Visa ending in 4242" — show "Card" instead. |
+
+These settings are useful for privacy-conscious organisations or when donors include sensitive context in their notes.
+
+## Saving
+
+Settings save automatically as you change them. Changes are reflected on the donor-facing dashboard immediately on the next page load.
+
+## Customising further
+
+For appearance changes beyond what these settings expose, edit the dashboard CSS at `wp-content/plugins/donorpress/assets/css/donor-dashboard.css`, or override the templates per [template overrides](/developers/template-overrides).
+
+## Related
+
+<CardGroup cols={2}>
+	<Card title="Donor dashboard guide" icon="user" href="/donors/donor-dashboard">
+		Setting up the donor dashboard.
+	</Card>
+	<Card title="Shortcode reference" icon="code" href="/shortcodes/donor-dashboard">
+		Every shortcode attribute including accent_color.
+	</Card>
+</CardGroup>

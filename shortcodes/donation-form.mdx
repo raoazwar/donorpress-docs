@@ -1,0 +1,79 @@
+---
+title: "[donorpress_form]"
+description: "The donation form shortcode — every attribute and example."
+---
+
+`[donorpress_form]` renders a donation form anywhere on your site.
+
+<Frame>
+	<img src="/images/frontend/donation-form.png" alt="Donation form rendered on the frontend" />
+</Frame>
+
+## Basic usage
+
+```text
+[donorpress_form id="123"]
+```
+
+Replace `123` with the form ID from **DonorPress → Forms**.
+
+## Attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | integer | — | **Required.** Form ID. |
+| `display` | `inline` \| `modal` | `inline` | Render the form inline or open it from a button click. |
+| `button_text` | string | `"Donate"` | Modal trigger button label. Only used when `display="modal"`. |
+| `button_color` | string | — | Modal trigger button color. HEX, RGB, or named CSS color. |
+
+## Examples
+
+### Inline (default)
+
+```text
+[donorpress_form id="42"]
+```
+
+### Modal
+
+```text
+[donorpress_form id="42" display="modal" button_text="Donate now"]
+```
+
+### Modal with custom button color
+
+```text
+[donorpress_form id="42" display="modal" button_color="#16a34a" button_text="Support us"]
+```
+
+### Inside a `<header>` (sticky donate button)
+
+In a code-based theme:
+
+```php
+<?php echo do_shortcode( '[donorpress_form id="42" display="modal" button_text="Donate"]' ); ?>
+```
+
+In a block theme: insert a Shortcode block in the header template part.
+
+## Behavior notes
+
+- The form bundle (`build/form.js` + `build/form.css`) loads only on pages where the shortcode appears.
+- Stripe.js / PayPal SDK load lazily — only when the relevant gateway is enabled on this form.
+- Multiple forms can coexist on a single page (e.g. one inline, one in a modal). Each is independent.
+- If the form ID doesn't exist, the shortcode renders nothing (silent failure to avoid breaking layouts).
+
+## Permissions
+
+The shortcode renders for everyone — including logged-out visitors. Donors don't need accounts to use it. If they do have a WordPress account and are logged in, their donation is automatically associated with their account for the [donor dashboard](/donors/donor-dashboard).
+
+## Related
+
+<CardGroup cols={2}>
+	<Card title="Embedding forms" icon="code" href="/forms/embedding-forms">
+		All embedding options including blocks and Elementor.
+	</Card>
+	<Card title="Customizing styles" icon="paintbrush" href="/forms/customizing-styles">
+		Theming the form to match your brand.
+	</Card>
+</CardGroup>

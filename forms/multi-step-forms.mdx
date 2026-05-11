@@ -1,0 +1,75 @@
+---
+title: "Multi-step Forms"
+description: "When and how to use the multi-step form layout for higher conversion."
+---
+
+DonorPress forms support two layouts: **single-step** (everything on one screen) and **multi-step** (broken across screens). Multi-step usually outperforms single-step on longer forms.
+
+## When to use multi-step
+
+Use multi-step when your form has:
+
+- More than 4–5 donor fields beyond name and email (phone, company, address, etc.)
+- A custom comment / "tribute" field
+- Complex amount choices (e.g. tied to specific giving levels)
+- Anonymity, gift-aid, or other compliance opt-ins
+
+Use single-step when your form is minimal: amount + name + email + payment. Adding multi-step to a tiny form just adds friction.
+
+## Default step structure
+
+When you switch a form to multi-step, the builder splits your fields across three steps:
+
+1. **Amount** — preset amounts, custom amount, recurring toggle.
+2. **Details** — donor fields (name, email, address, etc.).
+3. **Payment** — gateway selection and payment input.
+
+You can rearrange fields between steps, rename steps, and add/remove steps in the builder.
+
+## Adding or removing steps
+
+In the builder's right-hand layout panel:
+
+- **Add a step** — click **+ Step** at the bottom of the step list.
+- **Rename a step** — click the step title and type.
+- **Reorder** — drag steps up/down.
+- **Delete** — click the trash icon. Fields in the deleted step move to the previous one (no data loss).
+
+## Step navigation
+
+The donor moves through steps using:
+
+- A **Continue** button on each step (disabled until required fields are filled).
+- A **Back** button on every step except the first.
+- A progress indicator at the top (dots or numbered steps — configurable).
+
+## Validation
+
+Each step validates its fields before allowing the donor to continue. Server-side validation runs on the final submit.
+
+## Saving partial submissions
+
+If a donor abandons a multi-step form mid-flow, no donation is created. The partial state is **not** persisted server-side — it lives only in the browser session.
+
+If you want to track abandonment, look at the `donorpress/form/step_completed` JavaScript event in your analytics integration.
+
+## Tips for higher conversion
+
+<AccordionGroup>
+	<Accordion title="Put recurring on step 1">
+		Donors who're going to commit to recurring decide early. Showing the option on step 1 (rather than step 3) consistently raises recurring opt-in.
+	</Accordion>
+	<Accordion title="Keep step 1 to 2-3 fields max">
+		The first step is the highest-friction step. The fewer fields, the higher the chance the donor reaches step 2.
+	</Accordion>
+	<Accordion title="Show the amount on every step">
+		A small "$50 monthly" reminder in the step header reduces the number of donors who back out at payment.
+	</Accordion>
+	<Accordion title="Use a progress indicator">
+		Donors who can see "Step 2 of 3" are more likely to complete than donors who feel they're in a bottomless form.
+	</Accordion>
+</AccordionGroup>
+
+## Switching between layouts
+
+You can switch between single-step and multi-step at any time without losing any field configuration. Switching from multi-step to single-step flattens all steps into one. Switching back re-applies the default 3-step split.

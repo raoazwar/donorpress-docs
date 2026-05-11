@@ -1,0 +1,114 @@
+---
+title: "Embedding Forms"
+description: "Shortcode, block, modal, and Elementor — every way to put a donation form on your site."
+---
+
+Once you've built a form, you embed it wherever you need it. There's no "form page" baked in — you control placement entirely.
+
+<Frame>
+	<img src="/images/frontend/donation-form.png" alt="Donation form rendered on the frontend" />
+</Frame>
+
+## Shortcode
+
+The simplest way. Drop this on any page or post:
+
+```text
+[donorpress_form id="123"]
+```
+
+Replace `123` with the ID from your forms list.
+
+### Shortcode attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | integer | — | **Required.** The form ID. |
+| `display` | `inline` \| `modal` | `inline` | Render the form inline or as a modal triggered by a button. |
+| `button_text` | string | `"Donate"` | Modal trigger button label. Only used when `display="modal"`. |
+| `button_color` | string | — | Modal trigger button color. Accepts HEX, RGB, or named CSS color. |
+
+### Examples
+
+Inline (default):
+
+```text
+[donorpress_form id="42"]
+```
+
+Modal with a custom button label:
+
+```text
+[donorpress_form id="42" display="modal" button_text="Support our mission"]
+```
+
+Modal with a branded button color:
+
+```text
+[donorpress_form id="42" display="modal" button_text="Donate now" button_color="#16a34a"]
+```
+
+## Block editor
+
+If you're using the WordPress block editor:
+
+<Steps>
+	<Step title="Open the page">
+		Edit any page or post.
+	</Step>
+	<Step title='Add the "Donation Form" block'>
+		Click the **+** button and search for "Donation Form".
+	</Step>
+	<Step title="Pick a form">
+		The block inspector shows a dropdown of all your forms. Select one.
+	</Step>
+	<Step title="Choose display mode">
+		Switch between inline and modal in the block sidebar — same options as the shortcode.
+	</Step>
+</Steps>
+
+## Elementor
+
+For sites built with Elementor:
+
+1. Open a page in the Elementor editor.
+2. Drag the **DonorPress Form** widget to where you want it.
+3. Pick the form from the widget's dropdown.
+
+Widget controls match the shortcode attributes one-to-one.
+
+## Sticky donate button
+
+A common pattern is to put a "Donate" modal button in your header so it's always available.
+
+In a code-based theme, drop the shortcode into your `header.php`:
+
+```php
+<?php echo do_shortcode( '[donorpress_form id="42" display="modal" button_text="Donate"]' ); ?>
+```
+
+In a block theme, add a Shortcode block to the header template part.
+
+## Hosting forms on dedicated landing pages
+
+For paid acquisition or campaign-specific landing pages, we recommend:
+
+- One dedicated form per landing page (don't reuse the same form across many pages — it makes performance comparison harder).
+- Inline display mode (modals lose data in conversion analytics).
+- Attach each form to a [campaign](/campaigns/creating-campaigns) so you can track performance per landing page.
+
+## URL prefill
+
+You can prefill the donor name and email by appending query parameters:
+
+```text
+https://yoursite.com/donate/?dp_first_name=Sam&dp_last_name=Smith&dp_email=sam@example.com
+```
+
+Useful for email broadcasts where you already know who the recipient is.
+
+## Performance notes
+
+- The form bundle is loaded **only on pages that contain the shortcode/block/widget**. There's no plugin-wide JS payload.
+- The bundle is ~80KB gzipped including all dependencies.
+- Stripe.js / PayPal SDK load lazily — only when the relevant gateway is enabled on the form being viewed.

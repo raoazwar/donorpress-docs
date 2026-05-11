@@ -1,0 +1,232 @@
+---
+title: "Custom Gateways"
+description: "Build a payment gateway integration from scratch."
+---
+
+DonorPress's gateway system is designed to be extended. Stripe, PayPal, and the Test Gateway are themselves implemented using the same public API documented here.
+
+## The contract
+
+A gateway is a class implementing `DonorPress\Gateways\GatewayInterface`:
+
+```php
+namespace DonorPress\Gateways;
+
+interface GatewayInterface {
+
+	public function get_id(): string;
+	public function get_label(): string;
+	public function get_description(): string;
+	public function supports_recurring(): bool;
+	public function supports_refunds(): bool;
+	public function get_supported_currencies(): array;
+
+	public function charge( DonationIntent $intent ): ChargeResult;
+	public function create_subscription( SubscriptionIntent $intent ): SubscriptionResult;
+	public function cancel_subscription( string $subscription_id ): bool;
+	public function refund( string $transaction_id, float $amount ): RefundResult;
+
+	public function get_admin_settings_fields(): array;
+	public function get_form_settings_fields(): array;
+}
+```
+
+You can extend `DonorPress\Gateways\AbstractGateway` to inherit a sensible default implementation of the boilerplate methods.
+
+## Minimal example
+
+A gateway that simulates a 1-second charge and always succeeds:
+
+```php
+namespace YourPlugin\Gateways;
+
+use DonorPress\Gateways\AbstractGateway;
+use DonorPress\Gateways\ChargeResult;
+use DonorPress\Gateways\DonationIntent;
+use DonorPress\Gateways\RefundResult;
+
+final class HelloGateway extends AbstractGateway {
+
+	public function get_id(): string {
+		return 'hello_gateway';
+	}
+
+	public function get_label(): string {
+		return 'Hello Gateway';
+	}
+
+	public function supports_recurring(): bool {
+		return false;
+	}
+
+	public function supports_refunds(): bool {
+		return true;
+	}
+
+	public function get_supported_currencies(): array {
+		return [ 'USD', 'EUR', 'GBP' ];
+	}
+
+	public function charge( DonationIntent $intent ): ChargeResult {
+		// Simulate gateway processing
+		sleep( 1 );
+
+		return ChargeResult::success(
+			'hello_txn_' . wp_generate_uuid4(),
+			[ 'mock' => true ]
+		);
+	}
+
+	public function refund( string $transaction_id, float $amount ): RefundResult {
+		return RefundResult::success(
+			'hello_refund_' . wp_generate_uuid4()
+		);
+	}
+
+	public function get_admin_settings_fields(): array {
+		return [
+			'api_key' => [
+				'label' => 'API Key',
+				'type'  => 'password',
+			],
+		];
+	}
+}
+```
+
+## Registering the gateway
+
+Register on the `donorpress/gateways` filter:
+
+```php
+add_filter( 'donorpress/gateways', function ( $gateways ) {
+	$gateways['hello_gateway'] = new \YourPlugin\Gateways\HelloGateway();
+	return $gateways;
+} );
+```
+
+The new gateway appears in **Settings → Payment Gateways** with its admin settings fields, ready to enable on forms.
+
+## Real-world implementation
+
+For a production gateway, you'll need:
+
+### 1. API client
+
+Wrap the gateway's HTTP API:
+
+```php
+private function api_request( string $method, string $path, array $body = [] ): array {
+	$response = wp_remote_request(
+		'https://api.gateway.example.com/v1/' . ltrim( $path, '/' ),
+		[
+			'method'  => $method,
+			'headers' => [
+				'Authorization' => 'Bearer ' . $this->setting( 'api_key' ),
+				'Content-Type'  => 'application/json',
+			],
+			'body'    => wp_json_encode( $body ),
+			'timeout' => 30,
+		]
+	);
+
+	if ( is_wp_error( $response ) ) {
+		throw new \RuntimeException( $response->get_error_message() );
+	}
+
+	$data = json_decode( wp_remote_retrieve_body( $response ), true );
+	$code = wp_remote_retrieve_response_code( $response );
+
+	if ( $code >= 400 ) {
+		throw new \RuntimeException( $data['error']['message'] ?? 'Gateway error' );
+	}
+
+	return $data;
+}
+```
+
+### 2. Charge implementation
+
+```php
+public function charge( DonationIntent $intent ): ChargeResult {
+	try {
+		$response = $this->api_request( 'POST', '/charges', [
+			'amount'      => (int) ( $intent->get_amount() * 100 ),
+			'currency'    => strtolower( $intent->get_currency() ),
+			'description' => 'Donation via DonorPress',
+			'metadata'    => [
+				'donation_id' => $intent->get_donation_id(),
+				'donor_email' => $intent->get_donor_email(),
+			],
+		] );
+
+		return ChargeResult::success(
+			$response['id'],
+			$response,
+			$response['receipt_url'] ?? null
+		);
+	} catch ( \Exception $e ) {
+		return ChargeResult::failure( $e->getMessage() );
+	}
+}
+```
+
+### 3. Webhook handler
+
+Register a webhook endpoint:
+
+```php
+public function register_webhook(): void {
+	register_rest_route( 'donorpress/v2', '/gateways/hello/webhook', [
+		'methods'  => 'POST',
+		'callback' => [ $this, 'handle_webhook' ],
+		'permission_callback' => '__return_true',
+	] );
+}
+
+public function handle_webhook( \WP_REST_Request $request ): \WP_REST_Response {
+	$payload = $request->get_json_params();
+
+	// Verify signature
+	$signature = $request->get_header( 'x-hello-signature' );
+	if ( ! $this->verify_signature( $payload, $signature ) ) {
+		return new \WP_REST_Response( null, 401 );
+	}
+
+	// Dispatch by event type
+	switch ( $payload['event'] ) {
+		case 'charge.succeeded':
+			$this->handle_charge_succeeded( $payload );
+			break;
+		case 'charge.refunded':
+			$this->handle_refund( $payload );
+			break;
+	}
+
+	return new \WP_REST_Response( null, 200 );
+}
+```
+
+### 4. Subscription support (optional)
+
+If your gateway supports recurring billing, implement `create_subscription` and the related lifecycle methods. Pattern follows the charge method but operates on subscription objects.
+
+## Testing your gateway
+
+1. Enable site-wide test mode.
+2. Add a development gateway slug that bypasses the live-mode auto-disable: `add_filter( 'donorpress/gateway/{your_slug}/available_in_live', '__return_true' )`. Remove this once you're done testing.
+3. Use the [Test Gateway](/gateways/test-gateway) as a reference implementation.
+
+## Distributing your gateway
+
+For internal use: drop the code in your site's `mu-plugins` folder.
+
+For public distribution: package as a WordPress plugin that depends on DonorPress (check `class_exists( 'DonorPress\\Plugin' )` before registering your gateway).
+
+## Best practices
+
+- **Idempotency keys** — pass an idempotency key on every charge to prevent duplicate charges if the request retries.
+- **Logging** — log every gateway interaction during development. Disable verbose logging for production.
+- **Timeout handling** — set a 30-second HTTP timeout. Most gateway APIs respond in < 5 seconds; 30 leaves headroom for slow networks.
+- **Currency validation** — explicitly list supported currencies in `get_supported_currencies()` so DonorPress can hide your gateway from forms with unsupported currencies.
+- **Test thoroughly** — webhook signature verification, refunds, subscription cancellations, network failures, gateway maintenance windows.

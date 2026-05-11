@@ -1,0 +1,95 @@
+---
+title: "Test vs. Live Mode"
+description: "The single switch that controls whether DonorPress moves real money."
+---
+
+DonorPress has a global **Test Mode** toggle in **Settings → General**. Understand this before you take a single donation.
+
+## What test mode does
+
+When **Test Mode is ON**:
+
+- All payment gateways use their **test credentials** (Stripe test keys, PayPal sandbox).
+- The Test Gateway is available as a payment option on forms.
+- A visible "Test Mode" badge appears on every donation form.
+- Charges are simulated — no real money moves.
+
+When **Test Mode is OFF (live)**:
+
+- All payment gateways use their **live credentials**.
+- The Test Gateway is automatically disabled.
+- The "Test Mode" badge disappears.
+- Charges are real and the donor's card or bank account is debited.
+
+<Warning>
+	The switch is global, not per-form or per-gateway. You cannot have one form in live mode and another in test mode simultaneously.
+</Warning>
+
+## Why a global switch?
+
+Three reasons:
+
+1. **Reduces accidents.** A per-form mode invites confusion ("which form is in test mode again?") that ends with a donor being charged real money for a test donation, or vice versa.
+2. **Matches gateway models.** Stripe, PayPal, and most other gateways operate the same way: one set of test credentials, one set of live credentials, no mixing.
+3. **Clear signal in reports.** All-test or all-live means revenue numbers are unambiguous.
+
+## Switching to live
+
+When you're ready to take real donations:
+
+<Steps>
+	<Step title="Confirm both gateways have live credentials">
+		Open **Settings → Payment Gateways** and verify the **Live** fields for every enabled gateway are populated. Empty live fields = no payments will process.
+	</Step>
+	<Step title="Configure live webhooks">
+		Test webhooks point at your test endpoint. You need separate live webhooks. See [Stripe](/gateways/stripe#step-3-configure-the-webhook) and [PayPal](/gateways/paypal#step-3-configure-the-webhook).
+	</Step>
+	<Step title="Toggle Test Mode off">
+		**Settings → General → Test Mode** → off. Save.
+	</Step>
+	<Step title="Place a real $1 donation">
+		Use a real card to validate the live flow end-to-end. Refund yourself afterward.
+	</Step>
+</Steps>
+
+## Test cards (Stripe)
+
+While in test mode, use any of these:
+
+| Card | Number | Behavior |
+| --- | --- | --- |
+| Visa | `4242 4242 4242 4242` | Always succeeds |
+| Visa (decline) | `4000 0000 0000 0002` | Always declines |
+| Visa (3DS) | `4000 0027 6000 3184` | Triggers 3D Secure flow |
+| Mastercard | `5555 5555 5555 4444` | Always succeeds |
+
+Any future expiry and any 3-digit CVC works.
+
+[Full Stripe test card list →](https://stripe.com/docs/testing)
+
+## Test PayPal
+
+For PayPal sandbox you need [sandbox test accounts](https://developer.paypal.com/dashboard/accounts) — auto-created when you sign up for PayPal Developer.
+
+## Test Gateway
+
+The bundled Test Gateway is the simplest way to simulate full success/failure flows without API keys. It's only available in test mode and shows up as "Test Gateway" on forms that have it enabled.
+
+[Test Gateway reference →](/gateways/test-gateway)
+
+## Common pitfalls
+
+<AccordionGroup>
+	<Accordion title="I switched to live mode but no donations process">
+		Almost always: you forgot to paste live credentials, or you pasted them into the test fields by mistake. Double-check both **Test** and **Live** fields are correct.
+	</Accordion>
+	<Accordion title="Test donations show up in my live reports">
+		Reports filter by mode. If you see test data in live reports, the donation was actually placed in live mode (likely because someone toggled the switch mid-test).
+	</Accordion>
+	<Accordion title="I forgot to toggle off test mode and went live">
+		Visitors will see the "Test Mode" badge and the donation form will simulate charges instead of taking them. No money lost; just no donations recorded. Toggle to live and you're fine.
+	</Accordion>
+	<Accordion title="Webhooks aren't firing in live mode">
+		Live webhooks must be configured separately from test webhooks. See the gateway-specific guides.
+	</Accordion>
+</AccordionGroup>

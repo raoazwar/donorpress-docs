@@ -1,0 +1,70 @@
+---
+title: "Donations vs. Subscriptions"
+description: "The most common confusion in DonorPress, cleared up."
+---
+
+People new to DonorPress (especially those coming from WooCommerce or Easy Digital Downloads) often ask: *"Why are donations and subscriptions separate things?"*
+
+Here's the model.
+
+## Donation = one charge
+
+A **donation** is a single payment. One row in `wp_donorpress_donations`. It has:
+
+- An amount
+- A status (Complete, Refunded, etc.)
+- A donor
+- A gateway transaction ID
+
+Every payment that ever leaves a donor's bank account is a donation, full stop.
+
+## Subscription = the recurring plan
+
+A **subscription** is the *agreement* to pay on a recurring schedule. One row in `wp_donorpress_subscriptions`. It has:
+
+- An amount per renewal
+- A frequency (monthly, yearly, etc.)
+- A status (Active, Paused, Cancelled, etc.)
+- A donor
+- A gateway subscription ID (Stripe Subscription, PayPal Billing Agreement, etc.)
+
+A subscription **does not move money on its own.** It produces donations.
+
+## How they connect
+
+```
+Donor: Sam
+Subscription #42 (Active, $10/month)
+  └─ Donation #501 (Complete, $10) — first charge
+  └─ Donation #517 (Complete, $10) — month 2 renewal
+  └─ Donation #533 (Complete, $10) — month 3 renewal
+  └─ Donation #549 (Failed,  $10) — month 4 — gateway declined
+  └─ Donation #565 (Complete, $10) — month 5 (gateway retried)
+```
+
+One subscription, five donations. Each renewal creates a fresh donation record.
+
+## Why separate?
+
+Three reasons:
+
+1. **Donations are the money.** Reports, totals, receipts, exports all live at the donation level. If donations and subscriptions were one table, reporting would constantly need conditional joins.
+2. **Status lifecycles are different.** A donation moves through Complete → Refunded. A subscription moves through Active → Paused → Cancelled. Mashing them together makes the state machine confusing.
+3. **One-time donations have no subscription.** ~70% of donations on most sites are one-time. They'd carry a permanently-null `subscription_id` if everything were one table.
+
+## Where this comes up
+
+| Action | Where it happens |
+| --- | --- |
+| Refund a single charge | Donations admin |
+| Cancel future renewals | Subscriptions admin |
+| See total raised this year | Donations report |
+| See active recurring revenue | Subscriptions report (MRR) |
+| Email a receipt | Donation event (every renewal triggers a fresh receipt) |
+| Email a "subscription cancelled" notice | Subscription event |
+
+## Quick mental model
+
+> "Subscriptions schedule donations. Donations move money."
+
+If you keep that one sentence in mind, the rest of the data model falls into place.

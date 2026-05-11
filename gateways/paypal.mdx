@@ -1,0 +1,119 @@
+---
+title: "PayPal"
+description: "Accept donations via PayPal balance and cards through PayPal Commerce."
+---
+
+DonorPress integrates with **PayPal Commerce Platform** (the modern PayPal API). It supports both PayPal balance payments and card payments processed through PayPal.
+
+## Before you start
+
+You need:
+
+- A [PayPal Business account](https://www.paypal.com/business) (personal accounts can't process payments).
+- Access to the [PayPal Developer dashboard](https://developer.paypal.com/) where you'll create REST API credentials.
+- HTTPS on your WordPress site.
+
+## Step 1 — Create a REST API app
+
+In the PayPal Developer dashboard:
+
+<Steps>
+	<Step title="Open My Apps & Credentials">
+		Visit [https://developer.paypal.com/dashboard/applications](https://developer.paypal.com/dashboard/applications).
+	</Step>
+	<Step title="Create an app">
+		Click **Create App**.
+		- **App Name**: e.g. "DonorPress Production"
+		- **App Type**: Merchant
+	</Step>
+	<Step title="Copy credentials">
+		The new app screen shows:
+		- **Client ID**
+		- **Secret** (click "Show")
+
+		PayPal gives you separate sandbox + live credentials. Use sandbox first.
+	</Step>
+</Steps>
+
+## Step 2 — Paste them into DonorPress
+
+1. Go to **DonorPress → Settings → Payment Gateways**.
+2. Toggle **PayPal** on.
+3. Paste sandbox credentials into the **Test** fields.
+4. Paste live credentials into the **Live** fields when ready.
+5. Save.
+
+## Step 3 — Configure the webhook
+
+<Steps>
+	<Step title="Open PayPal webhooks">
+		PayPal Developer dashboard → your app → **Add Webhook**.
+	</Step>
+	<Step title="Set the webhook URL">
+		```text
+		https://yoursite.com/wp-json/donorpress/v2/gateways/paypal/webhook
+		```
+	</Step>
+	<Step title="Select events">
+		Choose:
+		- `CHECKOUT.ORDER.APPROVED`
+		- `CHECKOUT.ORDER.COMPLETED`
+		- `PAYMENT.CAPTURE.COMPLETED`
+		- `PAYMENT.CAPTURE.REFUNDED`
+		- `PAYMENT.CAPTURE.DENIED`
+		- `BILLING.SUBSCRIPTION.ACTIVATED`
+		- `BILLING.SUBSCRIPTION.CANCELLED`
+		- `BILLING.SUBSCRIPTION.SUSPENDED`
+		- `BILLING.SUBSCRIPTION.PAYMENT.FAILED`
+	</Step>
+	<Step title="Copy the webhook ID">
+		After saving, copy the **Webhook ID** (a UUID-like string).
+	</Step>
+	<Step title="Paste it into DonorPress">
+		**Settings → Payment Gateways → PayPal → Webhook ID**.
+	</Step>
+</Steps>
+
+## Step 4 — Test a donation
+
+In sandbox mode, use [PayPal sandbox test accounts](https://developer.paypal.com/dashboard/accounts):
+
+- A **personal** sandbox account (the donor)
+- A **business** sandbox account (your charity — auto-created)
+
+Make a small donation, log into the personal sandbox account in the PayPal popup, approve the payment. The donation should appear in DonorPress with status **Complete**.
+
+## Donor flow
+
+1. Donor clicks "Donate with PayPal" on your form.
+2. A PayPal popup (or full-page redirect on mobile) opens.
+3. Donor logs into PayPal or enters card details.
+4. PayPal returns the donor to your site.
+5. DonorPress captures the order and shows the receipt page.
+
+## Subscriptions on PayPal
+
+PayPal recurring donations use **PayPal Subscriptions**. DonorPress creates a Plan and a Subscription on the PayPal side; PayPal handles the renewal cadence and notifies DonorPress via webhooks.
+
+A few PayPal-specific quirks:
+
+- **Frequency limits**: PayPal supports daily, weekly, monthly, every-3-months, every-6-months, and yearly. Custom intervals (e.g. every 5 days) aren't supported.
+- **Updating amount**: You can't change the amount of an existing PayPal subscription. The donor has to cancel and create a new one.
+- **Currency lock**: PayPal subscriptions are locked to the currency they were created in.
+
+## Troubleshooting
+
+<AccordionGroup>
+	<Accordion title='"Authentication failed" or 401 errors'>
+		The Client ID and Secret must come from the same app. Re-copy both from PayPal and paste freshly.
+	</Accordion>
+	<Accordion title="Webhook ID mismatch">
+		PayPal's webhook signature verification compares against the Webhook ID you've stored. If you regenerate the webhook in PayPal, you must also update the ID in DonorPress.
+	</Accordion>
+	<Accordion title="Sandbox works but live fails">
+		Confirm your live PayPal Business account is fully approved (no pending verification steps), and that you've pasted live credentials into the live fields — not the sandbox ones.
+	</Accordion>
+	<Accordion title='Donor sees "Sorry, we cannot process this transaction"'>
+		Usually means the donor's PayPal account or card was declined. The PayPal modal will sometimes give them more detail; check your PayPal transaction log for the specific reason.
+	</Accordion>
+</AccordionGroup>

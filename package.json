@@ -1,0 +1,18 @@
+{
+	"name": "donorpress-docs",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Documentation site for DonorPress (Mintlify) + automated screenshot tooling.",
+	"type": "module",
+	"scripts": {
+		"dev": "mintlify dev",
+		"check": "mintlify broken-links",
+		"screenshots": "node scripts/screenshots.mjs",
+		"screenshots:install": "playwright install chromium"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.47.0",
+		"dotenv": "^16.4.5",
+		"mintlify": "^4.0.0"
+	}
+}

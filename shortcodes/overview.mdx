@@ -1,0 +1,80 @@
+---
+title: "Shortcodes Reference"
+description: "Every DonorPress shortcode in one place."
+---
+
+DonorPress uses shortcodes (and matching block-editor blocks) to put donation flows on your site. Every shortcode below has a matching block — pick whichever editing experience you prefer.
+
+## All shortcodes
+
+| Shortcode | Purpose | Reference |
+| --- | --- | --- |
+| `[donorpress_form]` | Render a donation form. | [Donation Form →](/shortcodes/donation-form) |
+| `[donorpress_dashboard]` | Render the donor dashboard. | [Donor Dashboard →](/shortcodes/donor-dashboard) |
+| `[donorpress_login]` | Render a donor login form. | [Donor Login →](/shortcodes/donor-login) |
+| `[donorpress_signup]` | Render a donor sign-up form. | [Donor Signup →](/shortcodes/donor-signup) |
+| `[donorpress_receipt]` | Render a donation receipt. | [Receipt →](/shortcodes/receipt) |
+| `[donorpress_annual_receipts]` | Render a list of downloadable annual tax receipts. | [Annual Receipts →](/shortcodes/annual-receipts) |
+| `[donorpress_campaign_list]` | Display a list of campaigns. | [Campaigns →](/shortcodes/campaigns) |
+| `[donorpress_campaign_card]` | Display a single campaign card. | [Campaigns →](/shortcodes/campaigns) |
+
+## Auto-created pages
+
+When you activate DonorPress, it creates two pages with shortcodes already in them:
+
+- **Donor Login** — contains `[donorpress_login]`
+- **Donor Sign-up** — contains `[donorpress_signup]`
+
+You can rename, restyle, or delete these pages — they're regular WordPress pages.
+
+## Combining shortcodes
+
+Shortcodes can be combined freely on a page. Common patterns:
+
+### Combined login + sign-up
+
+```text
+<div class="login-col">[donorpress_login]</div>
+<div class="signup-col">[donorpress_signup]</div>
+```
+
+### Receipt page with a "back to dashboard" link
+
+```text
+[donorpress_receipt]
+
+<a href="/my-account/">← Back to my dashboard</a>
+```
+
+### Standalone annual receipts page
+
+If you don't want the Annual Receipts tab inside the dashboard:
+
+```text
+[donorpress_annual_receipts]
+```
+
+## Common attributes
+
+A few attributes recur across multiple shortcodes:
+
+- **`accent_color`** — sets the brand accent for tabs/buttons. Accepts HEX, RGB, or named CSS color. Currently supported on `[donorpress_dashboard]`.
+- **`display`** — `inline` vs. `modal` for forms.
+- **`id`** — selects a specific form, campaign, or donation by ID.
+
+## Block editor equivalents
+
+Every shortcode has a block. In the block editor, search for "DonorPress" and you'll see the full set:
+
+- Donation Form
+- Donor Dashboard
+- Donor Login / Sign Up
+- Receipt
+- Annual Receipts
+- Campaign List / Card
+
+Block attributes mirror shortcode attributes one-to-one.
+
+## Elementor widgets
+
+For Elementor sites, the same set is exposed as Elementor widgets under the **DonorPress** category in the widget panel.

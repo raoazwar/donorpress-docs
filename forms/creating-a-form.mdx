@@ -1,0 +1,115 @@
+---
+title: "Creating a Form"
+description: "Step-by-step walkthrough of building your first donation form."
+---
+
+This page walks through creating a form from scratch in DonorPress.
+
+## Open the new-form wizard
+
+Go to **DonorPress → Forms → New form**. A two-step wizard opens.
+
+### Wizard step 1 — Pick a template
+
+The first screen has two parts:
+
+1. **Form type** — two pills at the top: **Single step** (one page; best for sidebars and embeds) or **Multi-step** (guides donors across multiple screens). Switching toggles the previews below.
+2. **Template grid** — five pre-built templates, each rendered as a tiny visual mockup so you can see the layout before picking. Switching between Single-step and Multi-step instantly re-renders all five previews.
+
+| Template | What it includes |
+| --- | --- |
+| **Blank canvas** | Just payment + terms. You build the rest. |
+| **Simple donation** | Amount picker, donor info, payment. The clean default. |
+| **Campaign fundraiser** | Goal progress bar, amount tiers, donor info. Pairs with [campaigns](/campaigns/creating-campaigns). |
+| **Event donation** | Adds a company field and a "Message for the organiser" field. |
+| **Emergency appeal** | Thermometer goal style, urgency copy, larger suggested amounts. |
+
+Picking a card highlights it with a green ring + checkmark.
+
+### Wizard step 2 — Name your form
+
+A summary banner shows which template you picked. Below that:
+
+- **Form title** — internal only; donors never see this.
+- A 4-tile summary: Type, Template, Steps, Elements.
+- An **Includes** pill listing what comes pre-built (e.g. *Payment · Amounts · Goal · Recurring*).
+
+Click **Create form**. The form is saved as a draft and the full builder opens with your template applied.
+
+## Open the form builder
+
+After the wizard, you land in the form builder.
+
+<Frame>
+	<img src="/images/admin/form-builder.png" alt="DonorPress form builder" />
+</Frame>
+
+The builder has three areas:
+
+- **Left**: settings for the currently-selected step or field.
+- **Center**: live preview of the form as donors will see it.
+- **Right**: layout panel for arranging steps and fields.
+
+You can also reach the builder later from the forms list — just click any form's **Edit** action.
+
+## Step 1 — Confirm name and basic settings
+
+| Setting | Description |
+| --- | --- |
+| Form name | Internal name only. Donors don't see this. Pre-filled from the wizard. |
+| Currency | Per-form currency. Defaults to your site-wide setting. |
+| Layout | `Single-step` or `Multi-step`. Pre-set from the wizard but switchable here. |
+| Campaign | Optional [campaign](/campaigns/creating-campaigns) to attribute donations to. |
+
+## Step 2 — Donation amounts
+
+Add the preset amounts donors can choose from.
+
+| Field | Description |
+| --- | --- |
+| Preset amounts | Comma-separated list, e.g. `10, 25, 50, 100`. Three to five works best. |
+| Default selected | Which preset is selected by default. We recommend the second cheapest. |
+| Allow custom amount | Lets donors type in their own amount. |
+| Minimum amount | Smallest custom amount accepted (default: $1). |
+| Maximum amount | Largest custom amount accepted (default: unlimited). |
+
+## Step 3 — Recurring options
+
+| Field | Description |
+| --- | --- |
+| Allow recurring | Master toggle. If off, the form only accepts one-time donations. |
+| Frequencies | Pick which renewal frequencies the donor can choose (monthly, yearly, etc.). |
+| Default frequency | Pre-selected option when recurring is offered. |
+| Bill count | Optional. Limit recurring to N renewals (e.g. "12 monthly payments and stop"). |
+
+## Step 4 — Donor fields
+
+Required by default: first name, last name, email. You can add:
+
+- Phone (text)
+- Company (text)
+- Address (multi-line: street, city, region, postal code, country)
+- Anonymity checkbox
+- Custom note / comment field
+
+[Field types reference →](/forms/field-types)
+
+## Step 5 — Payment methods
+
+Pick which enabled gateways the form offers. If only one gateway is selected, donors don't see a chooser — they go straight to that gateway.
+
+## Step 6 — Receipt
+
+| Setting | Description |
+| --- | --- |
+| Success page | Where donors land after a successful payment. Defaults to your site-wide success page. |
+| Failure page | Where donors land after a failed payment. Defaults to staying on the form with an inline error. |
+| Receipt email | The email donors get. Configured in [Email Notifications](/emails/templates). |
+
+## Step 7 — Save
+
+Click **Save**. The form gets an ID — note it for embedding.
+
+## Step 8 — Embed it
+
+[Embedding guide →](/forms/embedding-forms)

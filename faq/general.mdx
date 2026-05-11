@@ -1,0 +1,98 @@
+---
+title: "General FAQ"
+description: "Common questions about installation, licensing, and basic use."
+---
+
+## Installation & licensing
+
+<AccordionGroup>
+	<Accordion title="Is DonorPress free?">
+		Yes — the core plugin is fully functional and free. You only pay for premium [modules](/modules/overview) like PDF Invoices, Manual Donations, Annual Receipts, etc.
+	</Accordion>
+	<Accordion title="Do I need a license to take donations?">
+		No. The free version processes one-time and recurring donations through Stripe and PayPal with no license required.
+	</Accordion>
+	<Accordion title="Where do I enter my license key?">
+		**DonorPress → Settings → License**. Paste the key from your account at donorpress.org and click Activate.
+	</Accordion>
+	<Accordion title="Can I move my license between sites?">
+		Yes — deactivate it on the old site first (**Settings → License → Deactivate**), then activate it on the new one.
+	</Accordion>
+	<Accordion title="What happens if my license expires?">
+		The plugin keeps working and donations keep flowing. You stop receiving updates and lose access to support, but no functionality is removed.
+	</Accordion>
+	<Accordion title="Does DonorPress work on multisite?">
+		Yes. Activate per-site rather than network-wide so each site has its own gateways, donors, and donations.
+	</Accordion>
+</AccordionGroup>
+
+## Compatibility
+
+<AccordionGroup>
+	<Accordion title="Which themes does DonorPress work with?">
+		DonorPress is theme-agnostic — it works with any well-built WordPress theme (block themes, classic themes, page builders). The donor-facing UI uses self-contained CSS that doesn't conflict with theme styles.
+	</Accordion>
+	<Accordion title="Does it work with Elementor?">
+		Yes. DonorPress provides Elementor widgets for forms, campaigns, and the donor dashboard.
+	</Accordion>
+	<Accordion title="Does it work with the block editor?">
+		Yes. Every shortcode has a matching Gutenberg block.
+	</Accordion>
+	<Accordion title="Does it work with caching plugins?">
+		Yes, with one rule: **don't cache pages that contain donation forms or the donor dashboard for logged-in users.** DonorPress sets the appropriate cache-control headers, but you may need to add explicit exclusions in cache plugins like WP Rocket or W3 Total Cache.
+	</Accordion>
+	<Accordion title="Does it conflict with WooCommerce / MemberPress / [other plugin]?">
+		No. DonorPress uses its own database tables and namespaces. It doesn't touch the WooCommerce orders table or any other plugin's data.
+	</Accordion>
+</AccordionGroup>
+
+## Data & privacy
+
+<AccordionGroup>
+	<Accordion title="Where is donor data stored?">
+		In your WordPress database, in DonorPress's own custom tables (`wp_donorpress_donors`, `wp_donorpress_donations`, etc.). DonorPress doesn't transmit donor data to any third-party service.
+	</Accordion>
+	<Accordion title="Is DonorPress GDPR-compliant?">
+		Out of the box DonorPress provides the data structures you need (donor records, deletion endpoints, export). You're responsible for the policy side: privacy notice, lawful basis, retention period.
+	</Accordion>
+	<Accordion title="How do I delete a donor's data?">
+		From the donor's detail screen, click **Delete**. Donation records are preserved (they're financial records you may need to retain) but unlinked from the donor record.
+	</Accordion>
+	<Accordion title="How do I export a donor's data on request?">
+		WordPress's built-in **Tools → Export Personal Data** tool detects DonorPress data automatically and includes it in the export.
+	</Accordion>
+	<Accordion title="Do you store credit card numbers?">
+		**No.** Card data is tokenised by Stripe / PayPal on the donor's device and sent directly to the gateway. DonorPress never sees the raw card number — only the gateway's transaction ID, last 4 digits, and brand.
+	</Accordion>
+</AccordionGroup>
+
+## Updates
+
+<AccordionGroup>
+	<Accordion title="How often is DonorPress updated?">
+		Roughly monthly for the core plugin, with bug-fix releases as needed. Premium modules update independently.
+	</Accordion>
+	<Accordion title="Can I roll back an update?">
+		Yes — every release is tagged on WordPress.org and on your account download page. You can download an older version and install it manually.
+	</Accordion>
+	<Accordion title="Will updates break my customizations?">
+		Hooks and filters are stable across major versions. Direct edits to plugin files (which you should never do) will be overwritten on update.
+	</Accordion>
+</AccordionGroup>
+
+## Other questions
+
+<CardGroup cols={2}>
+	<Card title="Payments FAQ" icon="credit-card" href="/faq/payments">
+		Refunds, currencies, gateway-specific issues.
+	</Card>
+	<Card title="Forms FAQ" icon="rectangle-list" href="/faq/forms">
+		Form builder questions, embedding gotchas, conversion tips.
+	</Card>
+	<Card title="Donors FAQ" icon="users" href="/faq/donors">
+		Merging, anonymity, donor accounts.
+	</Card>
+	<Card title="Troubleshooting" icon="wrench" href="/faq/troubleshooting">
+		Common errors and how to diagnose them.
+	</Card>
+</CardGroup>

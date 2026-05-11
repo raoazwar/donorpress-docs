@@ -1,0 +1,89 @@
+---
+title: "Advanced Settings"
+description: "Caching, performance, debugging, and uninstall behaviour."
+---
+
+The **Advanced** tab in **DonorPress → Settings** holds settings most users never need to touch — but when you need them, you really need them.
+
+## Caching
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Report cache duration | number (minutes) | How long report data is cached. Default 5. Set 0 to disable. |
+| Campaign query cache | number (minutes) | How long campaign list / card queries are cached. Default 5. |
+| Donor stats cache | toggle | Cache lifetime totals on the donor record. On = denormalized (fast). Off = computed on every page load. |
+
+For high-traffic sites, leave caches on. For sites that need real-time totals (e.g. live event displays), disable.
+
+## Database
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Schema version | display | Current DB schema version. Read-only. |
+| Run migrations | button | Force a re-run of all pending migrations. Useful if schema changes didn't apply during a recent update. |
+| Recompute donor stats | button | Recalculates `total_donated`, `donation_count`, `largest_donation`, `avg_donation` for every donor. Run after bulk imports or manual database edits. |
+| Repair table indexes | button | Adds any missing indexes (rare; only needed after manual schema interference). |
+
+## Webhook log
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Log webhook activity | toggle | Record every incoming webhook in the log. On by default — turn off only if you have very high webhook volume and your database is under stress. |
+| Webhook log retention | select | 7 / 30 / 90 / 365 days. |
+
+## Email log
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Log email sends | toggle | Record every email DonorPress attempts to send. |
+| Email log retention | select | 7 / 30 / 90 / 365 days. |
+
+## Debugging
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Debug mode | toggle | Logs verbose information to the WordPress debug log. Only enable when troubleshooting — produces a lot of output. |
+| Show developer tools | toggle | Adds a "Developer" tab to the admin with utilities like manual webhook replay, REST API explorer, and gateway raw response inspection. |
+
+## Permissions
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Admin capability | select | Which WP capability can manage DonorPress. Default `manage_options`. Change to `donorpress_manage` to use a custom capability for finer-grained role control. |
+| Reports capability | select | Which capability can view reports. Defaults to the admin capability. Set lower (e.g. `edit_posts`) to grant report access to staff who shouldn't see all settings. |
+
+## Frontend assets
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Load form assets globally | toggle | Pre-load form bundle on all pages (faster perceived donate time, but adds ~80KB to every page). Default off. |
+| Defer non-critical CSS | toggle | Defer the donor dashboard CSS until after first paint. Default on. |
+
+## Uninstall behaviour
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Delete data on uninstall | toggle | When you uninstall the plugin (not just deactivate), delete all DonorPress tables, post types, and settings. Default OFF — uninstall preserves all data so you can reinstall without losing donors. |
+
+<Warning>
+	Turning **Delete data on uninstall** on means uninstalling DonorPress will **permanently delete every donation, donor, subscription, form, campaign, and setting**. This is irreversible. Only enable if you're sure.
+</Warning>
+
+## License
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| License key | text | Your DonorPress license. Activate to receive updates and unlock premium modules. |
+| Status | display | Active / expired / not activated. |
+| Plan | display | Basic / Premium / Free. |
+| Sites used | display | Activations / total allowed. |
+| Manage license | button | Opens donorpress.org account portal in a new tab. |
+
+## Export & import
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Export settings | button | Downloads a JSON file containing all DonorPress settings. Useful for cloning configuration to another site. |
+| Import settings | file upload | Upload a previously-exported JSON file. Settings are merged (existing values overwritten). |
+
+Note: settings export does **not** include donor data, donations, or subscriptions — just configuration. For full data exports, use the WordPress Tools → Export and the per-section CSV exports.

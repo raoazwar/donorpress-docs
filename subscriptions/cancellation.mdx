@@ -1,0 +1,85 @@
+---
+title: "Cancellation"
+description: "How subscriptions are cancelled — by donors, admins, and gateways."
+---
+
+A subscription can end in three ways: **donor-initiated**, **admin-initiated**, or **gateway-initiated** (e.g. exhausted retries on a failing renewal).
+
+## Donor-initiated cancellation
+
+In the current release, donors **cannot self-cancel** from the donor dashboard. They have to contact you. Self-cancellation is on the roadmap.
+
+In the meantime, link to a "How to cancel" page in your dashboard or receipt emails — the simplest is a `mailto:` link to your support address.
+
+## Admin-initiated cancellation
+
+From **DonorPress → Subscriptions** click any active subscription, then **Cancel subscription**.
+
+What happens:
+
+1. DonorPress calls the gateway's cancellation endpoint (Stripe `DELETE /v1/subscriptions/{id}`, PayPal `POST /v1/billing/subscriptions/{id}/cancel`).
+2. On gateway success, the subscription status moves to **Cancelled**.
+3. The activity log records the cancellation event with timestamp + initiating user.
+4. The donor receives a "Subscription Cancelled" email (if configured).
+
+## Gateway-initiated cancellation
+
+When all renewal retries fail, the gateway cancels the subscription. DonorPress hears about this via webhook:
+
+- **Stripe** — `customer.subscription.deleted`
+- **PayPal** — `BILLING.SUBSCRIPTION.CANCELLED`
+
+The DonorPress subscription is updated to **Cancelled** automatically. The activity log notes "cancelled by gateway after exhausted retries".
+
+## End-of-period vs. immediate
+
+Most cancellations are **immediate** — the next renewal won't happen, and any in-flight pending charges are reversed where possible.
+
+Stripe also supports **cancel at period end** (let the donor finish out their current paid period). DonorPress doesn't expose this in the UI by default, but you can implement it via the REST API:
+
+```bash
+PATCH /wp-json/donorpress/v2/subscriptions/123
+{
+	"cancel_at_period_end": true
+}
+```
+
+## Reactivation
+
+Cancelled subscriptions cannot be reactivated. The gateway side is gone. To restart recurring giving, the donor creates a new subscription via your donation form.
+
+This is a deliberate choice — gateways treat reactivation inconsistently across versions, and the safest UX is to always start fresh.
+
+## What's preserved after cancellation
+
+- The subscription record itself (for historical reporting).
+- Every donation tied to the subscription.
+- The activity log.
+- The donor record.
+
+What's not preserved:
+
+- The gateway-side subscription (it's gone — that's the point).
+- The ability to charge using the same payment token (donor must re-enter card on a new subscription).
+
+## Refunds vs. cancellation
+
+These are separate actions:
+
+- **Cancel** — stops future renewals. Past renewals are untouched.
+- **Refund** — reverses one specific past renewal. Future renewals continue.
+
+To stop a subscription **and** refund the most recent renewal: cancel first, then refund the latest donation from the donations admin.
+
+## Cancellation reasons
+
+When cancelling from the admin, you can record an optional reason (e.g. "Donor requested by email", "Card expired"). This is stored in the activity log and appears in cancellation reports if you have the [Advanced Dashboard module](/modules/advanced-dashboard).
+
+Common reasons worth tracking:
+
+- Donor request
+- Card expired
+- Insufficient funds (gateway-initiated)
+- Fraud / chargeback
+- Duplicate subscription
+- Annual cleanup

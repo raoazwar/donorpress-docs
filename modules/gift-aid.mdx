@@ -1,0 +1,110 @@
+---
+title: "Gift Aid (UK)"
+description: "HMRC-compatible Gift Aid declarations and CSV exports for UK charities."
+---
+
+The **Gift Aid** module helps UK-registered charities collect Gift Aid declarations from donors and export the data in a format HMRC accepts.
+
+<Info>
+	Gift Aid is a **Premium plan** module, designed specifically for UK charities. [See all modules →](/modules/overview)
+</Info>
+
+## What it does
+
+Gift Aid is a UK government scheme that lets charities reclaim 25p from HMRC for every £1 a UK taxpayer donates — but only if the donor opts in with a valid declaration.
+
+This module:
+
+- Adds a Gift Aid opt-in checkbox to your donation forms.
+- Captures the donor's full name and HMRC-compliant address.
+- Stores a permanent record of each declaration.
+- Exports declarations in HMRC's [ChR1 schedule format](https://www.gov.uk/guidance/schedule-spreadsheet-to-claim-back-tax-on-gift-aid-donations) for easy claim filing.
+- Provides a Gift Aid summary dashboard.
+
+## Form integration
+
+When the module is active and Gift Aid is enabled on a form, donors see:
+
+1. A checkbox: **"I want to Gift Aid this donation and any donations I make in the future or have made in the past 4 years."**
+2. The standard HMRC declaration text below the checkbox.
+3. Address fields (required if the donor opts in): house number/name, street, city, postcode.
+
+Donors who don't tick the box give as normal — no Gift Aid is recorded.
+
+## Settings
+
+**DonorPress → Settings → Gift Aid**:
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Enable Gift Aid | toggle | Master switch. |
+| Charity name | text | Used in the declaration text. Must match your HMRC registration. |
+| HMRC reference | text | Your charity's HMRC charity reference number. Used in CSV exports. |
+| Declaration text | textarea | The legal declaration text shown above the checkbox. Pre-filled with HMRC's wording — only edit if you have legal advice. |
+| Auto-enable on new forms | toggle | When you create a new form, default the Gift Aid setting to ON. |
+| Address required | toggle | Make full address mandatory when Gift Aid is opted in. (HMRC requires it.) |
+
+## Data captured
+
+Per Gift Aid declaration:
+
+- Donor full name
+- House number/name
+- Street
+- City / Town
+- Postcode (validated against UK postcode format)
+- Date of declaration
+- Donation ID
+- Amount
+
+## Reclaim summary
+
+**Reports → Gift Aid** shows:
+
+- Total reclaimable amount in the selected period (donations × 25%).
+- Number of donations eligible.
+- Number of unique donors.
+- Per-donor breakdown.
+
+## CSV export for HMRC
+
+The **Export ChR1 CSV** button in Reports → Gift Aid generates a CSV in the exact format HMRC requires for online schedules:
+
+```csv
+Title,First name,Last name,House name or number,Postcode,Aggregated donations,Sponsored event,Donation date,Amount
+Mr,Sam,Smith,42,SW1A 1AA,No,No,15/03/2024,100.00
+Mrs,Ali,Patel,The Old Vicarage,W1H 5AB,No,No,22/04/2024,50.00
+```
+
+Upload this directly to HMRC's online portal as part of your Gift Aid claim.
+
+## Eligibility rules
+
+HMRC has specific eligibility rules. A donation is Gift Aid eligible only if:
+
+- The donor has **paid (or will pay)** at least as much UK income/capital gains tax in the year as the charity will reclaim.
+- The donor is a **UK resident** for tax purposes.
+- The donation is a **gift** (not a payment for goods or services).
+- The donor has provided a **valid declaration**.
+
+DonorPress doesn't enforce eligibility (it can't know the donor's tax situation) — the donor is responsible for opting in only if they're eligible. The declaration text makes this clear.
+
+## Multi-year declarations
+
+A donor's declaration covers the current donation, all future donations, and donations made in the past 4 years (per HMRC's standard wording). DonorPress retroactively flags eligible past donations from the same donor when they declare.
+
+## Cancelling a declaration
+
+If a donor wants to cancel their Gift Aid declaration:
+
+1. Find the donor in the donor admin.
+2. Open the **Gift Aid** tab on their detail screen.
+3. Click **Cancel declaration**.
+
+The cancellation is timestamped. Future donations from this donor won't be marked Gift Aid eligible until they make a fresh declaration.
+
+## What this module doesn't do
+
+- **Doesn't file the claim for you.** You still upload the CSV to HMRC manually.
+- **Doesn't handle Gift Aid Small Donations Scheme (GASDS)** — that's filed separately and doesn't require donor declarations.
+- **Doesn't track tax thresholds** — donors are trusted to opt in only when eligible.

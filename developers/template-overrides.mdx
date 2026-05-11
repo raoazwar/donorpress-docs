@@ -1,0 +1,165 @@
+---
+title: "Template Overrides"
+description: "Override DonorPress templates from your theme without forking the plugin."
+---
+
+DonorPress follows the standard WordPress convention: any template can be overridden by placing a file with the same name inside your theme's `donorpress/` folder.
+
+## How resolution works
+
+When DonorPress loads a template, it checks (in order):
+
+1. `wp-content/themes/your-child-theme/donorpress/{template}.php`
+2. `wp-content/themes/your-parent-theme/donorpress/{template}.php`
+3. `wp-content/plugins/donorpress/templates/{template}.php`
+
+The first one found wins. So to customise a template:
+
+1. Find it in `wp-content/plugins/donorpress/templates/`.
+2. Copy it to `wp-content/themes/your-theme/donorpress/`.
+3. Edit your copy.
+
+## Available templates
+
+| Template | What it renders |
+| --- | --- |
+| `single-donorpress_campaign.php` | A single campaign page. |
+| `archive-donorpress_campaign.php` | The campaign archive page. |
+| `taxonomy-donorpress_campaign_cat.php` | A campaign category archive. |
+| `receipt.php` | The donation receipt page (used by `[donorpress_receipt]`). |
+| `donor-dashboard.php` | The donor dashboard (used by `[donorpress_dashboard]`). |
+| `donor-login.php` | Donor login form (used by `[donorpress_login]`). |
+| `donor-signup.php` | Donor signup form (used by `[donorpress_signup]`). |
+| `annual-receipts.php` | Annual receipts list (used by `[donorpress_annual_receipts]`). |
+| `emails/wrapper.php` | The HTML shell wrapping every email body. |
+| `emails/{template-id}.php` | Per-template body (e.g. `emails/donation-completed.php`). |
+| `pdf/invoice.php` | PDF Invoices module template. |
+| `pdf/annual-receipt.php` | Annual Receipts module template. |
+
+## Variables available in templates
+
+Each template receives a known set of variables. They're documented at the top of each plugin-shipped template file as PHPDoc.
+
+For example, `receipt.php` receives:
+
+```php
+/**
+ * @var \DonorPress\Models\Donation $donation
+ * @var \DonorPress\Models\Donor    $donor
+ * @var \DonorPress\Models\Campaign|null $campaign
+ * @var array<string, mixed>        $settings
+ */
+```
+
+When you copy a template into your theme, leave the PHPDoc block intact so future-you (and editors with type hinting) know what's available.
+
+## Example: customising the campaign single template
+
+Step 1 — copy the file:
+
+```bash
+cp wp-content/plugins/donorpress/templates/single-donorpress_campaign.php \
+   wp-content/themes/my-theme/donorpress/single-donorpress_campaign.php
+```
+
+Step 2 — edit the copy:
+
+```php
+<?php
+/**
+ * @var WP_Post $campaign
+ * @var array $stats
+ */
+
+get_header();
+?>
+
+<main class="campaign-page">
+	<header class="campaign-hero">
+		<?php if ( has_post_thumbnail( $campaign ) ) : ?>
+			<?php echo get_the_post_thumbnail( $campaign, 'large' ); ?>
+		<?php endif; ?>
+		<h1><?php echo esc_html( get_the_title( $campaign ) ); ?></h1>
+	</header>
+
+	<div class="campaign-content">
+		<?php echo apply_filters( 'the_content', $campaign->post_content ); ?>
+	</div>
+
+	<aside class="campaign-sidebar">
+		<div class="campaign-progress">
+			<strong><?php echo esc_html( wc_price( $stats['raised'] ) ); ?></strong>
+			raised of <?php echo esc_html( wc_price( $stats['goal'] ) ); ?>
+		</div>
+		<?php echo do_shortcode( '[donorpress_form id="' . get_post_meta( $campaign->ID, '_dp_default_form_id', true ) . '"]' ); ?>
+	</aside>
+</main>
+
+<?php
+get_footer();
+```
+
+That's it — your version takes over for all campaign single pages.
+
+## Email template overrides
+
+Email templates work the same way. Override the wrapper to use your own HTML structure:
+
+```bash
+cp wp-content/plugins/donorpress/templates/emails/wrapper.php \
+   wp-content/themes/my-theme/donorpress/emails/wrapper.php
+```
+
+The wrapper receives `$content` (the per-template body) and `$settings` (your branding configuration).
+
+For per-template bodies (e.g. customising just the donation-completed email):
+
+```bash
+cp wp-content/plugins/donorpress/templates/emails/donation-completed.php \
+   wp-content/themes/my-theme/donorpress/emails/donation-completed.php
+```
+
+## PDF template overrides
+
+Both the PDF Invoices and Annual Receipts modules use the same template-override pattern, scoped under `pdf/`:
+
+```bash
+cp wp-content/plugins/donorpress/modules/pdf-invoices_premium_only/templates/invoice.php \
+   wp-content/themes/my-theme/donorpress/pdf/invoice.php
+```
+
+PDF templates render via dompdf. Stick to inline CSS, tables, and the [supported HTML/CSS subset](https://github.com/dompdf/dompdf/wiki/Inline-CSS-Limitations).
+
+## Always test
+
+Two things to verify after overriding:
+
+1. **Frontend rendering** — load the page in an incognito window.
+2. **Future updates** — when DonorPress updates a template (e.g. fixes an XSS issue), your override won't pick up the fix. Subscribe to the changelog and re-sync your overrides as needed.
+
+## Versioning your overrides
+
+For long-lived customisations, add a version comment at the top:
+
+```php
+<?php
+/**
+ * Custom DonorPress receipt template.
+ * Based on plugin version: 1.0.0
+ * Last reviewed: 2025-04-22
+ */
+```
+
+When a plugin update touches the upstream template, you'll know to compare.
+
+## Alternative: use the override hook instead
+
+For one-off tweaks (changing a single string, adding one element), filters are often cleaner than template overrides:
+
+```php
+add_filter( 'donorpress/receipt/intro_text', function () {
+	return 'Thank you so much for your gift!';
+} );
+```
+
+Reach for template overrides when the change is structural; reach for filters when the change is a property tweak.

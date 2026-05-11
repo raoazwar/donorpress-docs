@@ -1,0 +1,9 @@
+node_modules/
+.env
+.mintlify/
+.DS_Store
+*.log
+
+# Generated screenshots — uncomment to ignore raw captures and only commit curated ones.
+# images/admin/*.png
+# images/frontend/*.png

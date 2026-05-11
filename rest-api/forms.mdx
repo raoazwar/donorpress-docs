@@ -1,0 +1,172 @@
+---
+title: "Forms Endpoint"
+description: "REST API: list, create, update, and delete donation forms."
+---
+
+Base path: `/wp-json/donorpress/v2/forms`
+
+Forms are stored as the `donorpress_form` custom post type. The REST API wraps that with a flat JSON shape.
+
+## List forms
+
+```http
+GET /forms
+```
+
+### Query parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `per_page` | int | Default 20, max 100. |
+| `page` | int | Default 1. |
+| `status` | string | `active` / `inactive` / `all`. Default `active`. |
+| `search` | string | Searches form name. |
+| `orderby` | string | `date` / `title` / `total_raised` / `submissions`. |
+| `order` | string | `ASC` / `DESC`. |
+
+### Response
+
+```json
+[
+  {
+    "id": 42,
+    "name": "Annual Fund",
+    "status": "active",
+    "layout": "single-step",
+    "currency": "USD",
+    "campaign_id": 0,
+    "amounts": [10, 25, 50, 100],
+    "default_amount": 25,
+    "allow_custom": true,
+    "min_amount": 1,
+    "max_amount": 0,
+    "allow_recurring": true,
+    "frequencies": ["monthly", "yearly"],
+    "default_frequency": "monthly",
+    "fields": [
+      { "key": "first_name", "label": "First name", "required": true },
+      { "key": "last_name",  "label": "Last name",  "required": true },
+      { "key": "email",      "label": "Email",      "required": true }
+    ],
+    "gateways": ["stripe", "paypal"],
+    "style": {
+      "primary_color": "#3858e9",
+      "border_radius": 8,
+      "font_family": "inherit"
+    },
+    "stats": {
+      "submissions": 184,
+      "completions": 159,
+      "total_raised": 8425.00
+    },
+    "date_created": "2024-08-13T10:22:11Z",
+    "date_modified": "2025-04-22T14:38:14Z"
+  }
+]
+```
+
+## Get a single form
+
+```http
+GET /forms/{id}
+```
+
+Returns the same shape with full nested objects (fields, gateways, style settings).
+
+## Create a form
+
+```http
+POST /forms
+```
+
+### Body
+
+Send any subset of the form fields. Required: `name`. Everything else has sensible defaults.
+
+```json
+{
+  "name": "Spring Appeal",
+  "currency": "USD",
+  "amounts": [25, 50, 100, 250],
+  "default_amount": 50,
+  "allow_recurring": true,
+  "frequencies": ["monthly"],
+  "gateways": ["stripe"]
+}
+```
+
+### Response
+
+The full form object including the new `id`.
+
+## Update a form
+
+```http
+PATCH /forms/{id}
+```
+
+Send only the fields you want to change:
+
+```json
+{
+  "amounts": [10, 25, 50, 100, 250],
+  "default_amount": 50
+}
+```
+
+Updating the form does NOT affect existing donations or subscriptions tied to it — they keep their original snapshot of the form's settings.
+
+## Duplicate a form
+
+```http
+POST /forms/{id}/duplicate
+```
+
+Returns the new form's full object. The duplicate inherits all settings except donations and revision history.
+
+## Form revisions
+
+```http
+GET /forms/{id}/revisions
+```
+
+Returns the last 20 saved revisions:
+
+```json
+[
+  { "revision_id": 901, "saved_at": "2025-04-22T14:38:14Z", "saved_by": 1 },
+  { "revision_id": 902, "saved_at": "2025-04-23T09:11:00Z", "saved_by": 1 }
+]
+```
+
+```http
+POST /forms/{id}/revisions/{revision_id}/restore
+```
+
+Restores the named revision. The current state is auto-saved as a new revision first.
+
+## Delete a form
+
+```http
+DELETE /forms/{id}
+```
+
+- Deletes the form post.
+- Existing donations / subscriptions are preserved (their `form_id` becomes a tombstone reference).
+- Embeds of `[donorpress_form id="N"]` for the deleted form silently render nothing.
+
+Returns 204.
+
+## Permissions
+
+All endpoints require `manage_options`.
+
+## Form schema (advanced)
+
+For programmatic form creation, the full schema is documented in the OpenAPI spec at:
+
+```
+GET /wp-json/donorpress/v2/forms/_schema
+```
+
+Useful for generating typed clients in your language of choice.

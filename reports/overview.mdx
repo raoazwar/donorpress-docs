@@ -1,0 +1,92 @@
+---
+title: "Reports Overview"
+description: "Built-in reporting for revenue, donors, and form performance."
+---
+
+DonorPress includes a reports module out of the box. Premium installations get richer analytics via the [Advanced Dashboard module](/modules/advanced-dashboard).
+
+<Frame>
+	<img src="/images/admin/reports.png" alt="DonorPress reports admin" />
+</Frame>
+
+## Built-in (free) reports
+
+| Report | What it shows |
+| --- | --- |
+| **Revenue** | Daily, weekly, or monthly revenue over a chosen period. |
+| **Donors** | New donors per period; donor retention. |
+| **Forms** | Per-form: views, submissions, completion rate. |
+| **Subscriptions** | Active subscriptions, MRR, churn. |
+
+Each report supports a date range filter, gateway filter, and export to CSV.
+
+## Period filter
+
+A global filter at the top of every report:
+
+- Last 7 days
+- Last 30 days
+- This month
+- Last month
+- This year
+- Last year
+- Custom range
+
+The previous-period comparison column shows percent change vs. the equivalent prior window.
+
+## Filters
+
+In addition to the period:
+
+- **Gateway** — Stripe / PayPal / Manual / etc.
+- **Currency** — useful if you accept multiple currencies (default: site currency).
+- **Form** — limit to a single form.
+- **Campaign** — limit to a single campaign.
+- **Status** — by default, only Complete donations count. You can include refunds, pending, etc.
+
+## Exporting
+
+Every report has a **Download CSV** button that exports the underlying data with the current filters applied. Useful for board reports and end-of-year accounting.
+
+## Report types
+
+<CardGroup cols={2}>
+	<Card title="Revenue Reports" icon="chart-line" href="/reports/revenue-reports">
+		Total revenue, average donation, peak periods.
+	</Card>
+	<Card title="Donor Reports" icon="users" href="/reports/donor-reports">
+		New vs. returning, lifetime value, lapsed donors.
+	</Card>
+</CardGroup>
+
+## Premium reports (Advanced Dashboard)
+
+When the [Advanced Dashboard module](/modules/advanced-dashboard) is active, you also get:
+
+- KPI strip with 6 headline metrics + period comparison.
+- Revenue line chart with previous-period overlay.
+- Gateway breakdown donut chart.
+- Day × hour heatmap.
+- Top campaigns leaderboard.
+- Form performance table.
+- Donor LTV histogram.
+- Subscription health and 12-month MRR projection.
+- PDF export of the full dashboard.
+
+## Performance
+
+Reports query the donations table directly. For sites with millions of donations, large date ranges may take a few seconds. Three optimizations:
+
+- **Default to short periods** — 30 days is faster than "this year".
+- **Enable report caching** — **Settings → Reports → Cache duration** (default: 5 minutes).
+- **Run reports on a read replica** — for very large sites, use `donorpress/database/use_replica` filter.
+
+## Webhook delays
+
+Reports reflect the database state, which is updated by gateway webhooks. If a webhook is delayed, recent renewals or refunds may not appear in reports for a few minutes. The data catches up once webhooks process.
+
+## Real-time vs. snapshot
+
+Reports are computed on each load — there's no nightly aggregation step. New donations appear in reports immediately (or as soon as the cache expires).
+
+This means reports are always current, but heavy queries can be slow on big datasets. The Advanced Dashboard module pre-aggregates several KPIs in a daily background job to keep loads fast.

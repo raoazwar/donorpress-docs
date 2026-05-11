@@ -1,0 +1,145 @@
+---
+title: "Extending Gateways"
+description: "Hook into existing gateways to customise their behaviour."
+---
+
+This page documents the gateway-specific hooks. For building a new gateway from scratch, see [custom gateways](/developers/custom-gateways).
+
+## Per-gateway settings fields
+
+Inject extra settings into a gateway's settings panel:
+
+```php
+add_filter( 'donorpress/gateway/stripe/settings_fields', function ( $fields ) {
+	$fields['my_custom_field'] = [
+		'label'    => 'My custom Stripe field',
+		'type'     => 'text',
+		'help'     => 'Used by my custom integration.',
+		'default'  => '',
+	];
+	return $fields;
+} );
+```
+
+The field appears in **Settings → Payment Gateways → Stripe**, and the value is accessible via `$stripe->setting( 'my_custom_field' )`.
+
+## Modify charge arguments
+
+Adjust the args sent to the gateway when creating a charge:
+
+```php
+add_filter( 'donorpress/gateway/stripe/charge_args', function ( $args, $intent ) {
+	// Add a custom statement descriptor suffix per donation
+	$args['statement_descriptor_suffix'] = sprintf(
+		'CAMP-%d',
+		$intent->get_campaign_id()
+	);
+	return $args;
+}, 10, 2 );
+```
+
+Use sparingly — gateway argument schemas can change between API versions.
+
+## Modify subscription arguments
+
+Same pattern for subscriptions:
+
+```php
+add_filter( 'donorpress/gateway/stripe/subscription_args', function ( $args, $intent ) {
+	// Add billing cycle anchor (start subscription at start of next month)
+	$args['billing_cycle_anchor'] = strtotime( 'first day of next month' );
+	$args['proration_behavior'] = 'none';
+	return $args;
+}, 10, 2 );
+```
+
+## Inspect raw webhook payloads
+
+```php
+add_action( 'donorpress/gateway/webhook_received', function ( $gateway_slug, $payload ) {
+	if ( $gateway_slug === 'stripe' ) {
+		error_log( 'Stripe webhook: ' . wp_json_encode( $payload ) );
+	}
+}, 10, 2 );
+```
+
+## Override the webhook signing secret source
+
+For multi-environment setups (e.g. reading the secret from environment variables instead of WP options):
+
+```php
+add_filter( 'donorpress/gateway/stripe/webhook_secret', function ( $secret ) {
+	return getenv( 'STRIPE_WEBHOOK_SECRET' ) ?: $secret;
+} );
+```
+
+## Add custom payment method types
+
+For Stripe, enable additional payment method types beyond cards:
+
+```php
+add_filter( 'donorpress/gateway/stripe/payment_method_types', function ( $types ) {
+	$types[] = 'sepa_debit';
+	$types[] = 'ideal';
+	return $types;
+} );
+```
+
+(Note: each payment method has its own activation requirements in your Stripe account.)
+
+## Customise success / cancel URLs
+
+```php
+add_filter( 'donorpress/gateway/stripe/success_url', function ( $url, $intent ) {
+	// Append a custom query param
+	return add_query_arg( 'utm_source', 'stripe-checkout', $url );
+}, 10, 2 );
+```
+
+## React to refunds at the gateway level
+
+```php
+add_action( 'donorpress/gateway/stripe/refund_succeeded', function ( $donation, $refund_amount ) {
+	// Reconcile with your accounting system
+	your_accounting_api->record_refund(
+		$donation->get_id(),
+		$refund_amount
+	);
+}, 10, 2 );
+```
+
+## Override the gateway charge method (advanced)
+
+You can entirely replace a gateway's `charge` method:
+
+```php
+add_filter( 'donorpress/gateway/stripe', function ( $gateway ) {
+	return new MyCustomStripeGateway();   // must implement GatewayInterface
+} );
+```
+
+This is rarely necessary — usually filtering args or adding hooks is enough. Only replace the gateway entirely if you need fundamentally different charge logic.
+
+## Add gateway-specific donor metadata
+
+Pass extra data to the gateway when creating a customer / charge:
+
+```php
+add_filter( 'donorpress/gateway/stripe/customer_metadata', function ( $metadata, $donor ) {
+	$metadata['referral_code'] = get_user_meta( $donor->get( 'user_id' ), 'referral_code', true );
+	return $metadata;
+}, 10, 2 );
+```
+
+This metadata appears in the gateway dashboard alongside the customer record — useful for cross-referencing with external systems.
+
+## Related
+
+<CardGroup cols={2}>
+	<Card title="Custom gateways" icon="plug" href="/developers/custom-gateways">
+		Build a gateway from scratch.
+	</Card>
+	<Card title="Webhooks" icon="bolt" href="/gateways/webhooks">
+		How webhooks work.
+	</Card>
+</CardGroup>

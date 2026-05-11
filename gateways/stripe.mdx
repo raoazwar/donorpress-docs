@@ -1,0 +1,143 @@
+---
+title: "Stripe"
+description: "Set up Stripe for cards, Apple Pay, Google Pay, and recurring donations."
+---
+
+Stripe is the recommended gateway for most DonorPress sites. It handles cards, Apple Pay, Google Pay, and gives you a polished hosted checkout for both one-time and recurring donations.
+
+## Before you start
+
+You need:
+
+- A [Stripe account](https://dashboard.stripe.com/register) (free).
+- For live payments: business verification complete in Stripe.
+- HTTPS on your WordPress site (Stripe rejects card data over HTTP).
+
+## Step 1 — Get your API keys
+
+In your Stripe dashboard:
+
+<Tabs>
+	<Tab title="Test mode">
+		Go to **Developers → API keys**.
+
+		Copy:
+		- **Publishable key** (starts with `pk_test_…`)
+		- **Secret key** (starts with `sk_test_…` — click "Reveal test key")
+	</Tab>
+	<Tab title="Live mode">
+		In the dashboard sidebar, switch the "Test mode" toggle off.
+
+		Then go to **Developers → API keys**.
+
+		Copy:
+		- **Publishable key** (starts with `pk_live_…`)
+		- **Secret key** (starts with `sk_live_…` — generate a restricted key with at least the permissions listed [below](#recommended-restricted-key-permissions))
+	</Tab>
+</Tabs>
+
+## Step 2 — Paste them into DonorPress
+
+1. Go to **DonorPress → Settings → Payment Gateways**.
+2. Toggle **Stripe** on.
+3. Paste the test publishable + secret keys into the **Test** fields.
+4. Paste the live keys into the **Live** fields (only when ready).
+5. Save.
+
+## Step 3 — Configure the webhook
+
+Webhooks are how Stripe tells DonorPress about events that happen outside your site (subscription renewals, refunds processed in Stripe directly, disputes, etc.).
+
+<Steps>
+	<Step title="Open Stripe webhooks">
+		In Stripe: **Developers → Webhooks → Add endpoint**.
+	</Step>
+	<Step title="Set the endpoint URL">
+		Paste:
+		```text
+		https://yoursite.com/wp-json/donorpress/v2/gateways/stripe/webhook
+		```
+		Replace `yoursite.com` with your actual domain.
+	</Step>
+	<Step title="Select events">
+		Choose these events:
+		- `payment_intent.succeeded`
+		- `payment_intent.payment_failed`
+		- `charge.refunded`
+		- `customer.subscription.created`
+		- `customer.subscription.updated`
+		- `customer.subscription.deleted`
+		- `invoice.payment_succeeded`
+		- `invoice.payment_failed`
+	</Step>
+	<Step title="Copy the signing secret">
+		After creating the webhook, click **Reveal** next to the signing secret (starts with `whsec_…`).
+	</Step>
+	<Step title="Paste it into DonorPress">
+		**Settings → Payment Gateways → Stripe → Webhook signing secret**.
+	</Step>
+</Steps>
+
+## Step 4 — Test a donation
+
+Make a $1 test donation using card `4242 4242 4242 4242`, any future expiry, any CVC. After payment:
+
+- The donation appears in **DonorPress → Donations** with status **Complete**.
+- The donor record is created (or updated).
+- The donor receives the receipt email.
+- In Stripe, the corresponding PaymentIntent appears.
+
+## Statement descriptor
+
+The **Statement descriptor** field controls what appears on the donor's bank statement. Constraints:
+
+- Maximum 22 characters.
+- Letters, numbers, spaces only.
+- Must contain at least one letter.
+- Cannot contain `<`, `>`, `\`, `'`, `"`, or `*`.
+
+Common pattern: `YOUR ORG DONATION`.
+
+## Recommended restricted key permissions
+
+For live mode we recommend creating a [Stripe restricted key](https://dashboard.stripe.com/apikeys/create) instead of using your full secret key. Required permissions:
+
+| Resource | Permission |
+| --- | --- |
+| Charges | Write |
+| Customers | Write |
+| PaymentIntents | Write |
+| Refunds | Write |
+| Subscriptions | Write |
+| Plans / Prices | Write |
+| Invoices | Read |
+| Webhook Endpoints | Read |
+
+Tighter scopes work for read-only roles but won't let you process new donations.
+
+## Apple Pay & Google Pay
+
+Apple Pay and Google Pay are enabled automatically when:
+
+- Stripe is enabled and configured.
+- Your site is HTTPS.
+- For Apple Pay: you've registered your domain in Stripe (**Settings → Payment methods → Apple Pay** in the Stripe dashboard).
+
+The donation form auto-detects browser support and shows the appropriate buttons.
+
+## Troubleshooting
+
+<AccordionGroup>
+	<Accordion title='"Invalid API Key provided" error'>
+		Double-check you've pasted the secret key (not the publishable key) into the secret field. They look similar but are distinct (`sk_…` vs `pk_…`).
+	</Accordion>
+	<Accordion title="Webhook events not arriving">
+		Visit the webhook endpoint in Stripe and check **Recent events**. Failed deliveries show the response code DonorPress returned. 401/403 typically means the signing secret in DonorPress doesn't match the one in Stripe.
+	</Accordion>
+	<Accordion title="Subscriptions not renewing">
+		Verify that `invoice.payment_succeeded` is in your webhook event list. Without it, DonorPress never hears about renewals.
+	</Accordion>
+	<Accordion title="Test donations work but live ones fail">
+		Confirm you've pasted live keys (not test) into the live fields, and that your Stripe account has completed business verification (required before Stripe processes live charges).
+	</Accordion>
+</AccordionGroup>

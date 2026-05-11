@@ -1,0 +1,85 @@
+---
+title: "Recurring Donations"
+description: "How DonorPress handles subscriptions, renewals, and cancellations."
+---
+
+DonorPress supports **recurring donations** — donors who give monthly, quarterly, annually, or on any frequency you enable.
+
+<Frame>
+	<img src="/images/admin/subscriptions-list.png" alt="DonorPress subscriptions list" />
+</Frame>
+
+## How recurring works
+
+When a donor opts into recurring on a form:
+
+1. The first charge is processed immediately, just like a one-time donation.
+2. A **subscription record** is created in DonorPress, linked to a subscription on the gateway side (Stripe Subscription or PayPal Billing Agreement).
+3. The gateway processes future charges automatically on the schedule you set.
+4. Each successful renewal creates a new **donation record** linked to the subscription.
+5. Donors get a renewal receipt by email each time.
+
+## Supported frequencies
+
+Out of the box, you can offer:
+
+- Daily
+- Weekly
+- Monthly
+- Quarterly
+- Yearly
+
+You enable per-form which frequencies the donor sees. We recommend starting with **monthly** and **yearly** only — too many options reduces conversion.
+
+## Subscription statuses
+
+| Status | Meaning |
+| --- | --- |
+| **Active** | Renewing on schedule. |
+| **Paused** | Temporarily halted. Can be resumed by the donor or admin. |
+| **Cancelled** | Permanently stopped. Donor can start a new subscription, but this one won't resume. |
+| **Failing** | A renewal payment failed. The gateway will retry per its own dunning rules. |
+| **Expired** | Reached the configured bill count (e.g. "12 monthly payments") and finished. |
+| **Completed** | Successfully completed all configured payments. |
+
+## Optional bill count
+
+By default, recurring donations continue until cancelled. You can also set a **bill count** per form (e.g. "12 monthly payments and stop") for fixed-term campaigns.
+
+## Failed renewals
+
+When a renewal fails:
+
+1. DonorPress marks the subscription as **Failing**.
+2. The gateway retries on its own dunning schedule (Stripe: 3 attempts over a week by default; PayPal: similar).
+3. Donor receives an email asking them to update payment details.
+4. After the gateway gives up, the subscription moves to **Cancelled**.
+
+You can fully customize the failed-renewal email from **Settings → Email Notifications**.
+
+## Managing subscriptions
+
+From **Donations → Subscriptions** you can:
+
+- Filter by status, gateway, donor, or date.
+- Pause a subscription (skips the next renewal).
+- Cancel a subscription (stops all future renewals).
+- View the full renewal history (every donation tied to the subscription).
+
+## What donors can do
+
+If you've published the [donor dashboard](/donors/donor-dashboard), donors see their active subscriptions and (in current version) view their next renewal date. Cancellation from the dashboard is on the roadmap.
+
+## Webhooks
+
+Subscriptions rely heavily on webhooks for renewal notifications. **Always configure webhooks** for any gateway you use in production:
+
+<Card title="Configure webhooks" icon="bolt" href="/gateways/webhooks">
+	Step-by-step guides for Stripe and PayPal.
+</Card>
+
+Without webhooks, renewals will still process, but DonorPress won't know about them until the next page load triggers a manual sync (and that's not reliable).
+
+## Recurring + tax receipts
+
+Each recurring renewal counts as a separate donation for [annual receipt](/modules/annual-receipts) purposes. So a donor giving $25/month for the calendar year ends up with one annual receipt listing 12 individual donations totalling $300.

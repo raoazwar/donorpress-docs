@@ -1,0 +1,84 @@
+---
+title: "[donorpress_receipt]"
+description: "Donation receipt page shortcode."
+---
+
+`[donorpress_receipt]` renders the donation receipt for a specific donation. Donors land here after a successful payment, and can return to it any time from their donation history.
+
+## Basic usage
+
+Place on a dedicated page — typically the "Donation Confirmation" page that the setup wizard creates:
+
+```text
+[donorpress_receipt]
+```
+
+The shortcode reads the donation ID from a `donation_id` query parameter:
+
+```
+https://yoursite.com/donation-confirmation/?donation_id=123
+```
+
+## Attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `id` | integer | from URL | Donation ID. Usually omitted — read from `?donation_id=` instead. |
+| `show_pdf_button` | bool | `true` | Whether to show the "Download PDF" button (requires the [PDF Invoices module](/modules/pdf-invoices)). |
+| `show_share_buttons` | bool | `false` | Whether to show "Share your support" buttons for Twitter, Facebook, etc. |
+| `accent_color` | string | `#3858e9` | Brand accent color. |
+
+## What's on the receipt
+
+- Thank you message with the donor's name.
+- Donation summary: amount, date, payment method, receipt number.
+- Donor info: name, email.
+- Campaign attribution (if any).
+- "Download PDF" button (if PDF Invoices is active).
+- Optional share buttons.
+- A "What's next?" section with links back to your homepage / dashboard / next campaign.
+
+## Access control
+
+The receipt is accessible:
+
+- **To the donor who made the donation** (matched by session token after the donation, then by their logged-in user account afterwards).
+- **To admins** with `manage_options` capability.
+
+Anyone else who hits the URL with a guessed donation ID gets a "Receipt not found" message — donation IDs aren't enumerable from the receipt page.
+
+## Use case: thank-you redirect
+
+After a successful donation, DonorPress redirects to the **Success Page** configured in **Settings → General**, with `?donation_id=123` appended. As long as that page contains `[donorpress_receipt]`, the donor sees their personalised receipt.
+
+You can also build a custom thank-you page:
+
+```text
+<h1>Thank you, {donor_first_name}!</h1>
+
+<p>Your donation of {donation_amount} will help us reach our goal.</p>
+
+[donorpress_receipt]
+
+<a href="/our-impact/">See the impact your gift makes →</a>
+```
+
+(The `{donor_first_name}` style template tag isn't supported in raw page content — you'd need to wire it up via a custom shortcode or use only the `[donorpress_receipt]` block.)
+
+## Customising the layout
+
+For deeper customisation:
+
+1. Copy `wp-content/plugins/donorpress/templates/receipt.php` to your theme at `wp-content/themes/your-theme/donorpress/receipt.php`.
+2. Edit freely.
+3. The template receives `$donation`, `$donor`, and `$campaign` (if attributed).
+
+[Template overrides →](/developers/template-overrides)
+
+## Mobile optimisations
+
+The receipt is fully responsive. The "Download PDF" button is finger-friendly on mobile (44px tap target), and share buttons collapse into an icon row on small screens.
+
+## Print
+
+The receipt page includes `@media print` CSS that hides navigation, share buttons, and the "What's next?" section, leaving a clean printable receipt. Donors can use their browser's print dialog as an alternative to the PDF download.

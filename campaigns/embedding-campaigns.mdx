@@ -1,0 +1,110 @@
+---
+title: "Embedding Campaigns"
+description: "Display campaigns on any page using shortcodes, blocks, or widgets."
+---
+
+Campaigns have their own auto-generated public pages, but you can also embed them anywhere — your homepage, a "Current campaigns" page, your sidebar, a footer.
+
+## List shortcode
+
+`[donorpress_campaign_list]` displays a grid of campaign cards.
+
+```text
+[donorpress_campaign_list]
+```
+
+### Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `count` | 12 | How many campaigns to display. |
+| `columns` | 3 | Cards per row (1–4). |
+| `category` | — | Filter by category slug. |
+| `tag` | — | Filter by tag slug. |
+| `status` | `active` | `active`, `ended`, or `all`. |
+| `orderby` | `date` | `date`, `title`, `goal`, `progress`, `random`. |
+| `order` | `DESC` | `ASC` or `DESC`. |
+| `show_progress` | `true` | Whether to render the goal progress bar. |
+| `show_excerpt` | `true` | Whether to render the campaign excerpt. |
+
+### Examples
+
+A clean three-column list of all active campaigns:
+
+```text
+[donorpress_campaign_list count="9" columns="3"]
+```
+
+Just one row of education-category campaigns:
+
+```text
+[donorpress_campaign_list count="3" columns="3" category="education"]
+```
+
+Top 5 by goal progress (most-funded first):
+
+```text
+[donorpress_campaign_list count="5" orderby="progress" order="DESC"]
+```
+
+## Single campaign card shortcode
+
+`[donorpress_campaign_card]` displays a single featured campaign.
+
+```text
+[donorpress_campaign_card id="42"]
+```
+
+### Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `id` | — | **Required.** Campaign ID. |
+| `style` | `vertical` | `vertical` or `horizontal` (image-left layout). |
+| `show_progress` | `true` | Whether to render the goal progress bar. |
+| `show_donate_button` | `true` | Whether to show a "Donate" button. |
+| `button_text` | `"Donate"` | Donate button label. |
+
+### Examples
+
+A featured horizontal card for a homepage hero:
+
+```text
+[donorpress_campaign_card id="42" style="horizontal"]
+```
+
+A vertical card with no donate button (e.g. for a "current campaigns" archive):
+
+```text
+[donorpress_campaign_card id="42" show_donate_button="false"]
+```
+
+## Block editor
+
+Search for "DonorPress Campaign" in the block inserter:
+
+- **Campaign List** — same as `[donorpress_campaign_list]`, with a visual filter UI.
+- **Campaign Card** — same as `[donorpress_campaign_card]`, with a campaign picker.
+
+Block attributes mirror shortcode attributes one-to-one.
+
+## Elementor widgets
+
+For Elementor sites, the same set is exposed as widgets:
+
+- **DonorPress Campaign List**
+- **DonorPress Campaign Card**
+
+Found under the **DonorPress** category in the widget panel. Widget controls match the shortcode attributes plus full Elementor styling controls.
+
+[Elementor widgets reference →](/campaigns/elementor-widgets)
+
+## Widget areas (legacy widgets)
+
+For classic-widget themes, DonorPress also registers a **Campaign Card** widget (under **Appearance → Widgets**) with the same options as the shortcode.
+
+## Performance
+
+- Campaign queries are cached for 5 minutes by default. New donations won't update the displayed total instantly — there's a brief lag.
+- For real-time totals, set `cache="0"` on the shortcode (note: heavier on the database).
+- Campaign list pages with many campaigns (50+) should use pagination — add `count="20"` and a "View more" link to a campaign archive page.

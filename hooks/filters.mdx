@@ -1,0 +1,137 @@
+---
+title: "Filters"
+description: "Every WordPress filter DonorPress exposes for runtime customisation."
+---
+
+Filters let you modify DonorPress data and behaviour without forking the plugin. All filters use the `donorpress/` prefix.
+
+## Form filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/form/field_types` | Available field types in the form builder. | `array $types` |
+| `donorpress/form/before_render` | The form data before rendering. | `array $form_data` |
+| `donorpress/form/after_render` | The form HTML after rendering. | `string $html, array $form_data` |
+| `donorpress/form/submission_validate` | Per-submission validation result. Return WP_Error to reject. | `true\|WP_Error $valid, array $submission` |
+| `donorpress/form/spam_check` | Whether a submission is spam. Return true to reject. | `bool $is_spam, array $submission` |
+
+## Donation filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/donation/data_before_create` | Donation data array before insertion. | `array $data` |
+| `donorpress/donation/refundable` | Whether a donation is refundable. | `bool $can_refund, Donation $donation` |
+| `donorpress/donation/receipt_url` | URL for the donation receipt. | `string $url, Donation $donation` |
+
+## Donor filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/donor/match_data` | Data used to match an existing donor for a new donation. Return modified data to influence matching. | `array $data` |
+| `donorpress/donor/dashboard_url` | URL for the donor dashboard. | `string $url, Donor $donor` |
+| `donorpress/donor/can_view_dashboard` | Whether the current user can view the donor dashboard. | `bool $can_view, Donor $donor` |
+
+## Subscription filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/subscription/frequencies` | Available subscription frequencies. | `array $frequencies` |
+| `donorpress/subscription/before_create` | Subscription data before creation. | `array $data` |
+| `donorpress/subscription/cancellable` | Whether a subscription can be cancelled. | `bool $can_cancel, Subscription $subscription` |
+
+## Gateway filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/gateways` | The full registry of gateways. Add or remove gateways. | `array $gateways` |
+| `donorpress/gateway/{slug}/settings_fields` | Settings fields exposed for a specific gateway. | `array $fields` |
+| `donorpress/gateway/{slug}/charge_args` | Args passed to the gateway charge call. | `array $args, DonationIntent $intent` |
+| `donorpress/gateway/{slug}/webhook_secret` | The signing secret used to verify webhooks. | `string $secret` |
+
+## Email filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/email/send` | Whether to send an email at all. Return false to suppress. | `bool $should_send, string $template, array $args` |
+| `donorpress/email/from_name` | Sender name. | `string $from_name, string $template` |
+| `donorpress/email/from_email` | Sender email. | `string $from_email, string $template` |
+| `donorpress/email/recipient` | Email recipient. | `string $recipient, string $template` |
+| `donorpress/email/subject` | Email subject. | `string $subject, string $template` |
+| `donorpress/email/body` | Email body (HTML). | `string $body, string $template, array $args` |
+| `donorpress/email/tags` | Available template tags. | `array $tags, string $template` |
+| `donorpress/email/headers` | Email headers. | `array $headers, string $template` |
+| `donorpress/email/attachments` | Email attachments. | `array $attachments, string $template, array $args` |
+
+## REST filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/rest/permission/{endpoint}` | Required capability for an endpoint. | `string $capability` |
+| `donorpress/rest/donations/list_args` | Args for the donations list query. | `array $args` |
+| `donorpress/rest/donor/response` | Donor object before serialization. | `array $response, Donor $donor` |
+
+## Admin filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/admin/menu_capability` | Capability required to see the admin menu. | `string $capability` |
+| `donorpress/admin/menu_position` | WP menu position. | `int $position` |
+| `donorpress/admin/columns/{post_type}` | Custom columns for a post type list table. | `array $columns` |
+
+## Reports filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/reports/excluded_statuses` | Donation statuses excluded from reports by default. | `array $statuses` |
+| `donorpress/reports/cache_minutes` | Report cache duration. | `int $minutes` |
+
+## Database filters
+
+| Filter | Modifies | Args |
+| --- | --- | --- |
+| `donorpress/database/use_replica` | Whether to read from a database replica. | `bool $use_replica, string $query_context` |
+| `donorpress/database/table_prefix` | Custom table prefix. | `string $prefix` |
+
+## Examples
+
+### Force all donation receipts BCC'd to your accountant
+
+```php
+add_filter( 'donorpress/email/headers', function ( $headers, $template ) {
+	if ( $template === 'donation_completed' ) {
+		$headers[] = 'Bcc: accountant@yourcharity.org';
+	}
+	return $headers;
+}, 10, 2 );
+```
+
+### Match donors by email AND phone (instead of email only)
+
+```php
+add_filter( 'donorpress/donor/match_data', function ( $data ) {
+	// Add phone to the matching key. Note: requires customising the donor lookup query too.
+	$data['_match_by_phone'] = true;
+	return $data;
+} );
+```
+
+### Hide one of the built-in gateways
+
+```php
+add_filter( 'donorpress/gateways', function ( $gateways ) {
+	unset( $gateways['paypal'] );
+	return $gateways;
+} );
+```
+
+### Custom report cache duration
+
+```php
+add_filter( 'donorpress/reports/cache_minutes', fn() => 30 );
+```
+
+## Related
+
+<Card title="Actions" icon="bolt" href="/hooks/actions">
+	React to events.
+</Card>

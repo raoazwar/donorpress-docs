@@ -1,0 +1,82 @@
+---
+title: "Donor Dashboard"
+description: "Give your donors a self-serve dashboard to view their history and manage subscriptions."
+---
+
+The donor dashboard is a frontend page that logged-in donors visit to see their giving history, manage recurring donations, download receipts, and update their profile.
+
+<Frame>
+	<img src="/images/frontend/donor-dashboard.png" alt="Donor dashboard rendered on the frontend" />
+</Frame>
+
+## Setting it up
+
+<Steps>
+	<Step title="Create a page">
+		In WordPress, create a new page (e.g. **"My Donations"** or **"My Account"**).
+	</Step>
+	<Step title="Add the shortcode">
+		Drop `[donorpress_dashboard]` as the page content.
+	</Step>
+	<Step title="Publish">
+		The page is now live for any logged-in donor.
+	</Step>
+	<Step title="Link to it">
+		Add the page to your site navigation, or include the link in your donation receipt emails.
+	</Step>
+</Steps>
+
+## What donors see
+
+The dashboard is organized into tabs:
+
+- **Overview** — Stats (total donated, donation count, recurring plans, member since) plus a recent donations preview.
+- **Donation History** — Full table of every donation with status badges and receipt links.
+- **Recurring** — Active recurring donations (only shown if the donor has any).
+- **Annual Receipts** — Year-end tax receipts (only shown if the [Annual Receipts module](/modules/annual-receipts) is enabled and the "Show in Donor Dashboard" setting is on).
+- **Edit Profile** — Self-serve name editing.
+
+## Customizing the look
+
+The dashboard uses a single accent color for tabs, buttons, and focus states. Set it via the shortcode attribute:
+
+```text
+[donorpress_dashboard accent_color="#ff6b35"]
+```
+
+Accepts HEX, RGB, or named CSS colors. Full reference at the [shortcode page](/shortcodes/donor-dashboard).
+
+## Login flow
+
+If a donor visits the dashboard page while logged out, they see a "Please log in" message with a link to the WordPress login screen. After login, they're returned to the dashboard automatically.
+
+For donors who've never created a WordPress account, link them to your sign-up page (`[donorpress_signup]`) before the dashboard.
+
+## What the donor cannot do
+
+For safety, the dashboard intentionally **doesn't let donors**:
+
+- Change their email address (it's tied to their WP account — they should change it from the WP user profile).
+- See or edit other donors' records.
+- Cancel a subscription that they didn't create themselves.
+- Issue refunds.
+
+These actions live in the admin and require admin capabilities.
+
+## What the donor can do
+
+- View their full donation history with downloadable receipts.
+- See and (in a future release) cancel recurring donations.
+- Download annual tax receipts (if the module is enabled).
+- Edit their first and last name.
+
+## Related
+
+<CardGroup cols={2}>
+	<Card title="Shortcode reference" icon="code" href="/shortcodes/donor-dashboard">
+		Every attribute and example.
+	</Card>
+	<Card title="Annual Receipts module" icon="file-pdf" href="/modules/annual-receipts">
+		Add a tax receipts tab to the dashboard.
+	</Card>
+</CardGroup>

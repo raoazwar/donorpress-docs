@@ -1,0 +1,118 @@
+---
+title: "Annual Receipts"
+description: "Generate year-end tax receipts donors can download as PDF."
+---
+
+The Annual Receipts module gives donors a single, consolidated PDF receipt for every donation they made within a tax year. Useful for tax filing, charitable deduction claims, and personal record-keeping.
+
+<Info>
+	Annual Receipts is a **Basic plan** premium module. [See all modules →](/modules/overview)
+</Info>
+
+## Enabling the module
+
+<Steps>
+	<Step title="Activate Basic or higher">
+		Confirm your DonorPress license unlocks the Basic plan.
+	</Step>
+	<Step title="Open Modules">
+		Go to **DonorPress → Add-ons** and toggle **Annual Receipts** on.
+	</Step>
+	<Step title="Configure">
+		The module's settings appear at **DonorPress → Settings → Annual Receipts**.
+	</Step>
+</Steps>
+
+<Frame>
+	<img src="/images/admin/modules-list.png" alt="Module list with Annual Receipts enabled" />
+</Frame>
+
+## Settings reference
+
+<Frame>
+	<img src="/images/admin/annual-receipts-settings.png" alt="Annual Receipts settings panel" />
+</Frame>
+
+| Setting | Type | Default | Description |
+| --- | --- | --- | --- |
+| Enable Annual Receipts | toggle | On | Master switch for the module. When off, no shortcodes or downloads work. |
+| Show in Donor Dashboard | toggle | Off | Adds an "Annual Receipts" tab to the [donor dashboard](/shortcodes/donor-dashboard) automatically — no extra shortcode required. |
+| Charity / Business Name | text | Site name | Printed at the top of every receipt. |
+| Tax ID / EIN | text | — | Optional. Printed under the charity name for tax filings. |
+| Tax Year End | month + day | Dec 31 | Last day of your tax year. Use a different date if your fiscal year differs (e.g. Apr 5 for the UK). |
+| Receipt Number Prefix | text | `AR-` | Receipt numbers are generated as `{prefix}{donor-id}-{year}`. |
+| Included Donation Statuses | multi-select | Completed | Which donation statuses count toward the annual total. |
+| Intro Text | textarea | Standard wording | Opening paragraph shown above the donor's details. |
+| Text Before Table | textarea | — | Optional. Inserted between the intro and the donation list. |
+| Text After Table | textarea | — | Optional. Inserted below the totals. |
+| Footer Text | textarea | Compliance note | Typically a "no goods or services were provided" note. |
+| Show Logo | toggle | Off | Display your logo at the top of the PDF. |
+| Logo Media ID / URL | number / text | — | Source for the logo (JPEG only). |
+| Logo Alignment | select | Center | Left / Center / Right. |
+| Show Branding Line | toggle | On | Display a small "Powered by DonorPress" line at the bottom. |
+| Branding Line | text | "Powered by DonorPress" | Customize the branding line. |
+
+## How donors get their receipts
+
+There are two ways to expose annual receipts to donors. You can use either, or both.
+
+### Option 1 — Donor Dashboard tab (recommended)
+
+Turn on **Show in Donor Dashboard** in the settings. The annual receipts tab appears automatically on any page using `[donorpress_dashboard]`.
+
+<Frame>
+	<img src="/images/frontend/dashboard-annual-receipts-tab.png" alt="Annual Receipts tab inside the donor dashboard" />
+</Frame>
+
+This is the cleanest setup — donors visit one place to see all of their giving information.
+
+### Option 2 — Standalone shortcode
+
+Place the shortcode on any page:
+
+```text
+[donorpress_annual_receipts]
+```
+
+This renders the same year list with download buttons, but as its own page. Useful if you want a dedicated "Tax Receipts" page in the navigation.
+
+[Shortcode reference →](/shortcodes/annual-receipts)
+
+## How tax years are calculated
+
+The module respects your **Tax Year End** setting. Here's how the year ranges work:
+
+| Tax Year End | Year label `2024` covers |
+| --- | --- |
+| December 31 | Jan 1 2024 → Dec 31 2024 |
+| April 5 (UK) | Apr 6 2023 → Apr 5 2024 |
+| June 30 (AU) | Jul 1 2023 → Jun 30 2024 |
+
+The label always refers to the calendar year of the **end date**.
+
+## Download URLs & security
+
+Receipt downloads are served via `admin-post.php?action=donorpress_download_annual_receipt`. Every download URL is signed with a token bound to:
+
+- The donor ID
+- The tax year
+- The current site key
+
+A donor can only download their own receipts (verified by matching the logged-in user's email to the donor record). Admins can also download any receipt from the donors admin page using a separate nonce.
+
+## FAQ
+
+<AccordionGroup>
+	<Accordion title="Can I customize the PDF layout further?">
+		Yes — apply the `donorpress/annual_receipts/template_path` filter to point at your own PHP template.
+	</Accordion>
+	<Accordion title="Are receipts cached?">
+		No. Each download is generated on the fly so it always reflects the latest donation data, refunds, and donor profile.
+	</Accordion>
+	<Accordion title="Does this work with manual donations?">
+		Yes — provided the manual donations have a status that's included in your "Included Donation Statuses" setting.
+	</Accordion>
+	<Accordion title="What about refunded donations?">
+		Refunded donations are excluded by default. Tick "Refunded" in **Included Donation Statuses** if you want them shown (with a note).
+	</Accordion>
+</AccordionGroup>

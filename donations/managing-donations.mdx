@@ -1,0 +1,102 @@
+---
+title: "Managing Donations"
+description: "View, search, refund, and export donations from the admin."
+---
+
+The Donations admin screen is where you'll spend most of your day-to-day time. Every donation — one-time or recurring renewal — lands here.
+
+<Frame>
+	<img src="/images/admin/donations-list.png" alt="DonorPress donations list" />
+</Frame>
+
+## Anatomy of the list
+
+| Column | What it shows |
+| --- | --- |
+| **ID** | Internal donation ID — useful for support tickets and webhook investigation. |
+| **Donor** | Donor name with a link to the donor record. |
+| **Amount** | Donation amount in your currency. Refunded amounts show as a strikethrough. |
+| **Status** | Pending, Complete, Failed, Refunded, Abandoned, or Cancelled. |
+| **Form** | Which donation form the donor used. |
+| **Gateway** | Stripe, PayPal, or another configured gateway. |
+| **Date** | When the donation was created (in your site's timezone). |
+
+## Filters
+
+Above the table you'll find filters for:
+
+- **Status** — show only pending, complete, refunded, etc.
+- **Form** — show donations from a specific form.
+- **Gateway** — show donations from a specific gateway.
+- **Date range** — last 7 days, last 30 days, this month, custom range.
+- **Search** — searches donor name, email, and donation ID.
+
+Filters combine, so you can quickly find e.g. "all refunded Stripe donations from May".
+
+## Donation statuses
+
+| Status | Meaning |
+| --- | --- |
+| **Pending** | The donor started the form but hasn't completed payment yet. Often abandoned. |
+| **Complete** | Payment confirmed by the gateway. Counted toward all reports and totals. |
+| **Failed** | Payment was attempted but declined / errored. |
+| **Refunded** | Originally complete, then refunded (in full or in part). |
+| **Cancelled** | Manually voided from the admin before payment cleared. |
+| **Abandoned** | Pending for more than 24 hours with no payment attempt. |
+
+Only **Complete** donations count toward donor totals and revenue reports by default.
+
+## Inspecting a donation
+
+Click any row to open the donation detail screen. You'll see:
+
+- **Summary** — amount, status, gateway, form, donor link.
+- **Donor info** — name, email, address (if collected), donor ID.
+- **Gateway data** — gateway transaction ID, payment method (last 4 of card, PayPal email, etc.), and a link to the gateway's own dashboard for that transaction.
+- **Notes** — internal notes you can leave for your team.
+- **Activity log** — full event history: created, gateway response, webhook events, refunds, status changes.
+
+## Refunding a donation
+
+From a donation's detail screen:
+
+<Steps>
+	<Step title='Click "Refund"'>
+		The refund button only appears for donations that are eligible (status = Complete and the gateway supports refunds).
+	</Step>
+	<Step title="Choose full or partial">
+		For partial refunds, enter the amount.
+	</Step>
+	<Step title="Add an optional reason">
+		Stored in the activity log and (for Stripe) sent to the gateway's refund metadata.
+	</Step>
+	<Step title="Confirm">
+		The refund is sent to the gateway. On success, the donation status updates to **Refunded** and the donor's lifetime total is recalculated.
+	</Step>
+</Steps>
+
+<Warning>
+	Refunds are not reversible. Once issued through the gateway, the only way to "undo" is to ask the donor to make a fresh donation.
+</Warning>
+
+## Exporting
+
+From the donations list, click **Export** to download a CSV of the currently filtered set. The CSV includes every field you see in the list plus donor email, gateway transaction ID, and notes.
+
+Useful for:
+
+- Annual accounting handoffs
+- Importing into a CRM (Salesforce NPSP, HubSpot, etc.)
+- Reconciliation with your gateway's own export
+
+## Bulk actions
+
+Select rows with the checkbox column for bulk actions:
+
+- **Resend receipt** — re-emails the donation receipt.
+- **Mark as cancelled** — for stuck pending donations.
+- **Delete** — permanently removes the donation. Use with care — this is irreversible.
+
+## What about offline donations?
+
+Manually recording offline donations (cash, check, bank transfer) requires the [Manual Donations module](/modules/manual-donations).

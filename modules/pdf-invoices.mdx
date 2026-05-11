@@ -1,0 +1,97 @@
+---
+title: "PDF Invoices"
+description: "Auto-generate branded PDF receipts for every donation."
+---
+
+The **PDF Invoices** module attaches a branded PDF receipt to every donation receipt email and makes it downloadable from the donor dashboard.
+
+<Info>
+	PDF Invoices is a **Basic plan** premium module. [See all modules →](/modules/overview)
+</Info>
+
+## What it does
+
+When enabled:
+
+- Every donation receipt email includes a PDF attachment.
+- A **Download PDF** button appears on the donation receipt page.
+- Donors can re-download the PDF from their [donor dashboard](/donors/donor-dashboard) → Donation History → click any donation.
+- Admins can download any donation's PDF from the donation detail screen.
+
+## Settings
+
+**DonorPress → Settings → PDF Invoices**:
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Charity / Business Name | text | Printed at the top of every PDF. Defaults to your site title. |
+| Address | textarea | Multi-line address printed below the name. Optional but expected for most tax purposes. |
+| Tax ID / EIN | text | Tax identifier printed below the address. Optional. |
+| Logo | media | Logo printed in the header. JPEG / PNG, max 800px wide recommended. |
+| Logo alignment | select | Left / Center / Right. |
+| Receipt number prefix | text | Receipt numbers are generated as `{prefix}{donation-id}`. Default `INV-`. |
+| Footer text | textarea | Compliance / disclaimer text at the bottom of every PDF. |
+| Show "Powered by" | toggle | Whether to include a small DonorPress branding line. |
+| Page size | select | A4 or US Letter. |
+| Color scheme | color | Accent color for headings and totals. |
+
+## What's on the PDF
+
+Each receipt includes:
+
+- **Header**: logo, charity name, address, tax ID.
+- **Receipt number**: `{prefix}{donation-id}`.
+- **Date**: when the donation was made.
+- **Donor block**: name, email, optionally address.
+- **Donation details**: amount, date, payment method, gateway transaction ID.
+- **Campaign attribution** (if any).
+- **Footer**: compliance text, branding line.
+
+## Customising the layout
+
+For deeper customisation:
+
+1. Copy `wp-content/plugins/donorpress/modules/pdf-invoices_premium_only/templates/invoice.php` to your theme at `wp-content/themes/your-theme/donorpress/pdf-invoice.php`.
+2. Edit the PHP template freely.
+3. The template receives `$donation`, `$donor`, and `$settings` variables.
+
+The PDF is rendered with [dompdf](https://github.com/dompdf/dompdf), which supports a meaningful subset of HTML and CSS but not modern flexbox or grid. Stick to tables, divs with absolute positioning, and basic CSS.
+
+## File storage
+
+PDFs are **generated on demand** every time they're requested — never cached. This means:
+
+- Refunds, donor name changes, and other edits are always reflected in the latest PDF.
+- No filesystem disk usage.
+- Tradeoff: ~200ms per PDF generation. Acceptable for individual receipts; less ideal for bulk operations.
+
+For bulk needs (e.g. emailing 10,000 year-end receipts), generate them in a background job rather than synchronously.
+
+## Email delivery
+
+When enabled, the PDF is attached to:
+
+- The donation receipt email (sent immediately after a successful donation).
+- Renewal receipt emails (sent on every recurring renewal).
+- Manual donation receipt emails (when admins record an offline donation).
+- Resent receipts (when admins click "Resend receipt" on a donation).
+
+You can disable PDF attachment per-template in **Settings → Email Notifications** if you prefer to link to the PDF rather than attach it.
+
+## Donor dashboard integration
+
+In the donor dashboard, every donation in the history table includes a small PDF icon — clicking downloads the receipt PDF for that specific donation.
+
+## Annual receipts vs. PDF Invoices
+
+These are two separate modules:
+
+- **PDF Invoices** — one PDF per donation. For per-transaction receipts.
+- **[Annual Receipts](/modules/annual-receipts)** — one PDF per year per donor, listing every donation. For tax filing.
+
+Most charities run both.
+
+## Performance notes
+
+- dompdf consumes ~30MB of memory per PDF. If your server has a low memory limit (< 128M), bulk generation may fail.
+- For high-volume sites (10k+ donations / year), consider switching to a queue-based PDF service. The `donorpress/pdf_invoices/render` filter lets you swap the renderer for a custom implementation.

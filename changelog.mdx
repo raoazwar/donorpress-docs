@@ -1,0 +1,39 @@
+---
+title: "Changelog"
+description: "Release notes for DonorPress."
+---
+
+All notable changes to DonorPress are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
+
+## 1.0.0 — Initial release
+
+### Added
+
+- Donation form builder with single-step and multi-step layouts
+- Donor records with lifetime stats and an admin detail screen
+- One-time and recurring donation support
+- Stripe gateway integration (cards, Apple Pay, Google Pay, subscriptions, refunds)
+- PayPal gateway integration (Commerce Platform, subscriptions, refunds)
+- Test gateway for QA workflows
+- Custom post types for forms, campaigns, and email notifications
+- Donor dashboard shortcode (`[donorpress_dashboard]`) with tabbed UI and accent-color theming
+- Donor login / sign-up shortcodes
+- Receipt and annual receipts shortcodes
+- Email notification system with template tags
+- REST API v2 (donations, donors, forms, campaigns, subscriptions, settings, reports, modules, gateways)
+- Setup wizard for first-time configuration
+- Premium modules: PDF Invoices, Manual Donations, Annual Receipts, Advanced Dashboard, Gift Aid (UK), Currency Switcher
+- Elementor widgets for campaigns and forms
+- Reporting dashboard with revenue, donor, and form analytics
+
+### Notes
+
+- Requires WordPress 6.3+ and PHP 8.1+.
+- All custom database tables are created via `dbDelta()` on activation.
+- Default frontend pages (Donor Login, Donor Sign-up) are auto-created on activation.
+
+---
+
+<Note>
+	Future releases will be appended above. To subscribe to release notes by email, visit your account at [donorpress.org](https://donorpress.org).
+</Note>

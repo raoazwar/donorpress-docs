@@ -1,0 +1,179 @@
+---
+title: "Donors Endpoint"
+description: "REST API: list, create, merge, and delete donor records."
+---
+
+Base path: `/wp-json/donorpress/v2/donors`
+
+## List donors
+
+```http
+GET /donors
+```
+
+### Query parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `per_page` | int | 1-100. Default 20. |
+| `page` | int | Default 1. |
+| `search` | string | Searches name and email. |
+| `min_total` | decimal | Filter to donors with lifetime total ≥ this. |
+| `last_donation_after` | date | Filter to donors who gave after this date. |
+| `last_donation_before` | date | Filter to lapsed donors. |
+| `is_recurring` | bool | Filter to donors with at least one Active subscription. |
+| `orderby` | string | `date_created` / `total_donated` / `donation_count` / `last_donation`. |
+| `order` | string | `ASC` / `DESC` (default). |
+
+### Response
+
+```json
+[
+  {
+    "id": 7,
+    "email": "sam@example.com",
+    "first_name": "Sam",
+    "last_name": "Smith",
+    "phone": "",
+    "company": "",
+    "total_donated": 350.00,
+    "donation_count": 5,
+    "largest_donation": 100.00,
+    "avg_donation": 70.00,
+    "is_anonymous": false,
+    "user_id": 12,
+    "date_created": "2024-08-13T10:22:11Z",
+    "date_modified": "2025-04-22T14:38:14Z",
+    "first_donation_date": "2024-08-13T10:22:11Z",
+    "last_donation_date": "2025-04-22T14:38:14Z"
+  }
+]
+```
+
+## Get a single donor
+
+```http
+GET /donors/{id}
+```
+
+Returns the same shape, with optional expansions:
+
+- `?include=donations` — last 100 donations.
+- `?include=subscriptions` — all subscriptions.
+- `?include=notes` — internal notes.
+
+## Lookup by email (public)
+
+```http
+GET /donors/lookup?email=sam@example.com
+```
+
+Returns minimal pre-fill data (first name, last name only) for any caller — used by donation forms to pre-fill returning donors. Never returns lifetime totals or sensitive data.
+
+## Create a donor
+
+```http
+POST /donors
+```
+
+Rarely needed — donors are created automatically by donation submissions. Use this only for explicit pre-creation (e.g. importing a contact list before they donate).
+
+### Body
+
+```json
+{
+  "email": "sam@example.com",
+  "first_name": "Sam",
+  "last_name": "Smith",
+  "phone": "+1-555-0100",
+  "company": "Acme Corp"
+}
+```
+
+Returns 422 if the email already exists.
+
+## Update a donor
+
+```http
+PATCH /donors/{id}
+```
+
+### Body
+
+```json
+{
+  "first_name": "Samantha",
+  "phone": "+1-555-0101",
+  "is_anonymous": true,
+  "user_id": 15
+}
+```
+
+Email is editable but causes a row update — be careful, since donations are matched by email.
+
+## Merge donors
+
+```http
+POST /donors/{id}/merge
+```
+
+Merges another donor into this one.
+
+### Body
+
+```json
+{
+  "merge_from_id": 8
+}
+```
+
+After merging:
+
+- All donations from donor 8 move to donor 7.
+- Donor 8's email becomes a secondary email on donor 7.
+- Stats are recalculated.
+- Donor 8 row is deleted.
+
+### Response
+
+```json
+{
+  "id": 7,
+  "merged_from": 8,
+  "donations_moved": 3,
+  "new_total_donated": 450.00
+}
+```
+
+## Recompute stats
+
+```http
+POST /donors/{id}/recompute
+```
+
+Re-runs the lifetime stats calculation for one donor. Useful after manual database edits. Returns the updated donor object.
+
+## Delete a donor
+
+```http
+DELETE /donors/{id}
+```
+
+- Removes the donor row.
+- Preserves all donations (sets `donor_id` to 0 — unlinks but doesn't delete).
+- Removes attached notes.
+
+Returns 204 on success.
+
+## Permissions
+
+| Endpoint | Required cap |
+| --- | --- |
+| `GET /donors` | `manage_options` |
+| `GET /donors/{id}` | `manage_options` |
+| `GET /donors/lookup` | Public (limited fields) |
+| `POST /donors` | `manage_options` |
+| `PATCH /donors/{id}` | `manage_options` |
+| `POST /donors/{id}/merge` | `manage_options` |
+| `POST /donors/{id}/recompute` | `manage_options` |
+| `DELETE /donors/{id}` | `manage_options` |

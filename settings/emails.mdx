@@ -1,0 +1,92 @@
+---
+title: "Email Settings"
+description: "Site-wide email defaults: from address, branding, deliverability."
+---
+
+The **Emails** tab in **DonorPress → Settings** controls the shared shell that every DonorPress email is wrapped in, plus deliverability options.
+
+<Frame>
+	<img src="/images/admin/settings-emails.png" alt="DonorPress email settings" />
+</Frame>
+
+## From address
+
+| Setting | Description |
+| --- | --- |
+| From name | Sender display name. Defaults to your organisation name. |
+| From email | Sender email address. Defaults to your organisation email. |
+| Reply-to email | Where donors' replies should go. Defaults to From email. |
+
+<Tip>
+	Use a "from" address on your own domain (e.g. `donations@yourcharity.org`), not a free email like `gmail.com`. Spam filters score same-domain mail much higher.
+</Tip>
+
+## Email wrapper (branding)
+
+| Setting | Description |
+| --- | --- |
+| Logo | Header image used in all emails. PNG / JPG, max 200px wide. |
+| Logo URL | Where the logo should link to (typically your homepage). |
+| Header background | Background color of the header band. |
+| Header text color | Text color in the header. |
+| Body background | Background of the page outside the email card. |
+| Card background | Background of the email content card. |
+| Body text color | Default body text color. |
+| Link color | Color of links in the body. |
+| Button background | CTA button background color. |
+| Button text color | CTA button text color. |
+| Footer text | Compliance / unsubscribe text shown at the bottom of every email. Supports template tags. |
+
+[Customizing emails →](/emails/customizing-emails)
+
+## Deliverability
+
+| Setting | Description |
+| --- | --- |
+| Force HTML emails | If on, recipients without HTML support get a plain-text fallback. If off, both versions are sent (recommended). |
+| Strip tracking pixels | Remove any tracking pixels DonorPress adds (defaults to off). |
+| Send via WordPress | Uses `wp_mail()` (the default). For production we recommend an SMTP plugin pointing at a transactional email provider. |
+
+## SMTP setup
+
+DonorPress doesn't include built-in SMTP — it uses WordPress's mail system. For reliable delivery, install one of:
+
+- [WP Mail SMTP](https://wordpress.org/plugins/wp-mail-smtp/)
+- [Post SMTP](https://wordpress.org/plugins/post-smtp/)
+- [FluentSMTP](https://wordpress.org/plugins/fluent-smtp/)
+
+Configure it to point at:
+
+- **Postmark** — best deliverability for transactional mail.
+- **SendGrid** — popular, generous free tier.
+- **Amazon SES** — cheapest at scale.
+- **Mailgun** — solid all-rounder.
+
+Without a real SMTP provider, expect 30–50% of receipts to land in spam folders.
+
+## Test deliverability
+
+| Setting | Description |
+| --- | --- |
+| Send a test email | Sends a minimal styled email to a specified address using the wrapper config. Useful for verifying SMTP and branding. |
+
+## Logging
+
+| Setting | Description |
+| --- | --- |
+| Log email sends | Record every email DonorPress attempts to send (Tools → Email Log). |
+| Retention | How long to keep log entries (7 / 30 / 90 / 365 days). |
+
+The log captures: recipient, subject, template, timestamp, success/failure, error message if any. Useful for debugging "why didn't this donor get a receipt?"
+
+## Bounces and unsubscribes
+
+DonorPress doesn't process bounces or maintain an unsubscribe list. These are handled by your SMTP provider:
+
+- Set up bounce webhooks on your provider to detect bad addresses.
+- Honour unsubscribe links in your emails (mandatory for marketing emails; optional but recommended for transactional).
+- Maintain your suppression list in your SMTP provider.
+
+## Per-template overrides
+
+The wrapper settings here apply to all emails by default. Each individual template (in **Email Notifications**) can override the from address, reply-to, and CC/BCC.

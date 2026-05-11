@@ -1,0 +1,99 @@
+---
+title: "Test Gateway"
+description: "A built-in gateway that simulates payments without API keys."
+---
+
+The **Test Gateway** is a DonorPress-bundled gateway that simulates payment success and failure without any external API. Use it for QA, demos, and showing the donation flow to stakeholders before configuring Stripe/PayPal.
+
+## Enabling
+
+The Test Gateway is **only available in [test mode](/core-concepts/test-vs-live-mode)**. To use it:
+
+<Steps>
+	<Step title="Confirm test mode is on">
+		**Settings → General → Test Mode** must be enabled.
+	</Step>
+	<Step title="Enable the Test Gateway">
+		**Settings → Payment Gateways → Test Gateway** → toggle on.
+	</Step>
+	<Step title="Add it to a form">
+		In the form builder, the Test Gateway appears alongside Stripe / PayPal in the Payment Methods panel.
+	</Step>
+</Steps>
+
+When you switch DonorPress to live mode, the Test Gateway is automatically removed from all forms — no risk of accidentally exposing it to real donors.
+
+## How it behaves
+
+The Test Gateway shows a single "Pay with Test Gateway" button on the form. When clicked:
+
+1. A simulated 1-second processing delay (so the UI looks realistic).
+2. Returns success.
+3. Creates a donation record with status **Complete**.
+4. Sends the receipt email (if enabled).
+5. Redirects to the success page.
+
+There's no card input, no external redirect, and no real money movement.
+
+## Simulating failures
+
+To simulate a failed payment, append `?dp_test_outcome=fail` to the donation URL:
+
+```
+https://yoursite.com/donate/?dp_test_outcome=fail
+```
+
+The Test Gateway will return a simulated decline. The donation lands with status **Failed** and the donor sees a generic "payment declined" error.
+
+Other supported outcomes:
+
+| Query param | Result |
+| --- | --- |
+| `?dp_test_outcome=success` | Default. Donation succeeds. |
+| `?dp_test_outcome=fail` | Donation fails (declined). |
+| `?dp_test_outcome=pending` | Donation lands as Pending and stays there. |
+| `?dp_test_outcome=delay&dp_test_delay=5000` | Adds a 5-second processing delay (in ms). |
+
+## Subscriptions
+
+The Test Gateway supports recurring donations. Renewals can be triggered manually:
+
+```bash
+wp donorpress subscription renew 42
+```
+
+Or from the subscription detail screen, click **Trigger renewal (test gateway only)**.
+
+In production, Stripe and PayPal trigger renewals automatically on schedule — the Test Gateway requires manual triggering because there's no real billing system to schedule against.
+
+## Refunds
+
+The Test Gateway supports refunds with the same UX as real gateways. They succeed immediately with no real money movement.
+
+## Why use it?
+
+<AccordionGroup>
+	<Accordion title="Demos">
+		Showing a stakeholder the donation flow without giving them real Stripe credentials.
+	</Accordion>
+	<Accordion title="QA">
+		Verifying that your custom emails, redirect URLs, and theme styling work end-to-end.
+	</Accordion>
+	<Accordion title="Stress tests">
+		Generating volume (e.g. 1000 donations to verify reports scale).
+	</Accordion>
+	<Accordion title="Local development">
+		Running DonorPress locally without exposing webhook endpoints to the internet.
+	</Accordion>
+</AccordionGroup>
+
+## When NOT to use it
+
+- **Production sites.** You can't take real money through the Test Gateway. It's automatically disabled in live mode.
+- **Donor-facing demos.** Donors clicking through a "test" flow can confuse them. Use real Stripe test mode for any demo where the donor is involved.
+
+## Related
+
+<Card title="Test cards (Stripe)" icon="credit-card" href="/core-concepts/test-vs-live-mode#test-cards-stripe">
+	The full list of Stripe test card numbers for more realistic payment testing.
+</Card>

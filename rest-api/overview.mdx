@@ -1,0 +1,150 @@
+---
+title: "REST API Overview"
+description: "DonorPress exposes a REST API v2 at /wp-json/donorpress/v2/."
+---
+
+DonorPress's admin interface is a React SPA that talks to a REST API — and that same API is fully documented and available for your own integrations.
+
+## Base URL
+
+```
+https://yoursite.com/wp-json/donorpress/v2/
+```
+
+## Available controllers
+
+| Controller | Base path |
+| --- | --- |
+| Donations | `/donations` |
+| Donors | `/donors` |
+| Forms | `/forms` |
+| Campaigns | `/campaigns` |
+| Subscriptions | `/subscriptions` |
+| Settings | `/settings` |
+| Reports | `/reports/*` |
+| Modules | `/modules` |
+| Gateways | `/gateways` |
+| Tools | `/tools/*` |
+
+Each controller follows REST conventions:
+
+- `GET /resource` — list (with filters, pagination)
+- `POST /resource` — create
+- `GET /resource/{id}` — fetch one
+- `PATCH /resource/{id}` — update
+- `DELETE /resource/{id}` — delete
+
+## Authentication
+
+Every endpoint (except public ones like donation creation) requires authentication. See [Authentication](/rest-api/authentication).
+
+## Permissions
+
+Most endpoints check `manage_options`. Public endpoints (creating a donation, looking up a donor by email for form pre-fill) have their own narrower permission rules.
+
+## Pagination
+
+List endpoints support standard pagination:
+
+```
+GET /donations?per_page=20&page=2
+```
+
+| Parameter | Default | Max |
+| --- | --- | --- |
+| `per_page` | 20 | 100 |
+| `page` | 1 | — |
+
+Responses include pagination metadata in HTTP headers:
+
+```
+X-WP-Total: 1234
+X-WP-TotalPages: 62
+```
+
+## Filtering
+
+List endpoints support resource-specific filters via query parameters:
+
+```
+GET /donations?status=complete&gateway=stripe&from=2025-01-01&to=2025-12-31
+```
+
+See per-controller documentation for available filters.
+
+## Responses
+
+All responses are JSON. Successful responses return the resource (or array of resources). Errors return:
+
+```json
+{
+	"code": "donorpress_invalid_request",
+	"message": "Human-readable error message",
+	"data": { "status": 400 }
+}
+```
+
+## Standard error codes
+
+| HTTP | Code | Meaning |
+| --- | --- | --- |
+| 400 | `donorpress_invalid_request` | Validation failed. |
+| 401 | `rest_not_logged_in` | Not authenticated. |
+| 403 | `rest_forbidden` | Authenticated but lacks capability. |
+| 404 | `donorpress_not_found` | Resource doesn't exist. |
+| 422 | `donorpress_validation_error` | Field-level validation errors (`data.errors` has details). |
+| 500 | `donorpress_server_error` | Unexpected server error. |
+
+## Quickstart
+
+Fetch the most recent 10 donations:
+
+```bash
+curl -X GET 'https://yoursite.com/wp-json/donorpress/v2/donations?per_page=10' \
+  -u 'admin:application-password'
+```
+
+Create a donation (e.g. for an offline gift):
+
+```bash
+curl -X POST 'https://yoursite.com/wp-json/donorpress/v2/donations' \
+  -H 'Content-Type: application/json' \
+  -u 'admin:application-password' \
+  -d '{
+    "donor_email": "sam@example.com",
+    "first_name": "Sam",
+    "last_name": "Smith",
+    "amount": 100,
+    "currency": "USD",
+    "gateway": "manual",
+    "status": "complete"
+  }'
+```
+
+(Manual donation creation requires the [Manual Donations module](/modules/manual-donations).)
+
+## Per-controller reference
+
+<CardGroup cols={2}>
+	<Card title="Donations" icon="hand-holding-dollar" href="/rest-api/donations">
+		List, create, refund.
+	</Card>
+	<Card title="Donors" icon="users" href="/rest-api/donors">
+		List, create, merge, delete.
+	</Card>
+	<Card title="Forms" icon="rectangle-list" href="/rest-api/forms">
+		Manage form configurations.
+	</Card>
+	<Card title="Campaigns" icon="bullhorn" href="/rest-api/campaigns">
+		Manage campaigns.
+	</Card>
+	<Card title="Subscriptions" icon="arrows-rotate" href="/rest-api/subscriptions">
+		List, pause, cancel.
+	</Card>
+	<Card title="Settings" icon="gear" href="/rest-api/settings">
+		Read and update settings.
+	</Card>
+	<Card title="Reports" icon="chart-line" href="/rest-api/reports">
+		Revenue, donor, form analytics.
+	</Card>
+</CardGroup>

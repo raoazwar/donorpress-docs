@@ -1,0 +1,80 @@
+---
+title: "Categories and Tags"
+description: "Organise campaigns with hierarchical categories and free-form tags."
+---
+
+DonorPress campaigns use the standard WordPress taxonomy model:
+
+- **Categories** are hierarchical (parent / child).
+- **Tags** are flat.
+
+## Categories
+
+Use categories for **mutually exclusive groupings** that have natural parent / child relationships. Examples:
+
+- Programs (Education → Scholarships, Education → Tutoring, Health → Clinics, etc.)
+- Regions (Africa → Kenya, Africa → Tanzania, etc.)
+- Years (2024, 2025, 2026)
+
+Manage categories under **Campaigns → Categories**.
+
+### Assigning a category
+
+When editing a campaign, the **Categories** sidebar lets you tick one or more. Categories can be created on the fly from the same sidebar.
+
+## Tags
+
+Use tags for **free-form descriptive labels** without hierarchy. Examples:
+
+- Theme: `urgent`, `disaster-relief`, `year-end-appeal`
+- Audience: `corporate-sponsor`, `peer-to-peer`
+- Source: `email-campaign`, `social-media`, `print-mail`
+
+Manage tags under **Campaigns → Tags**.
+
+### Assigning a tag
+
+In the campaign editor's **Tags** sidebar — type and hit enter to create new tags, or pick from suggestions.
+
+## Filtering by category or tag
+
+Categories and tags both create archive pages:
+
+- `/campaign-category/education/` — all campaigns in the Education category
+- `/campaign-tag/urgent/` — all campaigns tagged urgent
+
+## Display in shortcodes
+
+Both campaign list shortcodes accept `category` and `tag` filters:
+
+```text
+[donorpress_campaign_list category="education"]
+[donorpress_campaign_list tag="urgent"]
+[donorpress_campaign_list category="education" tag="scholarships"]
+```
+
+Multiple values are AND-combined (campaign must match both).
+
+## Reports
+
+The [Advanced Dashboard module](/modules/advanced-dashboard) includes campaign performance broken down by category and tag, useful for answering questions like:
+
+- "Which program area raised the most last year?"
+- "Did our email-tagged campaigns convert better than social-tagged ones?"
+
+## Best practices
+
+<AccordionGroup>
+	<Accordion title="Pick categories that don't change">
+		Categories are structural. If you find yourself renaming categories often, you probably want tags instead.
+	</Accordion>
+	<Accordion title="Use tags for ad-hoc grouping">
+		Tags are cheap to create and disposable. Don't be precious about them.
+	</Accordion>
+	<Accordion title="Set up your taxonomy before you have many campaigns">
+		Reorganising 50 campaigns is annoying. Spend 10 minutes on the structure upfront.
+	</Accordion>
+	<Accordion title="Avoid deep hierarchies">
+		Two levels (Parent → Child) is the sweet spot. Three levels (Parent → Child → Grandchild) gets confusing.
+	</Accordion>
+</AccordionGroup>

@@ -1,0 +1,92 @@
+---
+title: "Forms FAQ"
+description: "Form builder, embedding, conversion, and styling questions."
+---
+
+## Form builder
+
+<AccordionGroup>
+	<Accordion title="How many forms can I create?">
+		Unlimited.
+	</Accordion>
+	<Accordion title="Can I duplicate a form?">
+		Yes. From the forms list, hover the row and click **Duplicate**. The duplicate inherits all settings except donations and revision history.
+	</Accordion>
+	<Accordion title="Can I A/B test two forms?">
+		There's no built-in A/B testing yet. You can run informal tests by sending different traffic to different form URLs and comparing performance in the per-form report.
+	</Accordion>
+	<Accordion title="Can I import a form from another site?">
+		Yes. **Tools → Export Forms** generates a JSON export. **Tools → Import Forms** on the destination site reads it.
+	</Accordion>
+	<Accordion title="Can I bulk-edit forms?">
+		Limited bulk actions in the forms list (activate, deactivate, delete). For per-field bulk edits, run a script via WP-CLI.
+	</Accordion>
+</AccordionGroup>
+
+## Embedding
+
+<AccordionGroup>
+	<Accordion title="Can I embed the same form on multiple pages?">
+		Yes. Use the same shortcode (`[donorpress_form id="42"]`) on as many pages as you like. All donations roll up to the same form.
+	</Accordion>
+	<Accordion title="Can I embed a form in a popup?">
+		Yes. Use modal display mode: `[donorpress_form id="42" display="modal" button_text="Donate"]`.
+	</Accordion>
+	<Accordion title="Can I embed a form in a sidebar widget?">
+		Yes. Add a Shortcode widget in **Appearance → Widgets** containing the form shortcode.
+	</Accordion>
+	<Accordion title="Can I embed a form in a Mailchimp / Klaviyo email?">
+		No. Donation forms require JavaScript to render, and email clients strip JS. Send recipients a link to a landing page with the form embedded instead.
+	</Accordion>
+</AccordionGroup>
+
+## Conversion
+
+<AccordionGroup>
+	<Accordion title="What's a typical donation form conversion rate?">
+		Industry average: 17% of visitors who land on a donation page complete a donation. With well-optimised forms (short fields, clear amounts, recurring upsell upfront), 25-30% is achievable.
+	</Accordion>
+	<Accordion title="What slows conversion most?">
+		**Required fields beyond name + email + payment.** Each additional required field cuts conversion by an estimated 5-10%. Phone, company, and address are the worst offenders unless you genuinely need them.
+	</Accordion>
+	<Accordion title="Should I use single-step or multi-step?">
+		Multi-step usually wins on longer forms (5+ donor fields). Single-step wins on minimal forms (just name + email + payment). [More on multi-step →](/forms/multi-step-forms)
+	</Accordion>
+	<Accordion title="What's the best default donation amount?">
+		Whatever your second-cheapest preset is. Donors anchor on the default — if it's too low, you lose revenue; if it's too high, you lose donors.
+	</Accordion>
+</AccordionGroup>
+
+## Styling
+
+<AccordionGroup>
+	<Accordion title="How do I match the form to my brand?">
+		Use the form's **Style** panel: primary color, font, border radius. For more control, add per-form Custom CSS. [Customizing styles →](/forms/customizing-styles)
+	</Accordion>
+	<Accordion title="The form's font doesn't match my theme">
+		Set **Font family → Inherit from theme** in the form's Style panel. The form will pick up your theme's font.
+	</Accordion>
+	<Accordion title="The donate button is the wrong color">
+		Set **Primary color** in the Style panel. This single color drives the button, accent borders, focus rings, and selected presets.
+	</Accordion>
+	<Accordion title="Can I add an image / video to the form?">
+		Forms are deliberately minimal — adding media tends to hurt conversion. If you really want media, embed the form inside a page that has the media around it (rather than inside the form itself).
+	</Accordion>
+</AccordionGroup>
+
+## Other questions
+
+<CardGroup cols={2}>
+	<Card title="General FAQ" icon="circle-question" href="/faq/general">
+		Installation, licensing, basics.
+	</Card>
+	<Card title="Payments FAQ" icon="credit-card" href="/faq/payments">
+		Gateways, refunds, fees.
+	</Card>
+	<Card title="Donors FAQ" icon="users" href="/faq/donors">
+		Donor records and dashboard.
+	</Card>
+	<Card title="Troubleshooting" icon="wrench" href="/faq/troubleshooting">
+		Errors and diagnostics.
+	</Card>
+</CardGroup>

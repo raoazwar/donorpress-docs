@@ -1,0 +1,54 @@
+---
+title: "System Requirements"
+description: "Server, WordPress, and browser requirements for DonorPress."
+---
+
+## Minimum versions
+
+| Component | Minimum | Recommended |
+| --- | --- | --- |
+| WordPress | 6.3 | Latest stable |
+| PHP | 8.1 | 8.2 or 8.3 |
+| MySQL | 5.7 | 8.0+ |
+| MariaDB | 10.3 | 10.6+ |
+| HTTPS | Required for live payments | — |
+| WP Memory Limit | 128M | 256M |
+| Browser (admin) | Last 2 versions of Chrome, Firefox, Safari, Edge | — |
+
+<Warning>
+	Live payment processing requires HTTPS. Stripe and PayPal both refuse to process real charges from non-HTTPS origins.
+</Warning>
+
+## PHP extensions
+
+DonorPress relies on the standard WordPress PHP extension set, plus:
+
+| Extension | Used for |
+| --- | --- |
+| `curl` | Outbound API calls to Stripe / PayPal |
+| `json` | Encoding/decoding REST payloads |
+| `mbstring` | Multibyte string handling for translations |
+| `openssl` | Token signing for receipt downloads |
+| `gd` or `imagick` | Logo handling for the [PDF Invoices module](/modules/pdf-invoices) |
+
+These are bundled with virtually every modern PHP install. If you're on a stripped-down host, ask them to enable any that are missing.
+
+## Hosting compatibility
+
+DonorPress is tested on:
+
+- WP Engine, Kinsta, SiteGround, Pressable
+- Cloudways, RunCloud, Laragon (local), Local by Flywheel (local)
+- Generic LAMP / LEMP stacks
+
+It does not require any custom WordPress configuration. You can drop it onto an existing site without changes to `wp-config.php` or `.htaccess`.
+
+## Multisite
+
+DonorPress works on WordPress multisite networks. Activate per-site rather than network-wide so each site can manage its own gateways, donations, and donors independently.
+
+## What if my site is on PHP 7.4 or 8.0?
+
+DonorPress requires PHP 8.1+ for the strict-typing and enum features used internally. On older PHP the plugin won't activate — you'll see a clear "PHP 8.1 required" notice rather than a fatal error.
+
+Most hosts let you upgrade PHP from your control panel in a single click. If yours doesn't, it's a strong signal to find a better host.

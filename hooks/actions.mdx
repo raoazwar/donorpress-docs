@@ -1,0 +1,130 @@
+---
+title: "Actions"
+description: "Every WordPress action DonorPress fires."
+---
+
+DonorPress fires actions at key moments in the donation lifecycle. Hook into them to trigger custom workflows — sync to a CRM, send a Slack notification, update a third-party system, etc.
+
+## Naming convention
+
+All DonorPress actions are prefixed with `donorpress/` and use slash-separated names:
+
+```php
+do_action( 'donorpress/donation/created', $donation );
+```
+
+## Plugin lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/booted` | Plugin finished registering and booting all providers. Safe to access any service. | none |
+| `donorpress/activated` | Plugin activation complete (after migrations). | none |
+| `donorpress/deactivated` | Plugin deactivation complete. | none |
+
+## Donation lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/donation/before_create` | Before a donation is inserted into the database. | `array $data` |
+| `donorpress/donation/created` | A donation row was just created. | `Donation $donation` |
+| `donorpress/donation/status_changed` | Donation status changed. | `Donation $donation, string $old_status, string $new_status` |
+| `donorpress/donation/completed` | Donation moved to `complete`. | `Donation $donation` |
+| `donorpress/donation/failed` | Donation moved to `failed`. | `Donation $donation` |
+| `donorpress/donation/refunded` | Donation refunded (full or partial). | `Donation $donation, float $amount, string $reason` |
+| `donorpress/donation/deleted` | Donation row deleted. | `int $donation_id` |
+
+## Donor lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/donor/created` | New donor record created. | `Donor $donor` |
+| `donorpress/donor/updated` | Donor record updated. | `Donor $donor, array $changed_fields` |
+| `donorpress/donor/merged` | Two donors merged. | `Donor $into, Donor $from` |
+| `donorpress/donor/deleted` | Donor row deleted. | `int $donor_id` |
+| `donorpress/donor/stats_recalculated` | Lifetime stats recalculated. | `Donor $donor` |
+
+## Subscription lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/subscription/created` | New subscription created. | `Subscription $subscription` |
+| `donorpress/subscription/renewed` | A renewal donation was created. | `Subscription $subscription, Donation $renewal_donation` |
+| `donorpress/subscription/renewal_failed` | A renewal failed. | `Subscription $subscription, Donation $failed_donation` |
+| `donorpress/subscription/paused` | Subscription paused. | `Subscription $subscription` |
+| `donorpress/subscription/resumed` | Subscription resumed. | `Subscription $subscription` |
+| `donorpress/subscription/cancelled` | Subscription cancelled. | `Subscription $subscription, string $reason` |
+| `donorpress/subscription/expired` | Reached configured bill count. | `Subscription $subscription` |
+
+## Form lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/form/created` | New form created. | `int $form_id` |
+| `donorpress/form/updated` | Form updated. | `int $form_id` |
+| `donorpress/form/deleted` | Form deleted. | `int $form_id` |
+| `donorpress/form/submission` | Form submission received (regardless of payment outcome). | `array $submission_data` |
+
+## Email lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/email/before_send` | Before sending any DonorPress email. | `string $template, array $args` |
+| `donorpress/email/sent` | Email sent successfully. | `string $template, string $recipient` |
+| `donorpress/email/failed` | Email failed to send. | `string $template, string $recipient, string $error` |
+
+## Gateway lifecycle
+
+| Action | Fired when | Args |
+| --- | --- | --- |
+| `donorpress/gateway/registered` | A gateway was registered. | `GatewayInterface $gateway` |
+| `donorpress/gateway/webhook_received` | Webhook received (before processing). | `string $gateway_slug, array $payload` |
+| `donorpress/gateway/webhook_processed` | Webhook processed successfully. | `string $gateway_slug, string $event_type` |
+
+## Examples
+
+### Send a Slack notification on every donation
+
+```php
+add_action( 'donorpress/donation/completed', function ( $donation ) {
+	$message = sprintf(
+		'New donation: $%s from %s',
+		number_format( $donation->get( 'amount' ), 2 ),
+		$donation->get_donor()->get_email()
+	);
+
+	wp_remote_post( 'https://hooks.slack.com/services/YOUR/WEBHOOK/URL', [
+		'body' => wp_json_encode( [ 'text' => $message ] ),
+		'headers' => [ 'Content-Type' => 'application/json' ],
+	] );
+} );
+```
+
+### Sync new donors to Mailchimp
+
+```php
+add_action( 'donorpress/donor/created', function ( $donor ) {
+	$mailchimp_api->lists->addMember( 'YOUR_LIST_ID', [
+		'email_address' => $donor->get_email(),
+		'status' => 'subscribed',
+		'merge_fields' => [
+			'FNAME' => $donor->get( 'first_name' ),
+			'LNAME' => $donor->get( 'last_name' ),
+		],
+	] );
+} );
+```
+
+### Cancel an external membership when subscription cancels
+
+```php
+add_action( 'donorpress/subscription/cancelled', function ( $subscription, $reason ) {
+	$donor_email = $subscription->get_donor()->get_email();
+	your_membership_system_cancel( $donor_email );
+}, 10, 2 );
+```
+
+## Related
+
+<Card title="Filters" icon="filter" href="/hooks/filters">
+	Modify DonorPress behaviour at runtime.
+</Card>

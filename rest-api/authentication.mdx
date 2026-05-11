@@ -1,0 +1,124 @@
+---
+title: "REST API Authentication"
+description: "How to authenticate against the DonorPress REST API."
+---
+
+DonorPress uses standard WordPress REST API authentication. There are three options.
+
+## 1. Cookie + nonce (in-browser)
+
+For requests made from JavaScript running on the same WordPress site (e.g. the DonorPress admin SPA), use the standard WordPress nonce:
+
+```js
+fetch('/wp-json/donorpress/v2/donations', {
+	headers: {
+		'X-WP-Nonce': window.wpApiSettings.nonce,
+	},
+	credentials: 'same-origin',
+});
+```
+
+The `wpApiSettings.nonce` global is auto-localised by WordPress on admin pages.
+
+This is what the DonorPress React admin uses internally.
+
+## 2. Application Passwords (recommended for external integrations)
+
+For server-to-server integrations or CLI scripts, use [WordPress Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/).
+
+### Setup
+
+<Steps>
+	<Step title="Generate an Application Password">
+		Go to **Users → Profile → Application Passwords**. Enter a name (e.g. "Zapier integration") and click **Add New Application Password**.
+	</Step>
+	<Step title="Copy the password">
+		WordPress shows the password once. Copy it immediately — it's a 24-character string with spaces.
+	</Step>
+	<Step title="Use it">
+		Authenticate with HTTP Basic Auth using your username and the application password.
+	</Step>
+</Steps>
+
+### Example
+
+```bash
+curl -X GET 'https://yoursite.com/wp-json/donorpress/v2/donations' \
+  -u 'admin:xxxx xxxx xxxx xxxx xxxx xxxx'
+```
+
+Or in JavaScript:
+
+```js
+const auth = btoa('admin:xxxx xxxx xxxx xxxx xxxx xxxx');
+
+fetch('https://yoursite.com/wp-json/donorpress/v2/donations', {
+	headers: {
+		'Authorization': `Basic ${auth}`,
+	},
+});
+```
+
+### Revoking access
+
+Revoke an Application Password from **Users → Profile → Application Passwords**. The next API request with that password fails.
+
+## 3. JWT (third-party plugin)
+
+For JWT-based authentication, install a plugin like [JWT Authentication for WP REST API](https://wordpress.org/plugins/jwt-authentication-for-wp-rest-api/). DonorPress endpoints work with any standard WordPress authentication mechanism.
+
+## Public endpoints (no auth)
+
+A few endpoints are intentionally public:
+
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /donations` | Create a donation (front-end donor form). |
+| `GET /donors/lookup` | Look up a donor by email for form pre-fill. Returns name only, never sensitive data. |
+| `POST /gateways/stripe/webhook` | Stripe webhook receiver (signature-verified). |
+| `POST /gateways/paypal/webhook` | PayPal webhook receiver (signature-verified). |
+
+These don't require a user session. They have their own narrower validation rules.
+
+## Permissions
+
+Authenticated requests are checked against WordPress capabilities:
+
+| Capability | What it grants |
+| --- | --- |
+| `manage_options` | Full DonorPress access (default for all admin endpoints). |
+| `donorpress_view_reports` | Reports endpoints only (custom capability for read-only roles). |
+| `donorpress_manage` | Alternative to `manage_options` if you want a custom DonorPress-specific role. |
+
+You can override the required capability per endpoint via filters:
+
+```php
+add_filter( 'donorpress/rest/permission/donations', function ( $cap ) {
+	return 'edit_posts';   // lower the bar from manage_options
+} );
+```
+
+## CORS
+
+By default, the WP REST API doesn't enable CORS for cross-origin requests. To enable it for DonorPress endpoints from a specific origin:
+
+```php
+add_action( 'rest_api_init', function () {
+	add_filter( 'rest_pre_serve_request', function ( $served, $result, $request ) {
+		if ( str_starts_with( $request->get_route(), '/donorpress/v2/' ) ) {
+			header( 'Access-Control-Allow-Origin: https://your-frontend.com' );
+			header( 'Access-Control-Allow-Methods: GET, POST, PATCH, DELETE' );
+			header( 'Access-Control-Allow-Headers: Content-Type, Authorization, X-WP-Nonce' );
+		}
+		return $served;
+	}, 10, 3 );
+} );
+```
+
+## Rate limiting
+
+DonorPress doesn't impose rate limits itself. Your hosting / CDN may. For high-volume integrations, contact your host about their default limits.
+
+## HTTPS
+
+Always use HTTPS for production API calls. WordPress Application Passwords transmit in plaintext-equivalent encoding — without HTTPS they're sniffable.

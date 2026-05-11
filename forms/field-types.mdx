@@ -1,0 +1,101 @@
+---
+title: "Field Types"
+description: "Every donor field type DonorPress supports."
+---
+
+DonorPress ships with a set of common field types. Each can be added, reordered, and styled in the form builder.
+
+## Standard fields
+
+### Text
+
+A single-line text input.
+
+| Setting | Description |
+| --- | --- |
+| Label | Visible label. |
+| Placeholder | Greyed-out hint. |
+| Required | Toggle. |
+| Max length | Character limit (0 = no limit). |
+
+### Email
+
+Like text, but validates that the input looks like an email address. Always required (it's the donor identity key).
+
+### Number
+
+A numeric input with optional min/max.
+
+| Setting | Description |
+| --- | --- |
+| Min | Smallest accepted value. |
+| Max | Largest accepted value. |
+| Step | Increment for the +/- buttons. |
+
+### Phone
+
+Text input with phone-aware autocomplete + a soft validation pattern. Doesn't enforce a specific format — phone numbers vary worldwide.
+
+### Textarea
+
+Multi-line text. Use for "Why are you donating?" style prompts.
+
+| Setting | Description |
+| --- | --- |
+| Rows | Visible row count. |
+| Max length | Character limit. |
+
+### Select
+
+A dropdown with predefined options.
+
+| Setting | Description |
+| --- | --- |
+| Options | One per line, format `value\|label` or just `label`. |
+| Default | Pre-selected value. |
+
+### Radio
+
+Mutually-exclusive option group. Same configuration as Select.
+
+### Checkbox
+
+Single checkbox (e.g. "Subscribe me to your newsletter"). Stored as boolean.
+
+### Checkbox group
+
+Multiple-select via checkboxes. Same configuration as Select; stored as an array.
+
+### Anonymity
+
+A specialized checkbox: "Make this donation anonymous." When checked, the donor's name is hidden on public-facing campaign donor lists.
+
+### Address
+
+A composite field that includes:
+
+- Street address (line 1, line 2)
+- City
+- State / Province / Region
+- Postal code
+- Country (auto-populated dropdown)
+
+Each sub-field can be individually marked required.
+
+### Hidden
+
+An invisible field set via URL prefill or programmatically. Useful for tracking source (`?utm_source=…`) or campaign slugs.
+
+## Required fields
+
+Three fields are **always required** and cannot be removed:
+
+- First name
+- Last name
+- Email
+
+Everything else is opt-in.
+
+## Adding a custom field type
+
+Developers can register custom field types via the `donorpress/form/field_types` filter. See [the developer guide](/developers/architecture-overview).

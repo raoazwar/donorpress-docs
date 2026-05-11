@@ -1,0 +1,81 @@
+---
+title: "Refunds"
+description: "How to issue, partial-refund, and reconcile refunds."
+---
+
+DonorPress supports both full and partial refunds for any gateway that exposes them (Stripe and PayPal both do).
+
+## Full refunds
+
+From a donation's detail screen:
+
+<Steps>
+	<Step title='Click "Refund"'>
+		The button only appears if the donation status is **Complete** and the gateway supports refunds.
+	</Step>
+	<Step title="Confirm the amount">
+		Defaults to the full original amount.
+	</Step>
+	<Step title="Add an optional reason">
+		Stored in the activity log; sent to the gateway as refund metadata where supported.
+	</Step>
+	<Step title="Confirm">
+		The refund is sent to the gateway. On success the donation status updates to **Refunded**.
+	</Step>
+</Steps>
+
+Side effects:
+
+- Donation status → **Refunded**.
+- Donor's lifetime total recalculates (the refunded amount is excluded).
+- A refund event is added to the activity log with the refund ID.
+- A "Refund Issued" email is sent to the donor (configurable in **Settings → Email Notifications**).
+
+## Partial refunds
+
+Same flow, but enter a smaller amount. After a partial refund:
+
+- Donation status remains **Complete**, with a `refunded_amount` field populated.
+- The donor's lifetime total reflects only the net (original − refunded).
+- You can issue additional partial refunds up to the original total.
+
+## Reconciling refunds issued in the gateway
+
+If you (or someone else) refund a donation directly in the Stripe or PayPal dashboard, DonorPress hears about it via the gateway webhook (`charge.refunded` for Stripe, `PAYMENT.CAPTURE.REFUNDED` for PayPal). The donation updates automatically — usually within seconds.
+
+If webhooks aren't configured, you'll need to manually mark the donation refunded in DonorPress to keep your reports accurate.
+
+## Time limits
+
+Gateways have their own refund time limits:
+
+- **Stripe**: 180 days from the original charge.
+- **PayPal**: 180 days from the original capture (60 days for some account types).
+
+After the limit, neither DonorPress nor the gateway dashboard can issue an automatic refund. You'd have to send the donor a manual reverse payment.
+
+## Refund fees
+
+Most gateways do not refund their processing fee when you issue a refund. So a $100 refund of a $100 donation typically costs you the original ~$3 fee. Plan accordingly.
+
+## What if the refund fails?
+
+Common reasons:
+
+- Original charge was already refunded in the gateway.
+- Past the gateway's refund time limit.
+- Insufficient balance in your gateway account (rare; the gateway will pull from your bank if possible).
+
+The gateway error message is shown in the DonorPress activity log so you can act on it.
+
+## Subscriptions and refunds
+
+Refunding a single recurring renewal does **not** cancel the subscription. To stop future renewals, cancel the subscription separately from the subscriptions admin.
+
+## Receipt updates
+
+When a donation is refunded, the donor's annual receipt PDF (if the [Annual Receipts module](/modules/annual-receipts) is on) automatically reflects the refund the next time it's downloaded — annual receipts are generated fresh each time, never cached.
+
+## Bulk refunds
+
+There's no bulk refund action. Refunds are intentionally one-at-a-time to prevent costly mistakes. If you need to mass-refund (e.g. an event was cancelled), use the gateway's batch refund tooling and let the webhooks update DonorPress.

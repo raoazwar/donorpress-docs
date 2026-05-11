@@ -1,0 +1,180 @@
+---
+title: "Settings Endpoint"
+description: "REST API: read and update DonorPress settings."
+---
+
+Base path: `/wp-json/donorpress/v2/settings`
+
+DonorPress settings are exposed as a single JSON object. Read-modify-write is the recommended pattern.
+
+## Get all settings
+
+```http
+GET /settings
+```
+
+### Response
+
+```json
+{
+  "general": {
+    "organization_name": "Acme Charity",
+    "organization_email": "donations@acme.org",
+    "country": "US",
+    "currency": "USD",
+    "test_mode": false,
+    "logo_id": 42,
+    "success_page": 18,
+    "failure_page": 0,
+    "dashboard_page": 23
+  },
+  "currency": {
+    "currency_position": "before",
+    "decimal_separator": ".",
+    "thousand_separator": ",",
+    "decimals": 2
+  },
+  "forms": {
+    "default_layout": "single-step",
+    "default_amounts": [10, 25, 50, 100],
+    "honeypot": true,
+    "time_trap": true,
+    "recaptcha_enabled": false
+  },
+  "gateways": {
+    "stripe": {
+      "enabled": true,
+      "live_publishable_key": "pk_live_xxx",
+      "test_publishable_key": "pk_test_xxx"
+      // secrets never returned in plaintext
+    },
+    "paypal": {
+      "enabled": true,
+      "live_client_id": "AYxxx"
+    }
+  },
+  "emails": {
+    "from_name": "Acme Charity",
+    "from_email": "donations@acme.org",
+    "logo_id": 42
+  },
+  "donor_dashboard": {
+    "default_accent_color": "#3858e9",
+    "default_tab": "overview",
+    "donation_history_limit": 50
+  },
+  "advanced": {
+    "report_cache_minutes": 5,
+    "delete_data_on_uninstall": false
+  }
+}
+```
+
+Secret credentials (Stripe secret keys, PayPal client secrets, webhook signing secrets) are **never returned in plaintext** — the API returns either `null` (not set) or `"set"` (set, not exposed).
+
+## Update settings
+
+```http
+POST /settings
+```
+
+Accepts the same shape, optionally partial. Only fields you include are updated; everything else is left alone.
+
+### Body (partial example)
+
+```json
+{
+  "general": {
+    "test_mode": false
+  },
+  "gateways": {
+    "stripe": {
+      "live_secret_key": "sk_live_xxx"
+    }
+  }
+}
+```
+
+### Response
+
+The full updated settings object.
+
+## Get a specific section
+
+```http
+GET /settings/{section}
+```
+
+Sections: `general`, `currency`, `forms`, `gateways`, `emails`, `donor_dashboard`, `advanced`, `annual_receipts`, `pdf_invoices`, `gift_aid`, `currency_switcher`.
+
+```http
+GET /settings/general
+```
+
+```json
+{
+  "organization_name": "Acme Charity",
+  ...
+}
+```
+
+## Update a specific section
+
+```http
+POST /settings/{section}
+```
+
+Same body shape as the section response. Replaces only fields you include.
+
+## Reset to defaults
+
+```http
+POST /settings/reset
+```
+
+### Body
+
+```json
+{
+  "section": "forms"   // or "all"
+}
+```
+
+Resets the named section to plugin defaults. **Use with care** — there's no undo.
+
+## Validate without saving
+
+```http
+POST /settings/validate
+```
+
+Same body shape as the update endpoint. Returns 200 with `{ "valid": true }` if the settings would save successfully, or 422 with field-level errors if not.
+
+Useful for preflight validation in custom admin UIs.
+
+## Permissions
+
+| Endpoint | Required cap |
+| --- | --- |
+| `GET /settings` | `manage_options` |
+| `GET /settings/{section}` | `manage_options` |
+| `POST /settings` | `manage_options` |
+| `POST /settings/{section}` | `manage_options` |
+| `POST /settings/reset` | `manage_options` |
+| `POST /settings/validate` | `manage_options` |
+
+## Importing / exporting settings
+
+For backup or site migration:
+
+```http
+GET /settings/export
+```
+
+Returns a JSON file with all settings (and secrets — only available to admins).
+
+```http
+POST /settings/import
+```
+
+Accepts the JSON from a previous export. Settings are merged.

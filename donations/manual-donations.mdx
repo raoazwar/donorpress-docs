@@ -1,0 +1,96 @@
+---
+title: "Manual Donations"
+description: "Recording offline donations (cash, check, bank transfer)."
+---
+
+The **Manual Donations** module lets you record donations that didn't come through a payment gateway — cash collected at an event, checks mailed in, bank transfers, etc.
+
+<Info>
+	Manual Donations is a **Basic plan** premium module. [See all modules →](/modules/overview)
+</Info>
+
+## When to use it
+
+Common scenarios:
+
+- A donor mailed in a check.
+- Cash collected at a fundraising event.
+- A bank wire arrived in your account.
+- A pledged donation was honoured but not via your website.
+- Migrating historical donations from another system.
+
+## Recording a manual donation
+
+After enabling the module:
+
+<Steps>
+	<Step title="Open Donations">
+		Go to **DonorPress → Donations**.
+	</Step>
+	<Step title='Click "Add Manual Donation"'>
+		The button appears in the top-right when the module is active.
+	</Step>
+	<Step title="Find or create the donor">
+		Search by email or name; or fill in name + email to create a new donor.
+	</Step>
+	<Step title="Enter donation details">
+		Amount, currency, date, and payment method (Cash / Check / Bank Transfer / Other).
+	</Step>
+	<Step title="Optional fields">
+		Reference number (check number, transfer ID), notes, campaign attribution, anonymity.
+	</Step>
+	<Step title='Choose receipt behavior'>
+		Send a receipt to the donor immediately, or save without notification.
+	</Step>
+	<Step title="Save">
+		The donation is created with gateway = `manual` and status = **Complete**.
+	</Step>
+</Steps>
+
+## Settings
+
+**DonorPress → Settings → Manual Donations**:
+
+| Setting | Description |
+| --- | --- |
+| Default payment method | Pre-selected method on the manual entry form. |
+| Default status | Usually **Complete**, but you can default to **Pending** if you want a two-step approval workflow. |
+| Send receipt by default | Whether the "Send receipt" checkbox is pre-ticked. |
+| Receipt template | Which email template to use for manual receipts. |
+| Allow editing | Whether existing manual donations can be edited (gateway donations can never be edited). |
+
+## Editing a manual donation
+
+Unlike gateway donations, manual donations **can be edited** after creation — useful for correcting data-entry mistakes. Edit access is controlled by the **Allow editing** setting above.
+
+Editable fields: amount, date, payment method, reference, campaign, notes, anonymity. The donor link cannot be changed (re-create the donation if you need to reassign it).
+
+## Reports
+
+Manual donations appear in all reports just like gateway donations, with `gateway = manual` so you can filter them in or out.
+
+## Annual receipts
+
+Manual donations are eligible for [annual receipts](/modules/annual-receipts) by default. Configure which donation statuses count toward annual receipts in the module settings.
+
+## Bulk import
+
+For migrating historical donations, use **Tools → Import → Donations CSV**. The CSV format:
+
+```csv
+donor_email,first_name,last_name,amount,currency,date,payment_method,reference,campaign_slug,note
+sam@example.com,Sam,Smith,100,USD,2024-03-15,check,#1042,annual-fund,
+sam@example.com,Sam,Smith,250,USD,2024-06-01,bank,WIRE-99381,annual-fund,June pledge
+```
+
+The importer:
+
+- Creates donors that don't exist (matched by email).
+- Skips rows that look like duplicates (same email + amount + date).
+- Reports per-row success/failure with line numbers.
+
+## What manual donations don't do
+
+- **No payment processing.** The donor's card or bank is never charged. You're recording money that already moved (or that you trust will).
+- **No automatic refunds.** Refunds for manual donations have to be handled offline; DonorPress just records that you did so.
+- **No subscription support.** Manual donations are always one-off. For recurring offline pledges, record one manual donation per renewal as it arrives.

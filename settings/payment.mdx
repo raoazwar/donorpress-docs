@@ -1,0 +1,109 @@
+---
+title: "Payment Settings"
+description: "Per-gateway configuration, default payment methods, and currency handling."
+---
+
+The **Payment** tab in **DonorPress → Settings** controls every gateway DonorPress integrates with.
+
+<Frame>
+	<img src="/images/admin/settings-gateways.png" alt="DonorPress payment settings" />
+</Frame>
+
+## Gateway list
+
+The page shows every available gateway with:
+
+- An on/off toggle.
+- A status badge (Configured / Test mode / Live mode / Misconfigured).
+- A "Configure" button that opens the per-gateway settings.
+
+Built-in gateways:
+
+- [Stripe](/gateways/stripe)
+- [PayPal](/gateways/paypal)
+- [Test Gateway](/gateways/test-gateway)
+
+Custom gateways added via plugins or developer code also appear here.
+
+## Per-gateway settings
+
+Click any gateway to open its settings panel. Each gateway has its own fields, but they all share these patterns:
+
+### Test mode credentials
+
+- **Test publishable / client ID** — visible-side identifier.
+- **Test secret / client secret** — server-side credential. Never displayed back to you after saving.
+- Used when site-wide [Test Mode](/core-concepts/test-vs-live-mode) is on.
+
+### Live mode credentials
+
+- **Live publishable / client ID**
+- **Live secret / client secret**
+- Used when site-wide Test Mode is off.
+
+### Webhook signing secret / webhook ID
+
+Used to verify that webhook deliveries are genuine. See [Webhooks](/gateways/webhooks).
+
+### Statement descriptor (Stripe only)
+
+Up to 22 characters, shown on the donor's bank statement.
+
+## Saving credentials
+
+Settings save automatically as you type — there's no submit button. The "Saved" indicator confirms each change.
+
+Secret fields show as `••••••••` once saved. To replace, type the new value over the dots.
+
+## Default gateway
+
+When multiple gateways are enabled, donors see them as buttons on the donation form (Stripe / PayPal / etc.). The order is configurable per-form in the form builder.
+
+There's no site-wide "default gateway" concept — each form picks which gateways it offers.
+
+## Connection test
+
+Each gateway has a **Test connection** button. Clicking it makes a dummy authenticated API call to the gateway and reports success or the specific error message.
+
+Use this whenever:
+
+- You've just pasted credentials for the first time.
+- You suspect a gateway is misconfigured.
+- You're switching from test to live and want to verify both sets work.
+
+## Disabling a gateway
+
+Toggling a gateway off:
+
+- Removes it from all donation forms.
+- Doesn't delete the credentials (they're preserved if you re-enable later).
+- Doesn't affect existing donations or subscriptions on that gateway.
+- Existing subscriptions continue renewing — only **new** donation flows are blocked.
+
+## Removing credentials entirely
+
+If you want to wipe credentials (e.g. when transferring the site):
+
+1. Click **Configure** on the gateway.
+2. Clear each credential field.
+3. Save.
+4. Toggle the gateway off.
+
+## Currency support warnings
+
+If you've set a form to a currency that one of its enabled gateways doesn't support, a warning appears in the form builder. The non-supporting gateway is automatically hidden from that form's payment options.
+
+## Webhooks for production
+
+Always configure webhooks for live gateways. See [Webhooks](/gateways/webhooks). Without them, recurring donations will technically still process at the gateway, but DonorPress won't know about renewals.
+
+## Related
+
+<CardGroup cols={2}>
+	<Card title="Stripe setup" icon="credit-card" href="/gateways/stripe">
+		Step-by-step Stripe configuration.
+	</Card>
+	<Card title="PayPal setup" icon="paypal" href="/gateways/paypal">
+		Step-by-step PayPal configuration.
+	</Card>
+</CardGroup>

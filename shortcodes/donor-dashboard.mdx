@@ -1,0 +1,99 @@
+---
+title: "Donor Dashboard"
+description: "Give donors a self-serve dashboard to view their history, manage subscriptions, and download receipts."
+---
+
+The donor dashboard shortcode renders a modern, tab-based dashboard for logged-in donors. It includes their giving stats, full donation history, recurring subscriptions, annual receipts (when the module is enabled), and a profile editor.
+
+## Basic usage
+
+Drop the shortcode on any page:
+
+```text
+[donorpress_dashboard]
+```
+
+<Frame>
+	<img src="/images/frontend/donor-dashboard.png" alt="The donor dashboard rendered on the frontend" />
+</Frame>
+
+## What it shows
+
+The dashboard is organised into tabs:
+
+<AccordionGroup>
+	<Accordion title="Overview" icon="house">
+		Four stat tiles (total donated, donation count, recurring plans, member since) plus a "Recent Donations" preview that links into the full history tab.
+	</Accordion>
+	<Accordion title="Donation History" icon="clock-rotate-left">
+		Paginated table of every donation. Each row shows the ID, date, amount, status badge, and a link to view the receipt.
+	</Accordion>
+	<Accordion title="Recurring" icon="arrows-rotate">
+		Only shown when the donor has at least one subscription. Lists active and paused recurring plans with amount, frequency, status, and next renewal date.
+	</Accordion>
+	<Accordion title="Annual Receipts" icon="file-pdf">
+		Only shown when the [Annual Receipts module](/modules/annual-receipts) is enabled and "Show in Donor Dashboard" is on. Lists each available tax year with a download button.
+	</Accordion>
+	<Accordion title="Edit Profile" icon="user-pen">
+		Donors can update their first and last name. Email is read-only because it's tied to their WordPress account.
+	</Accordion>
+</AccordionGroup>
+
+## Customizing the accent color
+
+The dashboard uses a single accent color for active tabs, buttons, badges, and form focus states. Pass any color via the `accent_color` attribute:
+
+```text
+[donorpress_dashboard accent_color="#99BADD"]
+```
+
+The attribute accepts **named CSS colors, HEX codes, or RGB codes**. All three of the following produce a true red accent:
+
+```text
+[donorpress_dashboard accent_color="red"]
+[donorpress_dashboard accent_color="rgb(255,0,0)"]
+[donorpress_dashboard accent_color="#ff0000"]
+```
+
+<Tip>
+	The dashboard auto-picks a readable button text color (black or white) based on the luminance of your accent. So a pale yellow accent gets dark text, a deep navy gets white — no manual contrast tuning needed.
+</Tip>
+
+### Behind the scenes
+
+The accent color is injected as a CSS variable (`--dp-dd-accent`) on the dashboard's root element. Every interactive surface — tabs, buttons, badge tints, focus rings — derives from that single value, so theming is consistent.
+
+## All shortcode attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `accent_color` | string | `#3858e9` | Accent color used for tabs, buttons, and focus states. Accepts HEX, RGB, or named CSS color. |
+
+## Login & no-data states
+
+The shortcode handles two empty states out of the box:
+
+- **Not logged in** — shows a centred "Please log in to view your donor dashboard" message with a link to the WordPress login screen, redirecting back to the dashboard page after sign-in.
+- **No matching donor record** — shows a "No donation history found" message. This appears for logged-in users whose email doesn't match any donor in your database.
+
+Both states reuse the same accent color you configured on the shortcode.
+
+## URL hash navigation
+
+The dashboard syncs the active tab to the URL hash (`#dp-overview`, `#dp-donations`, `#dp-subscriptions`, `#dp-annual-receipts`, `#dp-profile`). This lets you:
+
+- Link directly to a specific tab from emails or other pages, e.g. `https://yoursite.com/dashboard/#dp-subscriptions`.
+- Bookmark a particular view.
+- Share a link that opens on the right tab.
+
+## Where to place it
+
+We recommend creating a dedicated **"My Account"** or **"My Donations"** page and adding `[donorpress_dashboard]` as the only content. Then link to it from:
+
+- Your site's main navigation (visible only to logged-in users).
+- The donation receipt email (`[receipt_link]` template tag).
+- The thank-you page after a successful donation.
+
+<Card title="Profile editing endpoint" icon="server" href="/developers/architecture-overview">
+	Profile updates submit to `admin-post.php?action=donorpress_dashboard_update_profile` with a nonce. The endpoint only updates the donor record matching the logged-in user's email — donors can never edit anyone else's profile.
+</Card>

@@ -1,0 +1,62 @@
+---
+title: "Currencies"
+description: "How DonorPress stores, displays, and converts currency."
+---
+
+DonorPress stores donations in whatever currency the form was set to. There's no automatic conversion — what you charge is what you record.
+
+## Site-wide default
+
+**Settings → General → Currency** sets the default currency for newly-created forms. Changing it doesn't touch existing forms or existing donations.
+
+## Per-form currency
+
+Each form has its own currency setting. Common patterns:
+
+- **Single currency site** — all forms set to the same currency (USD, GBP, etc.). Simplest setup.
+- **Per-region forms** — separate forms for each region, each in the local currency. The donor picks based on the page they land on.
+- **Multi-currency on one form** — donors choose their preferred currency on the form itself. Requires the [Currency Switcher module](/modules/currency-switcher).
+
+## Display formatting
+
+| Setting | Description |
+| --- | --- |
+| Currency position | `Before` (`$10.00`) or `After` (`10.00 $`). |
+| Decimal separator | Usually `.` or `,`. |
+| Thousands separator | Usually `,`, `.`, or empty. |
+| Number of decimals | 2 for most currencies; 0 for JPY, KRW, IDR, etc. |
+
+These format the **display** only. Internally, amounts are always stored as decimals with two places (or zero for zero-decimal currencies).
+
+## Zero-decimal currencies
+
+Stripe charges JPY, KRW, and a handful of others in their smallest unit (e.g. ¥1000 = 1000 yen, not 10.00 yen). DonorPress handles this automatically — you enter the amount the donor sees, and DonorPress sends the correct value to the gateway.
+
+Supported zero-decimal currencies:
+
+`BIF, CLP, DJF, GNF, JPY, KMF, KRW, MGA, PYG, RWF, UGX, VND, VUV, XAF, XOF, XPF`
+
+## Gateway currency support
+
+| Gateway | Currencies |
+| --- | --- |
+| Stripe | 135+ currencies. [Full list](https://stripe.com/docs/currencies) |
+| PayPal | 25 currencies. [Full list](https://developer.paypal.com/api/rest/reference/currency-codes/) |
+
+If you set a form to a currency a gateway doesn't support, that gateway is automatically hidden on the form.
+
+## Reports & multi-currency
+
+By default, all reports aggregate donations in their **native currency**. If you have donations in multiple currencies and want a unified view, the [Currency Switcher module](/modules/currency-switcher) adds:
+
+- A "base currency" setting for reporting.
+- Manual or automatic exchange-rate updates.
+- Reports broken down by both native + base currency.
+
+## Refunds
+
+Refunds are always issued in the original donation currency. You cannot refund a $100 donation as £80, even if the exchange rate has shifted.
+
+## Tax receipts
+
+[Annual receipts](/modules/annual-receipts) display each donation in its original currency. The total at the bottom is currency-aware — donations in different currencies are shown as separate totals (e.g. "Total: USD 1,200; EUR 350").

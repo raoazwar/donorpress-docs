@@ -1,0 +1,104 @@
+---
+title: "Managing Donors"
+description: "Donor records, lifetime stats, and how donors are matched across donations."
+---
+
+A **donor** is a person (identified by email) who has made at least one donation through DonorPress. Donor records are created automatically — you don't need to import them upfront.
+
+<Frame>
+	<img src="/images/admin/donors-list.png" alt="DonorPress donors list" />
+</Frame>
+
+## How donors get created
+
+Every time a donation form is submitted, DonorPress:
+
+1. Looks up the donor by email.
+2. If found, adds the donation to that donor and recalculates lifetime totals.
+3. If not found, creates a new donor record from the form data.
+
+This means **email is the unique key** for donors. Two donations with the same email always belong to the same donor, regardless of name spelling or capitalization.
+
+## Donor list columns
+
+| Column | Description |
+| --- | --- |
+| **Name** | First + last name. |
+| **Email** | Primary email. |
+| **Donations** | Lifetime count of completed donations. |
+| **Total** | Lifetime sum of completed donations. |
+| **Largest** | Largest single donation. |
+| **First donation** | Date of their first completed donation. |
+| **Last donation** | Date of their most recent donation. |
+
+Use the search box to find donors by name or email.
+
+## Donor detail screen
+
+Click any donor to open their record. You'll see:
+
+- **Profile card** — name, email, address (if collected), date created.
+- **Stats** — total donated, donation count, largest donation, average.
+- **Donations tab** — full list of every donation (one-time + recurring renewals).
+- **Subscriptions tab** — active and historical recurring plans.
+- **Notes tab** — internal team notes.
+- **Activity tab** — every event involving this donor.
+
+From here you can:
+
+- Edit name, email, phone, company, address.
+- Mark the donor as **anonymous** (hides their name on public-facing campaign lists).
+- Manually link the donor to a WordPress user account.
+- Recalculate stats (rarely needed — happens automatically).
+- Delete the donor (preserves their donation records but unlinks them).
+
+## Linking donors to WordPress users
+
+Donors and WordPress users are separate concepts in DonorPress:
+
+- A **donor** is anyone who's given money. They don't need a WP account.
+- A **WordPress user** is anyone who can log into WP. They might or might not have donated.
+
+When a logged-in user makes a donation, DonorPress tries to match by email. You can also manually link them from the donor detail screen.
+
+This matters for the [donor dashboard](/donors/donor-dashboard): a donor can only access their dashboard if they're logged into a WP user account whose email matches their donor record.
+
+## Anonymous donations
+
+If a donor checks **"Make this donation anonymous"** on a form:
+
+- The donor record is still created (you need it for the receipt).
+- Their name is hidden on public-facing campaign donor lists.
+- Their name is **still visible** in the admin — anonymity is a public-facing setting only.
+
+You can flip a donor's anonymity setting at any time from their detail screen.
+
+## Merging duplicate donors
+
+Occasionally a donor uses two different email addresses (e.g. `sam@gmail.com` and `sam@work.com`). To merge:
+
+<Steps>
+	<Step title="Open the duplicate donor">
+		Pick the one with fewer donations — that one will be removed.
+	</Step>
+	<Step title='Click "Merge into another donor"'>
+		Search for the donor you want to keep.
+	</Step>
+	<Step title="Confirm">
+		All donations from the duplicate move to the canonical donor. Their email becomes a secondary email on the canonical record. Stats are recalculated.
+	</Step>
+</Steps>
+
+<Warning>
+	Merge is irreversible. There's a confirmation step but no undo.
+</Warning>
+
+## Exporting donors
+
+From the donors list, **Export** generates a CSV with every donor field plus their lifetime totals. Useful for CRM imports and end-of-year reports.
+
+## Bulk actions
+
+- **Send email** — open a compose window prefilled with the selected donors as recipients (uses your WordPress mailer).
+- **Export selected** — CSV of just the selected rows.
+- **Delete** — permanently removes donor records. Donations remain but are unlinked.

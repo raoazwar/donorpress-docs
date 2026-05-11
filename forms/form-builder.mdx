@@ -1,0 +1,111 @@
+---
+title: "Form Builder"
+description: "A reference for every panel in the DonorPress form builder."
+---
+
+The form builder is a React-based visual editor. Every change is reflected instantly in the live preview.
+
+<Frame>
+	<img src="/images/admin/form-builder.png" alt="DonorPress form builder" />
+</Frame>
+
+## Layout
+
+The builder has three columns:
+
+- **Left sidebar** — Panel selector. Switches between Form, Amounts, Donor Fields, Recurring, Payment Methods, Receipt, and Style.
+- **Center** — Live preview. What donors will see, updated as you type.
+- **Right sidebar** — Field-level inspector for the currently-selected element in the preview.
+
+## Panels
+
+### Form
+
+General form settings.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Form name | text | Internal label. |
+| Currency | select | ISO 4217 code. Overrides site default. |
+| Layout | select | `Single-step` or `Multi-step`. |
+| Campaign | select | Optional campaign attribution. |
+| Status | select | `Active` (accepting donations) or `Inactive` (returns 404). |
+
+### Amounts
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Preset amounts | tags | Comma-separated decimal values. |
+| Default selected | select | Which preset is highlighted on load. |
+| Allow custom | toggle | Lets donors enter their own amount. |
+| Minimum | number | Smallest custom amount. |
+| Maximum | number | Largest custom amount (0 = no limit). |
+| Show "Other" tile | toggle | When custom is allowed, show a dedicated "Other" preset that reveals an input. |
+
+### Donor Fields
+
+Drag-to-reorder list. Each field has:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Required | toggle | Whether the field is mandatory. |
+| Label | text | What the donor sees. |
+| Placeholder | text | Greyed-out hint inside the input. |
+| Help text | text | Small caption shown under the field. |
+
+[Field types reference →](/forms/field-types)
+
+### Recurring
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Allow recurring | toggle | Master switch. |
+| Frequencies | multi-select | Daily, Weekly, Monthly, Quarterly, Yearly. |
+| Default | select | Pre-selected frequency. |
+| Bill count | number | Optional limit on number of renewals (0 = until cancelled). |
+
+### Payment Methods
+
+Tick which enabled gateways the form should expose. If your gateways are not visible here, enable them in **Settings → Payment Gateways** first.
+
+### Receipt
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Success page | page picker | Per-form override of the site-wide success page. |
+| Failure page | page picker | Per-form override of the site-wide failure page. |
+| Receipt email | template picker | Which receipt email template to send. |
+
+### Style
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Primary color | color | Buttons, accent borders, focus rings. |
+| Background color | color | Form background. |
+| Border radius | number (px) | Corner roundness for inputs and buttons. |
+| Font family | select | Inherit theme font, or pick from a curated list. |
+| Custom CSS | textarea | Per-form CSS injected when the form renders. Scoped via `.donorpress-form-{id}`. |
+
+## Multi-step layout
+
+Switching to multi-step splits the form into three default steps:
+
+1. **Amount** — preset amounts + recurring toggle.
+2. **Details** — donor fields.
+3. **Payment** — gateway selection + payment.
+
+You can drag fields between steps in the layout panel.
+
+## Saving
+
+Changes save automatically as you type. The "Saved" indicator appears in the top-right after each persisted change.
+
+There's also an explicit **Publish** button — useful for making a draft form go live in one atomic action.
+
+## Versioning
+
+Each form keeps a revision history (last 20 saves) accessible via the **Revisions** dropdown. Restore an earlier version with one click; the current state is saved as a new revision so nothing is lost.
+
+## Duplicating a form
+
+From the forms list, click **Duplicate**. The duplicate inherits everything except donations and revision history.

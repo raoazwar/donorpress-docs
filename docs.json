@@ -1,0 +1,228 @@
+{
+	"$schema": "https://mintlify.com/docs.json",
+	"theme": "mint",
+	"name": "DonorPress",
+	"description": "The complete fundraising platform for WordPress — donations, donors, recurring giving, campaigns, and more.",
+	"colors": {
+		"primary": "#3858e9",
+		"light": "#5a78f0",
+		"dark": "#2845c0"
+	},
+	"favicon": "/favicon.svg",
+	"logo": {
+		"light": "/images/logo-light.svg",
+		"dark": "/images/logo-dark.svg"
+	},
+	"navigation": {
+		"tabs": [
+			{
+				"tab": "Documentation",
+				"groups": [
+					{
+						"group": "Get Started",
+						"pages": [
+							"introduction",
+							"getting-started/installation",
+							"getting-started/quick-start",
+							"getting-started/setup-wizard",
+							"getting-started/system-requirements"
+						]
+					},
+					{
+						"group": "Core Concepts",
+						"pages": [
+							"core-concepts/overview",
+							"core-concepts/donations-vs-subscriptions",
+							"core-concepts/donor-records",
+							"core-concepts/test-vs-live-mode",
+							"core-concepts/currencies"
+						]
+					},
+					{
+						"group": "Donation Forms",
+						"pages": [
+							"forms/overview",
+							"forms/creating-a-form",
+							"forms/form-builder",
+							"forms/field-types",
+							"forms/multi-step-forms",
+							"forms/customizing-styles",
+							"forms/embedding-forms"
+						]
+					},
+					{
+						"group": "Donations & Donors",
+						"pages": [
+							"donations/managing-donations",
+							"donations/refunds",
+							"donations/manual-donations",
+							"donors/managing-donors",
+							"donors/donor-dashboard"
+						]
+					},
+					{
+						"group": "Recurring Donations",
+						"pages": [
+							"subscriptions/overview",
+							"subscriptions/managing-subscriptions",
+							"subscriptions/cancellation",
+							"subscriptions/renewal-emails"
+						]
+					},
+					{
+						"group": "Campaigns",
+						"pages": [
+							"campaigns/creating-campaigns",
+							"campaigns/categories-and-tags",
+							"campaigns/embedding-campaigns",
+							"campaigns/elementor-widgets"
+						]
+					},
+					{
+						"group": "Payment Gateways",
+						"pages": [
+							"gateways/overview",
+							"gateways/stripe",
+							"gateways/paypal",
+							"gateways/test-gateway",
+							"gateways/webhooks"
+						]
+					},
+					{
+						"group": "Premium Modules",
+						"pages": [
+							"modules/overview",
+							"modules/pdf-invoices",
+							"modules/manual-donations",
+							"modules/annual-receipts",
+							"modules/advanced-dashboard",
+							"modules/gift-aid",
+							"modules/currency-switcher"
+						]
+					},
+					{
+						"group": "Email Notifications",
+						"pages": [
+							"emails/overview",
+							"emails/templates",
+							"emails/template-tags",
+							"emails/customizing-emails"
+						]
+					},
+					{
+						"group": "Reports & Analytics",
+						"pages": [
+							"reports/overview",
+							"reports/revenue-reports",
+							"reports/donor-reports"
+						]
+					},
+					{
+						"group": "Shortcodes",
+						"pages": [
+							"shortcodes/overview",
+							"shortcodes/donation-form",
+							"shortcodes/donor-dashboard",
+							"shortcodes/donor-login",
+							"shortcodes/donor-signup",
+							"shortcodes/receipt",
+							"shortcodes/annual-receipts",
+							"shortcodes/campaigns"
+						]
+					},
+					{
+						"group": "Settings",
+						"pages": [
+							"settings/general",
+							"settings/payment",
+							"settings/forms",
+							"settings/emails",
+							"settings/donor-dashboard",
+							"settings/advanced"
+						]
+					},
+					{
+						"group": "FAQ",
+						"pages": [
+							"faq/general",
+							"faq/payments",
+							"faq/forms",
+							"faq/donors",
+							"faq/troubleshooting"
+						]
+					}
+				]
+			},
+			{
+				"tab": "Developers",
+				"groups": [
+					{
+						"group": "Architecture",
+						"pages": [
+							"developers/architecture-overview",
+							"developers/service-providers",
+							"developers/database-schema"
+						]
+					},
+					{
+						"group": "REST API",
+						"pages": [
+							"rest-api/overview",
+							"rest-api/authentication",
+							"rest-api/donations",
+							"rest-api/donors",
+							"rest-api/forms",
+							"rest-api/campaigns",
+							"rest-api/subscriptions",
+							"rest-api/settings",
+							"rest-api/reports"
+						]
+					},
+					{
+						"group": "Hooks & Filters",
+						"pages": [
+							"hooks/actions",
+							"hooks/filters",
+							"hooks/extending-gateways"
+						]
+					},
+					{
+						"group": "Custom Development",
+						"pages": [
+							"developers/custom-gateways",
+							"developers/custom-modules",
+							"developers/template-overrides"
+						]
+					}
+				]
+			},
+			{
+				"tab": "Changelog",
+				"groups": [
+					{
+						"group": "Releases",
+						"pages": ["changelog"]
+					}
+				]
+			}
+		]
+	},
+	"navbar": {
+		"links": [
+			{
+				"label": "Support",
+				"href": "https://donorpress.org/support"
+			}
+		],
+		"primary": {
+			"type": "button",
+			"label": "Get DonorPress",
+			"href": "https://donorpress.org/pricing"
+		}
+	},
+	"footer": {
+		"socials": {
+			"website": "https://donorpress.org"
+		}
+	}
+}

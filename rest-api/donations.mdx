@@ -1,0 +1,211 @@
+---
+title: "Donations Endpoint"
+description: "REST API: list, create, update, refund, and delete donations."
+---
+
+Base path: `/wp-json/donorpress/v2/donations`
+
+## List donations
+
+```http
+GET /donations
+```
+
+### Query parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `per_page` | int | 1-100. Default 20. |
+| `page` | int | Page number, default 1. |
+| `status` | string | Comma-separated list: `complete,pending,failed,refunded,cancelled,abandoned`. |
+| `gateway` | string | Comma-separated gateway slugs. |
+| `donor_id` | int | Filter by donor. |
+| `form_id` | int | Filter by form. |
+| `campaign_id` | int | Filter by campaign. |
+| `subscription_id` | int | Filter by subscription. |
+| `from` | date | YYYY-MM-DD. |
+| `to` | date | YYYY-MM-DD. |
+| `search` | string | Searches donor name, email, donation ID. |
+| `orderby` | string | `created_at` (default) / `amount` / `id`. |
+| `order` | string | `ASC` / `DESC` (default). |
+
+### Response
+
+```json
+[
+  {
+    "id": 42,
+    "donor_id": 7,
+    "donor": { "id": 7, "email": "sam@example.com", "first_name": "Sam", "last_name": "Smith" },
+    "form_id": 3,
+    "campaign_id": 0,
+    "subscription_id": 0,
+    "amount": 100.00,
+    "currency": "USD",
+    "status": "complete",
+    "gateway": "stripe",
+    "gateway_transaction_id": "pi_3O4Z2x...",
+    "payment_method": "card",
+    "refunded_amount": 0,
+    "is_anonymous": false,
+    "note": "",
+    "created_at": "2025-04-22T14:38:11Z",
+    "updated_at": "2025-04-22T14:38:14Z"
+  }
+]
+```
+
+Pagination metadata in headers:
+
+```
+X-WP-Total: 1234
+X-WP-TotalPages: 62
+```
+
+## Get a single donation
+
+```http
+GET /donations/{id}
+```
+
+Returns the same shape as a list item, plus expanded fields:
+
+- `transactions` — array of transaction ledger entries.
+- `notes` — array of internal notes.
+- `activity` — full activity log.
+
+## Create a donation
+
+```http
+POST /donations
+```
+
+Used both for frontend form submissions (public) and for manual donations (requires Manual Donations module + admin auth).
+
+### Body
+
+```json
+{
+  "donor_email": "sam@example.com",
+  "first_name": "Sam",
+  "last_name": "Smith",
+  "amount": 100,
+  "currency": "USD",
+  "form_id": 3,
+  "gateway": "stripe",
+  "payment_method": "card",
+  "is_anonymous": false,
+  "note": "Optional",
+  "campaign_id": 0
+}
+```
+
+For frontend submissions, additional gateway-specific fields are required (e.g. Stripe `payment_method_id`).
+
+### Response
+
+```json
+{
+  "id": 43,
+  "status": "pending",
+  "redirect_url": "https://gateway.example.com/checkout/...",
+  ...
+}
+```
+
+For Stripe / PayPal, the response includes a `redirect_url` for the donor to complete payment.
+
+## Update a donation
+
+```http
+PATCH /donations/{id}
+```
+
+Only certain fields are editable depending on the gateway:
+
+- `note` — always editable.
+- `is_anonymous` — always editable.
+- `campaign_id` — always editable.
+- `amount`, `date`, `payment_method`, `reference` — editable for **manual** donations only (with the Manual Donations module).
+
+### Body
+
+```json
+{
+  "note": "Updated note",
+  "is_anonymous": true
+}
+```
+
+## Refund a donation
+
+```http
+POST /donations/{id}/refund
+```
+
+### Body
+
+```json
+{
+  "amount": 100,        // optional — defaults to full amount
+  "reason": "Optional"
+}
+```
+
+### Response
+
+```json
+{
+  "id": 42,
+  "status": "refunded",
+  "refunded_amount": 100,
+  ...
+}
+```
+
+Returns 422 if the donation isn't refundable (wrong status, gateway doesn't support refunds, past gateway time limit).
+
+## Delete a donation
+
+```http
+DELETE /donations/{id}
+```
+
+**Permanently removes** the donation row. Use with care — refund first if you need to give the money back.
+
+Returns 204 on success.
+
+## Bulk operations
+
+```http
+POST /donations/bulk
+```
+
+### Body
+
+```json
+{
+  "action": "delete",   // or "resend_receipt", "mark_cancelled"
+  "ids": [42, 43, 44]
+}
+```
+
+### Response
+
+```json
+{
+  "succeeded": [42, 43],
+  "failed": { "44": "Already cancelled" }
+}
+```
+
+## Permissions
+
+| Endpoint | Required cap |
+| --- | --- |
+| `GET /donations` | `manage_options` |
+| `GET /donations/{id}` | `manage_options` |
+| `POST /donations` | Public (validates differently per gateway) |
+| `PATCH /donations/{id}` | `manage_options` |
+| `POST /donations/{id}/refund` | `manage_options` |
+| `DELETE /donations/{id}` | `manage_options` |

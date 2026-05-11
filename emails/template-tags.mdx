@@ -1,0 +1,113 @@
+---
+title: "Template Tags"
+description: "Every dynamic value you can insert into an email template."
+---
+
+Template tags are placeholders that get replaced with real data when an email is sent. Use them with `{tag_name}` syntax in subjects and bodies.
+
+## Donor tags
+
+| Tag | Renders |
+| --- | --- |
+| `{donor_first_name}` | Donor's first name. |
+| `{donor_last_name}` | Donor's last name. |
+| `{donor_full_name}` | First + last name. Falls back to email if both are empty. |
+| `{donor_email}` | Donor's email address. |
+| `{donor_phone}` | Donor's phone (empty if not collected). |
+| `{donor_company}` | Donor's company (empty if not collected). |
+| `{donor_address}` | Multi-line formatted address. |
+| `{donor_total_donated}` | Donor's lifetime total in your currency. |
+| `{donor_donation_count}` | Donor's lifetime donation count. |
+| `{donor_dashboard_url}` | Direct URL to the donor dashboard page. |
+
+## Donation tags
+
+| Tag | Renders |
+| --- | --- |
+| `{donation_id}` | Internal donation ID. |
+| `{donation_amount}` | Amount, formatted with currency symbol. |
+| `{donation_amount_raw}` | Amount as a plain number (no symbol). |
+| `{donation_currency}` | ISO 4217 currency code. |
+| `{donation_date}` | Donation date in your site's date format. |
+| `{donation_status}` | Status (Complete, Refunded, etc.). |
+| `{donation_form_name}` | Name of the form the donation was made through. |
+| `{donation_gateway}` | Gateway name (Stripe, PayPal, Manual, etc.). |
+| `{donation_gateway_id}` | Gateway transaction ID. |
+| `{donation_payment_method}` | For manual donations: payment method (Cash, Check, etc.). |
+| `{donation_reference}` | Reference number (manual donations). |
+| `{donation_note}` | Optional note from the donation. |
+| `{receipt_link}` | URL to the receipt page. |
+| `{receipt_pdf_link}` | URL to download the PDF receipt (requires PDF Invoices module). |
+
+## Subscription tags
+
+Available on subscription-related emails:
+
+| Tag | Renders |
+| --- | --- |
+| `{subscription_id}` | Internal subscription ID. |
+| `{subscription_amount}` | Per-renewal amount, formatted. |
+| `{subscription_frequency}` | Daily / Weekly / Monthly / etc. |
+| `{subscription_renewal_count}` | How many renewals so far. |
+| `{subscription_total_paid}` | Lifetime total paid through this subscription. |
+| `{subscription_next_renewal}` | Date of the next scheduled renewal. |
+| `{subscription_status}` | Active / Paused / Cancelled / etc. |
+| `{cancel_link}` | URL the donor can use to request cancellation. |
+
+## Refund tags
+
+Available on refund-related emails:
+
+| Tag | Renders |
+| --- | --- |
+| `{refund_amount}` | Refund amount, formatted. |
+| `{refund_date}` | When the refund was issued. |
+| `{refund_reason}` | Optional reason recorded by the admin. |
+
+## Campaign tags
+
+If the donation was attributed to a campaign:
+
+| Tag | Renders |
+| --- | --- |
+| `{campaign_name}` | Campaign title. |
+| `{campaign_url}` | URL to the campaign page. |
+| `{campaign_goal}` | Campaign goal amount, formatted. |
+| `{campaign_total}` | Current total raised, formatted. |
+| `{campaign_progress}` | Percentage of goal met. |
+
+## Site / organization tags
+
+| Tag | Renders |
+| --- | --- |
+| `{organization_name}` | From Settings → General. |
+| `{organization_email}` | From Settings → General. |
+| `{site_name}` | WordPress site title. |
+| `{site_url}` | WordPress site URL. |
+| `{login_url}` | URL to the WordPress login page. |
+| `{current_year}` | Current year (`2026`). Useful in footers. |
+| `{current_date}` | Today's date in your site's date format. |
+
+## Conditional content
+
+Wrap content in conditional blocks that render only when a tag has a value:
+
+```text
+{if:donor_company}
+Company: {donor_company}
+{/if}
+```
+
+Useful for fields that may or may not be collected (phone, company, address).
+
+## Custom tags
+
+Developers can register custom template tags via the `donorpress/email/tags` filter. See [the developer guide](/developers/architecture-overview).
+
+## Escaping
+
+Tag values are HTML-escaped automatically when used in HTML bodies. For raw output (e.g. embedding pre-formatted HTML), use the `{tag:raw}` syntax — but only on values you trust.
+
+## Missing tags
+
+If a tag has no value (e.g. `{donor_phone}` for a donor who didn't provide a phone), the tag is replaced with an empty string. Subjects with empty tags get cleaned up automatically (no `Hi  `).

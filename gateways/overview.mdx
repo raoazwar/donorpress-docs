@@ -1,0 +1,85 @@
+---
+title: "Payment Gateways"
+description: "Stripe and PayPal out of the box, with a clean architecture for adding more."
+---
+
+A **gateway** is the service that actually moves money between the donor's payment method and your bank account. DonorPress ships with three:
+
+<CardGroup cols={3}>
+	<Card title="Stripe" icon="stripe-s" href="/gateways/stripe">
+		Cards, Apple Pay, Google Pay, plus full subscription support.
+	</Card>
+	<Card title="PayPal" icon="paypal" href="/gateways/paypal">
+		PayPal balance and cards via PayPal Commerce.
+	</Card>
+	<Card title="Test Gateway" icon="flask" href="/gateways/test-gateway">
+		Simulates successful and failed payments with no real money. Great for QA.
+	</Card>
+</CardGroup>
+
+<Frame>
+	<img src="/images/admin/settings-gateways.png" alt="Payment gateways settings page" />
+</Frame>
+
+## Enabling a gateway
+
+<Steps>
+	<Step title="Open settings">
+		Go to **DonorPress → Settings → Payment Gateways**.
+	</Step>
+	<Step title="Enable the gateway">
+		Toggle on the gateway you want to use.
+	</Step>
+	<Step title="Paste API credentials">
+		Each gateway has its own credential fields (API keys, client IDs, etc.).
+	</Step>
+	<Step title="Save">
+		Settings save automatically as you type.
+	</Step>
+	<Step title="Configure webhooks">
+		For production use, always set up [webhooks](/gateways/webhooks) so DonorPress hears about subscription renewals and refunds processed outside your site.
+	</Step>
+</Steps>
+
+## Test mode vs. live mode
+
+DonorPress has a **global test mode** switch in **Settings → General**. When test mode is on:
+
+- Gateways use their **test credentials** (Stripe test keys, PayPal sandbox).
+- A "Test Mode" badge appears on every donation form.
+- All gateways are eligible for use, including the Test Gateway.
+
+When test mode is off:
+
+- Gateways use their **live credentials**.
+- The Test Gateway is automatically disabled — you cannot accept Test Gateway "donations" in production.
+
+We recommend leaving test mode on until you've end-to-end tested at least one full donation through each enabled gateway.
+
+## Per-form gateway selection
+
+Each form picks which enabled gateways it offers. Common patterns:
+
+- **One-form, all-gateways** — a single donation form with both Stripe and PayPal as donor-selectable options.
+- **One form per gateway** — separate donation flows for each gateway, each on its own landing page.
+- **Stripe only** — for sites that only need cards.
+
+## Currencies
+
+Each gateway supports its own subset of currencies. Most major currencies (USD, EUR, GBP, CAD, AUD, INR, etc.) work everywhere. Some niche currencies are gateway-specific.
+
+DonorPress will warn you on the form builder if you've selected a currency that the form's enabled gateways don't all support.
+
+## Refunds
+
+Both Stripe and PayPal support full and partial refunds via the [donation detail screen](/donations/managing-donations#refunding-a-donation). Refunds issued in DonorPress propagate to the gateway; refunds issued directly in the gateway dashboard come back into DonorPress via webhooks.
+
+## Adding a custom gateway
+
+For developers building bespoke integrations: implement the `GatewayInterface` and register the class via the `donorpress/gateways` filter. See [custom gateways](/developers/custom-gateways).
+
+## Security
+
+- Credentials live in the WordPress options table (encrypted at the gateway level via Stripe restricted keys / PayPal client secrets).
+- DonorPress **never stores raw card numbers**. All card data is handled by Stripe.js / PayPal SDK, tokenized on the donor's device, and sent directly to the gateway.
+- Webhook payloads are verified using the gateway's signing secret on every request.

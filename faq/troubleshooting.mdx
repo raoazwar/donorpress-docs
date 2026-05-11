@@ -1,0 +1,128 @@
+---
+title: "Troubleshooting"
+description: "Common errors and how to diagnose them."
+---
+
+## Activation issues
+
+<AccordionGroup>
+	<Accordion title='"DonorPress requires PHP 8.1 or higher"'>
+		Your server is on PHP 8.0 or older. Most hosts let you upgrade PHP from your control panel in one click. If yours doesn't, find a better host.
+	</Accordion>
+	<Accordion title='"DonorPress requires WordPress 6.3 or higher"'>
+		Update WordPress from **Dashboard → Updates**. If your theme blocks WordPress updates (rare but possible), contact your theme developer.
+	</Accordion>
+	<Accordion title="Activation hangs / white screen">
+		Usually a PHP fatal error during the activation hook. Enable WP_DEBUG (`define( 'WP_DEBUG', true );` in `wp-config.php`) and re-attempt. The error in `wp-content/debug.log` tells you what's wrong.
+	</Accordion>
+	<Accordion title='"DonorPress could not create database tables"'>
+		Your WordPress database user lacks `CREATE TABLE` privileges. Ask your host to grant them. Common on locked-down managed hosts.
+	</Accordion>
+</AccordionGroup>
+
+## Donations not processing
+
+<AccordionGroup>
+	<Accordion title="Donor clicks Donate but nothing happens">
+		Open browser dev tools → Console tab. JavaScript errors will explain. Common causes: a theme or plugin blocking jQuery, a CSP header blocking Stripe.js, or a CDN serving stale JS.
+	</Accordion>
+	<Accordion title='"No payment methods enabled" message'>
+		The form's enabled gateways are all disabled site-wide, or the gateway credentials are missing. Check **Settings → Payment Gateways**.
+	</Accordion>
+	<Accordion title="Donor sees Stripe error: 'Invalid API Key provided'">
+		Wrong key in DonorPress. Double-check: secret keys go in secret fields (`sk_…`), publishable keys go in publishable fields (`pk_…`). Don't swap them.
+	</Accordion>
+	<Accordion title="Donations show as Pending and never complete">
+		Webhooks aren't reaching your site. Check the gateway's webhook log (Stripe / PayPal dashboard) for delivery errors. Common causes: wrong endpoint URL, signing secret mismatch, your site blocking the webhook IP.
+	</Accordion>
+	<Accordion title="Donations show as Failed when the gateway says they succeeded">
+		The webhook signing secret in DonorPress doesn't match the gateway. Re-copy from the gateway dashboard.
+	</Accordion>
+</AccordionGroup>
+
+## Subscriptions not renewing
+
+<AccordionGroup>
+	<Accordion title="Subscriptions exist but no renewal donations appear">
+		Almost always a webhook problem. Verify:
+		1. The gateway webhook endpoint URL is correct.
+		2. The signing secret matches.
+		3. The right events are subscribed: for Stripe `invoice.payment_succeeded`; for PayPal `BILLING.SUBSCRIPTION.PAYMENT.FAILED` and others.
+
+		Check **Tools → Webhook Log** to see if any webhooks have arrived.
+	</Accordion>
+	<Accordion title="Subscriptions renew at the gateway but DonorPress shows them as still pending">
+		Same root cause — webhook isn't reaching DonorPress. Sometimes a gateway batches webhooks and there's a 30-second delay; if delays exceed 1-2 minutes, check the webhook log.
+	</Accordion>
+	<Accordion title='"Failing" subscriptions never recover'>
+		The donor's card is genuinely failing every retry. Email them to update payment details. After all retries fail, the subscription cancels automatically.
+	</Accordion>
+</AccordionGroup>
+
+## Email problems
+
+<AccordionGroup>
+	<Accordion title="Donors aren't receiving receipt emails">
+		Three things to check:
+		1. **Tools → Email Log** — was the email logged as sent?
+		2. **Spam folder** — first place to look.
+		3. **SMTP setup** — if you're relying on raw `wp_mail()`, deliverability is poor. Use WP Mail SMTP + Postmark / SendGrid.
+	</Accordion>
+	<Accordion title="Receipts are sent but look broken">
+		HTML emails need inline CSS — `<style>` blocks are stripped by most clients. The DonorPress wrapper handles this automatically, but custom email templates may need tweaking. [Customizing emails →](/emails/customizing-emails)
+	</Accordion>
+	<Accordion title="Template tags show as literal {donor_first_name}">
+		Tags weren't recognised — check spelling and case sensitivity. [Template tags reference →](/emails/template-tags)
+	</Accordion>
+</AccordionGroup>
+
+## Display issues
+
+<AccordionGroup>
+	<Accordion title="Form looks broken on the frontend">
+		Usually a CSS conflict with your theme. Open dev tools → Elements → inspect the form. If theme styles override DonorPress styles, add `!important` rules in the form's Custom CSS field, or use [template overrides](/developers/template-overrides).
+	</Accordion>
+	<Accordion title="Donor dashboard shows a blank page">
+		The user isn't logged in, or doesn't have a matching donor record. Check the WordPress error log — DonorPress logs both cases as info messages.
+	</Accordion>
+	<Accordion title="Charts in the Advanced Dashboard don't render">
+		JS error. Open dev tools → Console. Likely cause: another plugin (or your theme) is loading an old version of React on admin pages. Disable plugins one by one to find the conflict.
+	</Accordion>
+</AccordionGroup>
+
+## REST API errors
+
+<AccordionGroup>
+	<Accordion title="REST API endpoints return 404">
+		Permalinks aren't flushed. Go to **Settings → Permalinks** and click Save (no changes needed) to flush.
+	</Accordion>
+	<Accordion title="REST API returns 401 Unauthorized">
+		The nonce expired or is invalid. Refresh the admin page to get a new one. Or for cookie-less integrations, use Application Passwords instead.
+	</Accordion>
+	<Accordion title="REST API returns 403 Forbidden">
+		The current user lacks the required capability. Most DonorPress endpoints require `manage_options`.
+	</Accordion>
+</AccordionGroup>
+
+## Performance
+
+<AccordionGroup>
+	<Accordion title="Admin pages load slowly">
+		The reports module queries can be slow on large datasets. Reduce the default period to 30 days, enable report caching, or upgrade to the [Advanced Dashboard module](/modules/advanced-dashboard) which pre-aggregates KPIs.
+	</Accordion>
+	<Accordion title="Donation forms load slowly">
+		The form bundle is ~80KB gzipped — load time should be near-instant. If forms feel slow, your hosting is the bottleneck. Check Time-To-First-Byte in browser dev tools.
+	</Accordion>
+	<Accordion title="Database queries timing out">
+		Your database is undersized. Check `wp_donorpress_donations` row count — if it's > 1M, consider archiving old donations or moving to a more powerful database tier.
+	</Accordion>
+</AccordionGroup>
+
+## Getting help
+
+If none of the above resolves your issue:
+
+1. Enable **Settings → Advanced → Debug mode**.
+2. Reproduce the issue.
+3. Check `wp-content/debug.log` for the specific error.
+4. Open a support ticket at [donorpress.org/support](https://donorpress.org/support) and include the error.

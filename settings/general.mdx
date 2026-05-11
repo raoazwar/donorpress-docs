@@ -1,0 +1,71 @@
+---
+title: "General Settings"
+description: "Site-wide DonorPress settings: organization, currency, test mode."
+---
+
+The **General** tab in **DonorPress → Settings** is where you set the foundational options that everything else builds on.
+
+<Frame>
+	<img src="/images/admin/settings-general.png" alt="DonorPress general settings page" />
+</Frame>
+
+## Organization
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Organization Name | text | Charity / business name. Appears on receipts, emails, and PDFs. Defaults to your WordPress site title. |
+| Organization Email | email | Reply-to address on donor receipts. Defaults to the WordPress admin email. |
+| Country | select | Used for currency suggestions, tax-receipt defaults, and gateway eligibility. |
+| Logo | media | Optional logo for receipt PDFs and the donor dashboard header. JPEG or PNG. |
+
+## Currency
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Currency | select | Default currency for new forms. ISO 4217 code (USD, EUR, GBP, etc.). |
+| Currency position | select | `Before` (`$10.00`) or `After` (`10.00 $`). |
+| Decimal separator | text | Usually `.` or `,`. |
+| Thousands separator | text | Usually `,` or `.` (or empty). |
+| Number of decimals | number | 2 for most currencies; 0 for JPY, KRW, etc. |
+
+<Tip>
+	You can override the currency per form. The site-wide setting only acts as the default for new forms.
+</Tip>
+
+## Test mode
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Test Mode | toggle | Master switch. When on, all gateways use their test credentials and forms display a "Test Mode" badge. |
+
+When test mode is on:
+
+- All payment gateways use their **test** credentials.
+- The Test Gateway becomes available.
+- A visible "Test Mode" badge appears on every donation form.
+- Charges are not real money.
+
+When test mode is off:
+
+- All payment gateways use their **live** credentials.
+- The Test Gateway is automatically disabled.
+- The "Test Mode" badge disappears.
+- Charges are real.
+
+## Default pages
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Donation Confirmation Page | page picker | Where donors land after a successful payment. Auto-created during the setup wizard. |
+| Donation Failure Page | page picker | Optional. Where donors land after a failed payment. If unset, the form shows an inline error instead. |
+| Donor Dashboard Page | page picker | The page containing `[donorpress_dashboard]`. Used to generate dashboard links in emails. |
+
+## Onboarding & wizard
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Reset Setup Wizard | button | Resets the onboarding flag so the wizard runs again on the next admin page load. |
+
+## Saving
+
+Settings save automatically as you change them — there's no "Save" button to click. A small "Saved" indicator appears in the top-right when a change has been written.

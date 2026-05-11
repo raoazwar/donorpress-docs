@@ -1,0 +1,139 @@
+---
+title: "Creating Campaigns"
+description: "Group donations under a goal-driven campaign page."
+---
+
+A **campaign** in DonorPress is a fundraising effort with a goal, deadline (optional), and a public page. Donations attributed to the campaign roll up into goal progress.
+
+<Frame>
+	<img src="/images/admin/campaigns.png" alt="DonorPress campaigns admin" />
+</Frame>
+
+## When to use a campaign
+
+Use a campaign when:
+
+- You want a public page with goal progress (a thermometer / progress bar).
+- You're running a time-limited fundraising push.
+- You need to report on donations grouped by campaign for end-of-year analysis.
+- You're A/B testing different appeals.
+
+For everyday "donate to the org" donations, you can skip campaigns entirely — donations work just fine without one.
+
+## Creating a campaign
+
+<Steps>
+	<Step title="Open Campaigns">
+		**DonorPress → Campaigns → New campaign**. A wizard opens.
+	</Step>
+	<Step title="Pick a template">
+		The first wizard screen shows a grid of pre-built templates. Each one pre-fills the title, description, suggested goal, and goal type — you can change everything afterwards.
+
+		| Template | Best for | Default goal |
+		| --- | --- | --- |
+		| **Start from scratch** | Custom flows. Nothing is pre-filled. | — |
+		| **Emergency relief** | Disaster / crisis fundraising with urgency. | $25,000 |
+		| **Food drive** | Holiday meal programs, pantry support. | $12,000 |
+		| **Education fund** | Scholarships, school programs. | $50,000 |
+		| **Medical care** | Healthcare costs, patient funds. | $15,000 |
+		| **Animal welfare** | Shelters, rescues, vet care. | $20,000 |
+		| **Clean water** | Wells, sanitation, water access. | $50,000 |
+		| **Memorial / tribute** | Donations in someone's name. | $5,000 |
+
+		Picking a card highlights it with a green ring + checkmark and pre-fills the rest of the wizard.
+	</Step>
+	<Step title="Tell us about your cause">
+		The next step shows a "Using template" banner at the top with a **Change** link, then fields for **Title**, **Description**, **Brief description** (120 chars max — used on cards and lists), and a cover image (drag-and-drop or click to upload). Everything is editable even when arriving from a template.
+	</Step>
+	<Step title="Set the goal">
+		Pick a goal type and target:
+
+		- **Amount raised** — currency goal (e.g. $10,000).
+		- **Number of donations** — count goal (e.g. 500 donations).
+		- **Number of donors** — unique-donor goal (e.g. 100 donors).
+
+		Use 0 for an open-ended campaign with no goal.
+	</Step>
+	<Step title="Create">
+		Click **Create campaign**. You land on the campaign editor with a Settings, Forms, and Overview tab.
+	</Step>
+	<Step title="Pick a category and tags (optional)">
+		[Categories and tags →](/campaigns/categories-and-tags)
+	</Step>
+	<Step title="Publish">
+		The campaign gets a public URL like `https://yoursite.com/campaign/save-the-bees/`.
+	</Step>
+</Steps>
+
+## Linking donations to a campaign
+
+Two ways:
+
+- **At form-creation time** — pick a campaign in the form's settings. Every donation through that form is attributed to it.
+- **Per donation** — manually attribute a donation to a campaign from the donation detail screen (useful for offline donations).
+
+A donation can only be attributed to one campaign at a time.
+
+## Campaign metadata
+
+| Field | Where it lives | Used for |
+| --- | --- | --- |
+| Title | Post title | Page title, cards, lists. |
+| Description | Post content | The campaign page body. |
+| Goal | Custom field | Progress bar, percentage display. |
+| Deadline | Custom field | Countdown, expiry-aware messaging. |
+| Featured image | WP featured image | Page hero, card thumbnails. |
+| Categories | `donorpress_campaign_cat` taxonomy | Filtering and grouping. |
+| Tags | `donorpress_campaign_tag` taxonomy | Free-form organisation. |
+| Status | Active / Inactive | Whether the campaign accepts donations. |
+
+## The public campaign page
+
+Each campaign gets a public URL with:
+
+- The campaign title and description.
+- A goal progress bar with current total + percentage.
+- A deadline countdown (if set).
+- A list of recent donors (or anonymous count, depending on your settings).
+- An embedded donation form linked to the campaign.
+
+## Form display position
+
+Inside the campaign editor's **Settings** tab, scroll to **Form Display**. You'll see five layout options as radio cards — each one shows a tiny mockup of where the form will land on the public page:
+
+| Option | What it does |
+| --- | --- |
+| **Below content** *(default)* | Form sits at the bottom of the campaign page, after the story content. |
+| **Above content** | Form appears right after the stats and progress bar, before the long-form description. Good for putting the donate ask front-and-center. |
+| **Sidebar (right)** | Two-column layout: campaign content on the left, form sticks to the right while the page scrolls. Collapses to one column on tablets and mobile. |
+| **Floating button** | A pill-shaped donate button stays fixed at the bottom-right of the screen. Clicking it opens the form in a centered modal. Best for long campaign pages where the form would otherwise scroll out of view. |
+| **Manual placement** | The plugin doesn't auto-render the form. You drop `[donorpress_form id="X"]` anywhere in the campaign content yourself. |
+
+<Tip>
+	The floating button's label is whatever you've set under **DonorPress → Localization → Form Shortcode Messages → Default Donate Button**. Change it once and it applies everywhere.
+</Tip>
+
+The chosen position is saved per-campaign — different campaigns can have different layouts.
+
+## Customizing the campaign page
+
+The page uses the `single-donorpress_campaign.php` template. To customise:
+
+1. Copy the template from `wp-content/plugins/donorpress/templates/`.
+2. Drop it into your theme at `wp-content/themes/your-theme/donorpress/single-donorpress_campaign.php`.
+3. Edit it freely.
+
+[Template overrides →](/developers/template-overrides)
+
+## Campaign archives
+
+`/campaign/` (plural) shows the archive page listing all active campaigns. Override with `archive-donorpress_campaign.php` in your theme.
+
+## Closing a campaign
+
+Two options:
+
+- **Set inactive** — campaign page returns 404; donation forms attached to it stop accepting donations.
+- **Mark as ended** — campaign remains visible but shows "Campaign ended" instead of the donate form. Useful for showing past campaigns and final totals.
+
+Both are settable from the campaign edit screen.

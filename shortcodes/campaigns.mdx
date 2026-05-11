@@ -1,0 +1,121 @@
+---
+title: "Campaign Shortcodes"
+description: "[donorpress_campaign_list] and [donorpress_campaign_card]."
+---
+
+DonorPress provides two shortcodes for displaying campaigns: a multi-campaign list and a single-campaign card.
+
+## `[donorpress_campaign_list]`
+
+Renders a grid of campaign cards.
+
+```text
+[donorpress_campaign_list]
+```
+
+### Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `count` | 12 | How many campaigns to display. |
+| `columns` | 3 | Cards per row (1–4). |
+| `category` | — | Filter by category slug. |
+| `tag` | — | Filter by tag slug. |
+| `status` | `active` | `active`, `ended`, or `all`. |
+| `orderby` | `date` | `date`, `title`, `goal`, `progress`, `random`. |
+| `order` | `DESC` | `ASC` or `DESC`. |
+| `show_progress` | `true` | Whether to render the goal progress bar on each card. |
+| `show_excerpt` | `true` | Whether to render the campaign excerpt. |
+| `show_donate_button` | `true` | Whether to render a "Donate" button on each card. |
+| `cache` | `true` | Whether to use the 5-minute query cache. Set `false` for real-time totals. |
+
+### Examples
+
+Three-column list of all active campaigns:
+
+```text
+[donorpress_campaign_list count="9" columns="3"]
+```
+
+Education-only:
+
+```text
+[donorpress_campaign_list category="education"]
+```
+
+Top 5 by goal progress (most-funded first):
+
+```text
+[donorpress_campaign_list count="5" orderby="progress" order="DESC"]
+```
+
+Compact list with no progress bars or excerpts:
+
+```text
+[donorpress_campaign_list count="20" columns="4" show_progress="false" show_excerpt="false"]
+```
+
+## `[donorpress_campaign_card]`
+
+Renders a single featured campaign.
+
+```text
+[donorpress_campaign_card id="42"]
+```
+
+### Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `id` | — | **Required.** Campaign ID. |
+| `style` | `vertical` | `vertical` or `horizontal` (image-left layout). |
+| `show_progress` | `true` | Whether to render the progress bar. |
+| `show_donate_button` | `true` | Whether to render a "Donate" button. |
+| `button_text` | `"Donate"` | Donate button label. |
+| `cache` | `true` | Use the query cache. |
+
+### Examples
+
+Featured horizontal card for a homepage hero:
+
+```text
+[donorpress_campaign_card id="42" style="horizontal"]
+```
+
+Vertical card with no donate button (e.g. archive list):
+
+```text
+[donorpress_campaign_card id="42" show_donate_button="false"]
+```
+
+## What's on a card
+
+Both shortcodes render cards with the same elements:
+
+- Featured image (top, or left in horizontal mode).
+- Campaign title.
+- Excerpt (first ~150 characters of the description).
+- Goal progress bar (current / goal, percentage).
+- Days remaining (if a deadline is set).
+- Recent donor count or names.
+- Donate button (links to the campaign page).
+
+## Linking from cards
+
+Clicking a card title or featured image opens the public campaign page (`/campaign/{slug}/`). The Donate button does the same — there's no inline donation flow on the cards themselves. (For inline donation, embed `[donorpress_form id="…"]` directly.)
+
+## Caching
+
+Campaign queries are cached for 5 minutes. New donations don't update displayed totals instantly. For real-time totals (e.g. on a campaign's own page during a livestream), pass `cache="false"` — but expect heavier database load.
+
+## Performance notes
+
+The `[donorpress_campaign_list]` shortcode runs one query per render to fetch campaigns plus a JOIN against the donations table for totals. With caching enabled, this is fast. Without caching, performance scales with the number of donations — fine for sites with thousands but slow for sites with millions.
+
+For very high-traffic pages, consider rendering the campaign list once server-side and caching it via your page-cache plugin. The data won't update for the cache duration but the page will load instantly.
+
+## Related
+
+<Card title="Embedding campaigns" icon="code" href="/campaigns/embedding-campaigns">
+	More on shortcodes, blocks, and Elementor widgets.
+</Card>

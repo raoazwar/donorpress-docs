@@ -1,0 +1,95 @@
+---
+title: "[donorpress_annual_receipts]"
+description: "Standalone annual tax receipts page."
+---
+
+`[donorpress_annual_receipts]` renders a list of available annual tax receipts for the logged-in donor, with a download button per year.
+
+<Info>
+	This shortcode requires the [Annual Receipts module](/modules/annual-receipts) (Basic plan).
+</Info>
+
+## Basic usage
+
+```text
+[donorpress_annual_receipts]
+```
+
+Place on a dedicated "Tax Receipts" page (or anywhere else you want).
+
+## What it shows
+
+For a logged-in donor with at least one eligible donation:
+
+- The page heading: "Annual Tax Receipts"
+- A short intro paragraph.
+- A list of every available tax year, with a "Download {year} receipt (PDF)" button next to each.
+
+For a logged-out visitor: a "Please log in" message.
+
+For a logged-in user with no matching donor record: a "No donation history found" message.
+
+## Tax year calculation
+
+Years are determined by your **Tax Year End** setting in **Settings → Annual Receipts**:
+
+- December 31 → calendar year (Jan 1 → Dec 31)
+- April 5 → UK tax year (Apr 6 → Apr 5)
+- June 30 → Australian tax year (Jul 1 → Jun 30)
+
+A year shows up in the list only if the donor has at least one eligible donation in that year.
+
+## Download URLs
+
+Each download is a signed URL pointing at `admin-post.php?action=donorpress_download_annual_receipt&donor_id=…&year=…&token=…`. The token is bound to the donor + year + site key, so:
+
+- Donors can only download their own receipts.
+- URLs can't be guessed or shared with others (the token expires when the user logs out).
+- Admins can also download from the donors admin using a separate nonce.
+
+## Two ways to expose annual receipts
+
+You don't need this standalone shortcode if you've already enabled **"Show in Donor Dashboard"** in the module settings — annual receipts appear as a tab in `[donorpress_dashboard]` automatically.
+
+Use this standalone shortcode when:
+
+- You want a dedicated "Tax Receipts" page in your site nav.
+- You don't use the donor dashboard.
+- You're sending donors a direct link in tax season ("download your 2025 receipt here").
+
+Or use both — the same data, two entry points.
+
+## Styling
+
+The shortcode renders with class `.donorpress-annual-receipts` and a small set of BEM-style sub-classes. Easy to restyle via CSS:
+
+```css
+.donorpress-annual-receipts__list {
+	display: grid;
+	gap: 12px;
+}
+
+.donorpress-annual-receipts__row {
+	display: flex;
+	justify-content: space-between;
+	padding: 16px;
+	background: #fff;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+}
+
+.donorpress-annual-receipts__download {
+	background: #3858e9;
+	color: white;
+	padding: 8px 16px;
+	border-radius: 6px;
+}
+```
+
+When embedded inside `[donorpress_dashboard]`, the dashboard's CSS already styles these classes consistently.
+
+## Customising the PDF
+
+Settings — charity name, tax ID, intro text, footer text, logo, year-end date — are all in **DonorPress → Settings → Annual Receipts**.
+
+[Module reference →](/modules/annual-receipts)

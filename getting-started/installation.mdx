@@ -1,0 +1,90 @@
+---
+title: "Installation"
+description: "Install DonorPress on your WordPress site in two minutes."
+---
+
+DonorPress installs like any standard WordPress plugin. You have three options.
+
+## Requirements
+
+<Info>
+	Make sure your site meets these minimums before installing.
+</Info>
+
+| Requirement | Minimum | Recommended |
+| --- | --- | --- |
+| WordPress | 6.3 | Latest |
+| PHP | 8.1 | 8.2 or 8.3 |
+| MySQL / MariaDB | 5.7 / 10.3 | 8.0+ / 10.6+ |
+| HTTPS | Required for live payments | — |
+
+[Full system requirements →](/getting-started/system-requirements)
+
+## Option 1: WordPress.org plugin directory
+
+<Steps>
+	<Step title="Go to Plugins → Add New">
+		In your WordPress admin, navigate to **Plugins → Add New**.
+	</Step>
+	<Step title="Search for DonorPress">
+		Type "DonorPress" into the search box.
+	</Step>
+	<Step title="Install and activate">
+		Click **Install Now**, then **Activate**.
+	</Step>
+</Steps>
+
+## Option 2: Upload a zip
+
+<Steps>
+	<Step title="Download the zip">
+		Get `donorpress.zip` from your account at [donorpress.org](https://donorpress.org).
+	</Step>
+	<Step title="Upload it">
+		Go to **Plugins → Add New → Upload Plugin**, choose the zip, and click **Install Now**.
+	</Step>
+	<Step title="Activate">
+		After installation finishes, click **Activate Plugin**.
+	</Step>
+</Steps>
+
+<Frame>
+	<img src="/images/admin/plugin-activated.png" alt="DonorPress activated in the WordPress plugins list" />
+</Frame>
+
+## Option 3: WP-CLI
+
+If you manage WordPress from the command line:
+
+```bash
+wp plugin install donorpress --activate
+```
+
+Or from a downloaded zip:
+
+```bash
+wp plugin install /path/to/donorpress.zip --activate
+```
+
+## What happens on activation
+
+DonorPress runs a one-time setup when you activate it for the first time:
+
+1. Creates seven custom database tables (donors, donations, subscriptions, transactions, notes, meta, form submissions).
+2. Registers custom post types (`donorpress_campaign`, `donorpress_form`, `donorpress_email`).
+3. Creates two pages with shortcodes:
+	- **Donor Login** — `[donorpress_login]`
+	- **Donor Sign-up** — `[donorpress_signup]`
+4. Flushes rewrite rules so the new URLs work immediately.
+
+<Tip>
+	None of these tables or pages are deleted on plugin deactivation. They're only removed if you explicitly enable the cleanup option and uninstall the plugin.
+</Tip>
+
+## Next step
+
+After activation you'll be greeted by the setup wizard. Follow along here:
+
+<Card title="Run the setup wizard" icon="wand-magic-sparkles" href="/getting-started/setup-wizard">
+	Connect a payment gateway, set your currency, and create your first form.
+</Card>

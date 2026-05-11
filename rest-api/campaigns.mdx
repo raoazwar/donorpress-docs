@@ -1,0 +1,156 @@
+---
+title: "Campaigns Endpoint"
+description: "REST API: list, create, update, and delete campaigns."
+---
+
+Base path: `/wp-json/donorpress/v2/campaigns`
+
+Campaigns are stored as the `donorpress_campaign` custom post type with extra meta for goal, deadline, and progress.
+
+## List campaigns
+
+```http
+GET /campaigns
+```
+
+### Query parameters
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `per_page` | int | 1-100. Default 20. |
+| `page` | int | Default 1. |
+| `status` | string | `active` / `ended` / `all`. Default `active`. |
+| `category` | string | Filter by category slug. |
+| `tag` | string | Filter by tag slug. |
+| `orderby` | string | `date` / `title` / `goal` / `total_raised` / `progress` / `random`. |
+| `order` | string | `ASC` / `DESC`. |
+
+### Response
+
+```json
+[
+  {
+    "id": 12,
+    "title": "Save the Bees",
+    "slug": "save-the-bees",
+    "excerpt": "Help us protect pollinators across North America.",
+    "content": "<p>Full HTML description...</p>",
+    "status": "active",
+    "goal": 50000.00,
+    "currency": "USD",
+    "deadline": "2025-12-31",
+    "total_raised": 18420.00,
+    "donation_count": 144,
+    "progress_percent": 36.84,
+    "featured_image": "https://yoursite.com/wp-content/uploads/.../bees.jpg",
+    "categories": [{ "slug": "environment", "name": "Environment" }],
+    "tags": [{ "slug": "urgent", "name": "Urgent" }],
+    "permalink": "https://yoursite.com/campaign/save-the-bees/",
+    "date_created": "2025-01-15T09:00:00Z",
+    "date_modified": "2025-04-22T14:38:14Z"
+  }
+]
+```
+
+## Get a single campaign
+
+```http
+GET /campaigns/{id}
+```
+
+Same shape as a list item, plus optional expansions:
+
+- `?include=donors` — top 20 donors (respecting anonymity).
+- `?include=recent_donations` — last 20 donations.
+
+## Create a campaign
+
+```http
+POST /campaigns
+```
+
+### Body
+
+```json
+{
+  "title": "Spring Appeal 2025",
+  "excerpt": "Short description for cards.",
+  "content": "<p>Full description...</p>",
+  "goal": 25000,
+  "currency": "USD",
+  "deadline": "2025-06-30",
+  "categories": ["environment"],
+  "tags": ["spring", "annual"]
+}
+```
+
+### Response
+
+The full campaign object including its new `id` and `permalink`.
+
+## Update a campaign
+
+```http
+PATCH /campaigns/{id}
+```
+
+Send only the fields you want to change:
+
+```json
+{
+  "goal": 30000,
+  "deadline": "2025-07-15"
+}
+```
+
+Updating goal or deadline doesn't affect past donations attributed to the campaign.
+
+## Mark a campaign ended
+
+```http
+POST /campaigns/{id}/end
+```
+
+Equivalent to setting status to `ended`. The campaign page remains visible but shows "Campaign ended" instead of an active donate form.
+
+```http
+POST /campaigns/{id}/reopen
+```
+
+Restores the campaign to `active` status.
+
+## Delete a campaign
+
+```http
+DELETE /campaigns/{id}
+```
+
+- Removes the campaign post.
+- Donations attributed to the campaign remain (their `campaign_id` becomes a tombstone reference).
+
+Returns 204.
+
+## Categories and tags
+
+Categories and tags are managed via standard WordPress REST endpoints:
+
+```http
+GET  /wp/v2/donorpress_campaign_cat
+POST /wp/v2/donorpress_campaign_cat
+GET  /wp/v2/donorpress_campaign_tag
+POST /wp/v2/donorpress_campaign_tag
+```
+
+Use these to programmatically create or list categories before assigning them to campaigns.
+
+## Permissions
+
+| Endpoint | Required cap |
+| --- | --- |
+| `GET /campaigns` | Public (for active campaigns); `manage_options` for `?status=all`. |
+| `GET /campaigns/{id}` | Public for active; `manage_options` for ended/draft. |
+| `POST /campaigns` | `manage_options` |
+| `PATCH /campaigns/{id}` | `manage_options` |
+| `POST /campaigns/{id}/end` | `manage_options` |
+| `POST /campaigns/{id}/reopen` | `manage_options` |
+| `DELETE /campaigns/{id}` | `manage_options` |

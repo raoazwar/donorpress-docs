@@ -1,0 +1,93 @@
+---
+title: "Revenue Reports"
+description: "Track total revenue, trends, and peak periods."
+---
+
+The Revenue report is the most-used DonorPress report. It's where you answer "how much did we raise?"
+
+## Headline numbers
+
+At the top of the report:
+
+| Metric | Description |
+| --- | --- |
+| Total revenue | Sum of completed donations in the period. |
+| Donations | Count of completed donations. |
+| Average donation | Total / count. |
+| New donors | First-time donors in the period. |
+| % vs. previous period | Comparison vs. equivalent prior window. |
+
+## Time-series chart
+
+A line chart showing revenue per day (or per week / month, depending on the period length). Hover any point to see exact totals.
+
+You can switch the chart between:
+
+- **Total revenue** — all donations.
+- **One-time** — non-recurring donations only.
+- **Recurring** — subscription renewals only.
+- **By gateway** — stacked by Stripe / PayPal / etc.
+
+## Breakdowns
+
+Below the chart, four breakdown tables:
+
+### By gateway
+
+| Gateway | Donations | Revenue | % of total |
+
+Useful for verifying gateway diversification and spotting if one gateway is underperforming.
+
+### By form
+
+| Form | Submissions | Revenue | Avg donation |
+
+Helps identify which forms convert best. Combine with the form performance metrics from [forms reports](/reports/overview) for deeper analysis.
+
+### By campaign
+
+| Campaign | Donations | Revenue | % of goal | Days remaining |
+
+Tracks campaign progress at a glance. Filter further by category or tag if you have many campaigns.
+
+### Top donations
+
+| Donor | Amount | Date | Form | Campaign |
+
+The largest donations in the period. Useful for major-gift outreach (calling top donors to thank them personally).
+
+## Filters
+
+- **Date range** — from / to.
+- **Gateway** — limit to a single gateway.
+- **Currency** — for multi-currency sites, defaults to your base currency.
+- **Form** — limit to a single form.
+- **Campaign** — limit to a single campaign.
+- **Status** — by default Complete only; can include others.
+
+## Exporting
+
+The **Download CSV** button exports the time-series data plus the per-gateway and per-form breakdowns.
+
+## Use cases
+
+<AccordionGroup>
+	<Accordion title="End-of-year board report">
+		Switch period to "Last year", export CSV, paste into your board pack.
+	</Accordion>
+	<Accordion title="Did our holiday campaign work?">
+		Filter by the holiday campaign, compare period to previous year's same campaign.
+	</Accordion>
+	<Accordion title="Why is revenue down this month?">
+		Look at the time-series chart for the dip. Cross-reference with the per-gateway breakdown — is one gateway down? With the per-form breakdown — is a specific form underperforming?
+	</Accordion>
+	<Accordion title="Average donation trending up or down?">
+		The headline "Avg donation" plus the % change vs. previous period tells you instantly. Investigate by checking which forms moved.
+	</Accordion>
+</AccordionGroup>
+
+## Reconciling with your bank
+
+Revenue in this report is **gross** — before gateway fees. Your actual bank deposits will be lower by Stripe / PayPal fees (~2.9% + $0.30 per transaction for cards).
+
+For net-of-fees reporting, export both the DonorPress CSV and the gateway's payout report and reconcile. A future release will surface fee data directly in DonorPress.

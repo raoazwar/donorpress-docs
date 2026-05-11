@@ -1,0 +1,90 @@
+---
+title: "Quick Start"
+description: "Take your first donation in five minutes."
+---
+
+This guide walks you through accepting your first donation. You'll connect Stripe in test mode, create a form, embed it, and place a test charge.
+
+<Note>
+	Already familiar with WordPress? You can get to a working test donation in under five minutes.
+</Note>
+
+## 1. Connect a payment gateway
+
+Go to **DonorPress → Settings → Payment Gateways** and enable **Stripe**.
+
+<Frame>
+	<img src="/images/admin/settings-gateways.png" alt="Payment gateways settings page" />
+</Frame>
+
+Paste your **test** publishable and secret keys (you can grab these from your [Stripe dashboard](https://dashboard.stripe.com/test/apikeys)). Save.
+
+<Tip>
+	Always start in test mode. You can flip the global Test Mode switch off when you're ready to go live.
+</Tip>
+
+[More on Stripe setup →](/gateways/stripe)
+
+## 2. Create a donation form
+
+Go to **DonorPress → Forms → Add New**.
+
+<Frame>
+	<img src="/images/admin/form-builder.png" alt="DonorPress form builder" />
+</Frame>
+
+Give it a name, set a few preset amounts, and click **Save**. Note the form ID shown in the URL or list table.
+
+[Form builder reference →](/forms/form-builder)
+
+## 3. Embed the form
+
+Create a new WordPress page (e.g. **"Donate"**) and add the form shortcode:
+
+```text
+[donorpress_form id="123"]
+```
+
+Replace `123` with your form's ID. Publish the page.
+
+<Frame>
+	<img src="/images/frontend/donation-form.png" alt="Donation form rendered on the frontend" />
+</Frame>
+
+[Embedding options →](/forms/embedding-forms)
+
+## 4. Place a test donation
+
+Open the page in an incognito window and submit a donation using a Stripe test card:
+
+| Card | Number | Expiry | CVC |
+| --- | --- | --- | --- |
+| Visa (success) | `4242 4242 4242 4242` | Any future date | Any 3 digits |
+| Decline | `4000 0000 0000 0002` | Any future date | Any 3 digits |
+
+After payment, you'll be redirected to the receipt page.
+
+## 5. Inspect the result
+
+Back in **DonorPress → Donations** you'll see your test donation, with the donor automatically created and the totals updated.
+
+<Frame>
+	<img src="/images/admin/donations-list.png" alt="Donations list with the new test donation" />
+</Frame>
+
+That's it — you've taken your first donation. From here:
+
+<CardGroup cols={2}>
+	<Card title="Customize your form" icon="paintbrush" href="/forms/customizing-styles">
+		Change colors, layout, and copy to match your brand.
+	</Card>
+	<Card title="Set up email receipts" icon="envelope" href="/emails/templates">
+		Configure the receipt your donors get after every donation.
+	</Card>
+	<Card title="Create a campaign" icon="bullhorn" href="/campaigns/creating-campaigns">
+		Group donations under a goal-driven campaign page.
+	</Card>
+	<Card title="Add the donor dashboard" icon="user" href="/donors/donor-dashboard">
+		Give donors a self-serve dashboard to view their history.
+	</Card>
+</CardGroup>

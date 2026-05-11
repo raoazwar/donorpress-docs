@@ -1,0 +1,95 @@
+---
+title: "Donor Reports"
+description: "Track new donors, retention, and lifetime value."
+---
+
+The Donor report focuses on the people, not the money — useful for fundraising teams thinking about acquisition, retention, and stewardship.
+
+## Headline numbers
+
+| Metric | Description |
+| --- | --- |
+| Total donors | Unique donors who've ever given. |
+| New donors | First-time donors in the selected period. |
+| Returning donors | Donors who've given before, gave again in the period. |
+| Active recurring | Donors with at least one Active subscription. |
+| Average lifetime value | Total raised / total donor count. |
+| Retention rate | % of donors who gave in both this period and the previous period. |
+
+## Acquisition chart
+
+Time-series of new donors per period. Use this to track:
+
+- Whether a campaign brought in net-new donors (vs. existing donors giving more).
+- Seasonal patterns (year-end giving, quiet summer, etc.).
+- Long-term acquisition health.
+
+## Returning vs. new
+
+A stacked bar chart showing the split between new donors and returning donors per period. Key insight: a healthy charity sees ~60-70% returning donors over time. Lower numbers mean weak retention; higher means weak acquisition.
+
+## Top donors
+
+Table of the highest lifetime-value donors, with:
+
+- Name + email.
+- Lifetime total.
+- Donation count.
+- Last donation date.
+- Recurring status.
+
+Useful for major-gift cultivation lists.
+
+## Lapsed donors
+
+Donors who haven't given in the last 365 days. Filter by:
+
+- Lifetime value (focus on high-LTV lapsed donors).
+- Last donation date (recent lapses are easier to recover).
+- Gateway, form, campaign.
+
+Export this list and run a re-engagement campaign — winning back a lapsed donor is typically 5x cheaper than acquiring a new one.
+
+## LTV histogram (Advanced Dashboard)
+
+If the [Advanced Dashboard](/modules/advanced-dashboard) is active, you also get a histogram showing the distribution of donor lifetime values:
+
+- $1-25
+- $26-100
+- $101-500
+- $501-2,500
+- $2,501-10,000
+- $10,001+
+
+Most charities follow a power-law distribution (a few high-LTV donors and a long tail of small ones). Spotting a thin top tier suggests an opportunity for major-gift fundraising.
+
+## Filters
+
+- **Date range** — for new / returning / retention metrics.
+- **First-time vs. all** — toggle to focus on first-time donor analysis.
+- **Currency** — filter to one currency for multi-currency sites.
+
+## Exporting
+
+CSV export includes the full donor list (within the period filter) with lifetime totals and last donation date.
+
+## Stewardship use cases
+
+<AccordionGroup>
+	<Accordion title="Thank top donors personally">
+		Filter by lifetime value, sort by descending. Call or email the top 20 quarterly.
+	</Accordion>
+	<Accordion title="Re-engage lapsed donors">
+		Lapsed donor list → personalised "we miss you" email with the donor's lifetime impact.
+	</Accordion>
+	<Accordion title="Identify retention drop-off">
+		Compare retention rate over the last 4 quarters. If it's dropping, investigate the receipt email, donor experience, and campaign relevance.
+	</Accordion>
+	<Accordion title="Validate acquisition campaigns">
+		After a campaign, check New Donors. If new donors didn't move, the campaign reached existing donors only — fine for revenue, weak for growth.
+	</Accordion>
+</AccordionGroup>
+
+## Privacy
+
+Donor reports show personal data (names, emails). Access is gated by the same `manage_options` capability as the rest of DonorPress admin. For organizations with stricter privacy needs, a future release will add a "view-only" role that can see aggregates but not individual donor names.

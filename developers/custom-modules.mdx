@@ -1,0 +1,228 @@
+---
+title: "Custom Modules"
+description: "Build your own DonorPress module — same API the built-in premium modules use."
+---
+
+The module system that powers PDF Invoices, Annual Receipts, etc. is the same system available to third-party developers. A "module" is a self-contained add-on that:
+
+- Registers its own settings panel.
+- Adds REST endpoints if needed.
+- Hooks into DonorPress events.
+- Can be toggled on/off independently.
+
+## Module skeleton
+
+A module is just a folder with a bootstrap file:
+
+```
+your-module/
+├── module.php             # Bootstrap
+├── class-your-module.php  # Main module class
+├── class-settings.php     # Settings storage
+├── templates/             # Optional templates
+└── assets/                # Optional CSS/JS
+```
+
+## Bootstrap file
+
+```php
+<?php
+/**
+ * Bootstrap for the My Cool Module.
+ */
+declare(strict_types=1);
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+// Bail early if DonorPress isn't loaded
+if ( ! class_exists( '\DonorPress\Plugin' ) ) {
+	return;
+}
+
+require_once __DIR__ . '/class-settings.php';
+require_once __DIR__ . '/class-your-module.php';
+
+YourModule\YourModule::get_instance()->boot();
+```
+
+## Main class
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace YourModule;
+
+final class YourModule {
+
+	private static ?self $instance = null;
+
+	public static function get_instance(): self {
+		return self::$instance ??= new self();
+	}
+
+	public function boot(): void {
+		add_action( 'donorpress/booted', [ $this, 'on_donorpress_booted' ] );
+		add_action( 'donorpress/donation/completed', [ $this, 'on_donation' ] );
+	}
+
+	public function on_donorpress_booted(): void {
+		// Register settings, REST routes, admin pages, etc.
+		Settings::get_instance();
+		add_action( 'rest_api_init', [ $this, 'register_routes' ] );
+	}
+
+	public function on_donation( $donation ): void {
+		// Your module's reaction to a completed donation
+	}
+
+	public function register_routes(): void {
+		register_rest_route( 'donorpress/v2', '/your-module/(?P<id>\d+)', [
+			'methods'  => 'GET',
+			'callback' => [ $this, 'get_thing' ],
+			'permission_callback' => fn() => current_user_can( 'manage_options' ),
+		] );
+	}
+}
+```
+
+## Settings class
+
+Mirror the pattern used by built-in modules:
+
+```php
+<?php
+declare(strict_types=1);
+
+namespace YourModule;
+
+final class Settings {
+
+	public const OPTION_PREFIX = 'your_module_';
+
+	private static ?self $instance = null;
+
+	public static function get_instance(): self {
+		return self::$instance ??= new self();
+	}
+
+	public function defaults(): array {
+		return [
+			'enabled'    => true,
+			'some_text'  => '',
+			'some_bool'  => false,
+		];
+	}
+
+	public function all(): array {
+		$defaults = $this->defaults();
+		$values   = [];
+		foreach ( $defaults as $key => $default ) {
+			$option_value   = get_option( self::OPTION_PREFIX . $key, null );
+			$values[ $key ] = null === $option_value ? $default : $this->cast( $key, $option_value );
+		}
+		return $values;
+	}
+
+	public function get( string $key, mixed $fallback = null ): mixed {
+		$defaults = $this->defaults();
+		$default  = $defaults[ $key ] ?? $fallback;
+		$value    = get_option( self::OPTION_PREFIX . $key, null );
+		return null === $value ? $default : $this->cast( $key, $value );
+	}
+
+	public function update( array $input ): array {
+		$defaults = $this->defaults();
+		$saved    = [];
+		foreach ( $defaults as $key => $default ) {
+			if ( ! array_key_exists( $key, $input ) ) {
+				$saved[ $key ] = $this->get( $key );
+				continue;
+			}
+			$sanitized = $this->sanitize( $key, $input[ $key ] );
+			update_option( self::OPTION_PREFIX . $key, $sanitized, false );
+			$saved[ $key ] = $sanitized;
+		}
+		return $saved;
+	}
+
+	private function cast( string $key, mixed $value ): mixed {
+		return match ( $key ) {
+			'enabled', 'some_bool' => (bool) $value,
+			default => (string) $value,
+		};
+	}
+
+	private function sanitize( string $key, mixed $value ): mixed {
+		return match ( $key ) {
+			'enabled', 'some_bool' => (bool) $value,
+			default => sanitize_text_field( (string) $value ),
+		};
+	}
+}
+```
+
+## Hooking into the donor dashboard
+
+To add a custom tab to the donor dashboard from your module, use the `donorpress/donor_dashboard/tabs` filter:
+
+```php
+add_filter( 'donorpress/donor_dashboard/tabs', function ( $tabs, $donor ) {
+	$tabs['your-tab'] = [
+		'label' => 'Your custom tab',
+		'priority' => 50,
+		'render'   => function ( $donor ) {
+			// Output your tab content as HTML
+			echo '<p>Custom content for ' . esc_html( $donor->get_email() ) . '</p>';
+		},
+	];
+	return $tabs;
+}, 10, 2 );
+```
+
+## Adding custom donation metadata
+
+Use the meta table for module-specific data:
+
+```php
+use DonorPress\Models\Meta;
+
+// Save
+Meta::set( 'donation', $donation_id, 'your_module_field', 'value' );
+
+// Retrieve
+$value = Meta::get( 'donation', $donation_id, 'your_module_field' );
+
+// Delete
+Meta::delete( 'donation', $donation_id, 'your_module_field' );
+```
+
+## Plan-gating (premium modules)
+
+If your module is paid:
+
+```php
+if ( ! function_exists( 'donorpress_modules_is_pro_user' ) || ! donorpress_modules_is_pro_user() ) {
+	return;
+}
+```
+
+For specific plan tiers (basic vs. premium):
+
+```php
+if ( ! donorpress_modules_plan_allows( 'basic' ) ) {
+	return;  // user doesn't have at least the Basic plan
+}
+```
+
+## Distributing your module
+
+Three options:
+
+1. **Drop-in folder** — place under `wp-content/donorpress-modules/your-module/`. DonorPress auto-discovers modules in this folder.
+2. **WordPress plugin** — package as a standard WP plugin that depends on DonorPress.
+3. **Built into a theme / mu-plugin** — for site-specific modules.
+
+## Reference: built-in modules
+
+The [built-in modules](/modules/overview) all live at `wp-content/plugins/donorpress/modules/` and follow the same pattern documented here. Read the source — they're the canonical examples.

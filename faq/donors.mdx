@@ -1,0 +1,91 @@
+---
+title: "Donors FAQ"
+description: "Donor records, accounts, dashboard, and merging."
+---
+
+## Donor records
+
+<AccordionGroup>
+	<Accordion title="What creates a donor record?">
+		The first donation made with a given email address. DonorPress doesn't import donors upfront — they're created automatically as donations come in.
+	</Accordion>
+	<Accordion title="Can I add a donor manually?">
+		Yes — but only if the [Manual Donations module](/modules/manual-donations) is active. The manual donation flow lets you create a donor + donation in one step.
+	</Accordion>
+	<Accordion title="Can I import donors from a CSV?">
+		There's no donor-only import. Instead, use the donations CSV importer (Manual Donations module) — donors are created automatically as part of the donation import.
+	</Accordion>
+	<Accordion title="What identifies a unique donor?">
+		Email address, case-insensitive. Same email = same donor. Different emails = different donors, even if names match.
+	</Accordion>
+	<Accordion title="What if a donor uses two different emails?">
+		Use the merge function on the donor detail screen to combine duplicates. [Merging donors →](/donors/managing-donors#merging-duplicate-donors)
+	</Accordion>
+	<Accordion title="What if a donor wants to change their email?">
+		Edit the donor record. The email change is immediate. If they have a WordPress user account linked, the WP user's email needs updating separately.
+	</Accordion>
+</AccordionGroup>
+
+## Donor dashboard
+
+<AccordionGroup>
+	<Accordion title="Do donors need a WordPress account to use the dashboard?">
+		Yes. The dashboard requires login. Donors can create accounts via `[donorpress_signup]`.
+	</Accordion>
+	<Accordion title="A donor created an account but their dashboard is empty">
+		Their WordPress user email doesn't match a donor record. Check **Donors → Edit donor → Linked WP User** and assign manually if needed.
+	</Accordion>
+	<Accordion title="Can donors edit anything besides name?">
+		Currently: first name, last name. Email is read-only (it's tied to the WP user). Address editing and subscription cancellation from the dashboard are on the roadmap.
+	</Accordion>
+	<Accordion title="Can I customize the dashboard accent color?">
+		Yes. Use the `accent_color` shortcode attribute. Accepts HEX, RGB, or named CSS color. [Donor dashboard shortcode →](/shortcodes/donor-dashboard)
+	</Accordion>
+	<Accordion title="How do donors download their donation receipts?">
+		From the Donation History tab in the dashboard, each row has a "View" link to the receipt page. With [PDF Invoices](/modules/pdf-invoices) enabled, there's also a PDF download icon.
+	</Accordion>
+</AccordionGroup>
+
+## Privacy & anonymity
+
+<AccordionGroup>
+	<Accordion title="Can donors give anonymously?">
+		Yes. Add the Anonymity field to your form (or enable the per-donation toggle). Anonymous donors are hidden from public-facing campaign donor lists. They're still visible in the admin.
+	</Accordion>
+	<Accordion title="How do I delete a donor's data on request (GDPR)?">
+		From the donor's detail screen, click **Delete**. The donor row is removed; donations are preserved (unlinked) since they're financial records you may need to retain.
+
+		For deeper deletion, use the WordPress **Tools → Erase Personal Data** — DonorPress integrates with this and will purge donation-level personal fields too.
+	</Accordion>
+	<Accordion title="How do I export a donor's data?">
+		WordPress **Tools → Export Personal Data** detects DonorPress data automatically. Or from the donor detail screen, click **Export** for a JSON of just that donor.
+	</Accordion>
+	<Accordion title="Are donor records encrypted?">
+		At rest, they're stored in the WordPress database with the same encryption as the rest of WordPress (i.e. whatever your hosting provides — typically TLS in transit, disk encryption on managed hosts). DonorPress doesn't add an additional encryption layer.
+	</Accordion>
+</AccordionGroup>
+
+## Bulk operations
+
+<AccordionGroup>
+	<Accordion title="Can I email all donors at once?">
+		Not from DonorPress directly — that's marketing email territory and belongs in a CRM (Mailchimp, Klaviyo, etc.). DonorPress sends transactional emails only.
+	</Accordion>
+	<Accordion title="Can I sync donors to my CRM?">
+		Yes via webhooks. **Tools → Webhooks** lets you POST donor and donation events to any external URL. Most CRMs (Salesforce NPSP, HubSpot, Mailchimp) accept webhook ingest.
+	</Accordion>
+	<Accordion title="Can I bulk-delete donors?">
+		Yes, with checkbox selection in the donor list. **Use with care** — deletion is irreversible and unlinks all their donations.
+	</Accordion>
+</AccordionGroup>
+
+## Other questions
+
+<CardGroup cols={2}>
+	<Card title="Donor management guide" icon="users" href="/donors/managing-donors">
+		Full reference for the donors admin.
+	</Card>
+	<Card title="Donor dashboard" icon="user" href="/donors/donor-dashboard">
+		Setting up the self-serve dashboard.
+	</Card>
+</CardGroup>

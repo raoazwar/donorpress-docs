@@ -1,0 +1,204 @@
+---
+title: "Reports Endpoint"
+description: "REST API: revenue, donor, form, and subscription analytics."
+---
+
+Base path: `/wp-json/donorpress/v2/reports`
+
+Reports endpoints aggregate raw donation / donor data into the same numbers shown in the admin reports UI.
+
+## Common parameters
+
+All report endpoints accept a date range:
+
+| Param | Type | Description |
+| --- | --- | --- |
+| `from` | date | YYYY-MM-DD. Inclusive. |
+| `to` | date | YYYY-MM-DD. Inclusive. |
+| `period` | string | Shorthand: `last_7d`, `last_30d`, `this_month`, `last_month`, `this_year`, `last_year`. Mutually exclusive with `from` / `to`. |
+| `gateway` | string | Comma-separated gateway slugs. |
+| `currency` | string | ISO 4217 code. Defaults to site currency. |
+| `compare_previous` | bool | If true, return data for the previous equivalent period in a `previous` key. |
+
+## Revenue report
+
+```http
+GET /reports/revenue
+```
+
+### Response
+
+```json
+{
+  "totals": {
+    "revenue": 12450.00,
+    "donations": 287,
+    "average": 43.38,
+    "new_donors": 142
+  },
+  "previous_totals": {
+    "revenue": 9870.00,
+    "donations": 231,
+    "average": 42.73,
+    "new_donors": 118
+  },
+  "time_series": [
+    { "date": "2025-04-01", "revenue": 320.00, "donations": 7 },
+    { "date": "2025-04-02", "revenue": 480.00, "donations": 10 },
+    ...
+  ],
+  "by_gateway": [
+    { "gateway": "stripe", "revenue": 9210.00, "donations": 198 },
+    { "gateway": "paypal", "revenue": 3240.00, "donations": 89 }
+  ],
+  "by_form": [
+    { "form_id": 3, "form_name": "Annual Fund", "revenue": 8120.00, "donations": 158 },
+    ...
+  ],
+  "by_campaign": [
+    { "campaign_id": 12, "campaign_name": "Save the Bees", "revenue": 4250.00 }
+  ],
+  "top_donations": [
+    { "id": 442, "donor_name": "Sam Smith", "amount": 1000.00, "date": "2025-04-15" }
+  ]
+}
+```
+
+## Donor report
+
+```http
+GET /reports/donors
+```
+
+### Response
+
+```json
+{
+  "totals": {
+    "total_donors": 1842,
+    "new_donors": 142,
+    "returning_donors": 145,
+    "active_recurring": 87,
+    "average_lifetime_value": 215.40,
+    "retention_rate": 0.62
+  },
+  "previous_totals": {
+    "new_donors": 118,
+    "retention_rate": 0.58,
+    ...
+  },
+  "acquisition_series": [
+    { "date": "2025-04-01", "new_donors": 4 },
+    { "date": "2025-04-02", "new_donors": 7 },
+    ...
+  ],
+  "new_vs_returning": [
+    { "date": "2025-04-01", "new": 4, "returning": 3 },
+    ...
+  ],
+  "top_donors": [
+    { "donor_id": 7, "name": "Sam Smith", "lifetime_total": 4250.00, "donations": 38 }
+  ],
+  "lapsed_donors": {
+    "count": 312,
+    "details_url": "/wp-json/donorpress/v2/donors?last_donation_before=2024-04-22"
+  }
+}
+```
+
+## Forms report
+
+```http
+GET /reports/forms
+```
+
+### Response
+
+```json
+{
+  "items": [
+    {
+      "form_id": 3,
+      "form_name": "Annual Fund",
+      "views": 4280,
+      "submissions": 184,
+      "completions": 159,
+      "completion_rate": 0.864,
+      "conversion_rate": 0.0429,
+      "average_donation": 53.00,
+      "total_raised": 8427.00
+    }
+  ]
+}
+```
+
+Each row covers the period filter.
+
+## Subscriptions report
+
+```http
+GET /reports/subscriptions
+```
+
+### Response
+
+```json
+{
+  "totals": {
+    "active": 87,
+    "paused": 4,
+    "cancelled_in_period": 12,
+    "failing": 3,
+    "mrr": 2150.00,
+    "churn_rate": 0.038
+  },
+  "mrr_series": [
+    { "date": "2025-04-01", "mrr": 2080.00 },
+    { "date": "2025-04-02", "mrr": 2105.00 },
+    ...
+  ],
+  "by_frequency": [
+    { "frequency": "monthly", "count": 64, "mrr": 1620.00 },
+    { "frequency": "yearly",  "count": 23, "mrr":  530.00 }
+  ]
+}
+```
+
+## Custom report builder
+
+```http
+POST /reports/custom
+```
+
+Build ad-hoc aggregations without writing SQL.
+
+### Body
+
+```json
+{
+  "metric": "sum_amount",       // sum_amount, count, avg_amount, count_distinct_donors
+  "group_by": "gateway",        // gateway, form, campaign, day, week, month, quarter, year, status
+  "filters": {
+    "status": ["complete"],
+    "gateway": ["stripe"],
+    "from": "2025-01-01",
+    "to": "2025-04-30"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "rows": [
+    { "group": "stripe", "value": 9210.00 }
+  ]
+}
+```
+
+Powerful for custom dashboards. Use sparingly — large unfiltered queries can be slow.
+
+## Permissions
+
+All endpoints require `manage_options` (or `donorpress_view_reports` if you've configured a separate reports capability).

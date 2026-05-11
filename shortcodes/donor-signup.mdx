@@ -1,0 +1,91 @@
+---
+title: "[donorpress_signup]"
+description: "Donor sign-up form shortcode."
+---
+
+`[donorpress_signup]` renders a sign-up form so donors can create an account. With an account they can access the [donor dashboard](/donors/donor-dashboard) to view their giving history, manage subscriptions, and download receipts.
+
+## Basic usage
+
+```text
+[donorpress_signup]
+```
+
+DonorPress auto-creates a "Donor Sign-up" page on activation containing this shortcode.
+
+## Attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `redirect` | URL | Donor dashboard URL | Where to send the donor after sign-up. |
+| `show_login_link` | bool | `true` | Whether to show a "Already have an account? Log in" link. |
+| `accent_color` | string | `#3858e9` | Brand accent color. HEX, RGB, or named CSS color. |
+| `require_donation_match` | bool | `false` | If true, only allow signup for emails that match an existing donor record. |
+
+## Form fields
+
+The signup form collects:
+
+- Email
+- Password (with WordPress's standard strength meter)
+- First name
+- Last name
+
+Email becomes the WordPress username and the donor identity key. If the email already matches a donor record, the new WP account is automatically linked.
+
+## What happens on signup
+
+1. WordPress user is created with role `subscriber`.
+2. If the email matches an existing donor, the WP user is linked to the donor record.
+3. If no donor record exists, one is created (empty until the user makes their first donation).
+4. The user is logged in automatically.
+5. The "Welcome" email is sent (if the `donor_signup` template is enabled).
+6. The user is redirected to the dashboard (or the `redirect` URL).
+
+## Restricting signup to existing donors
+
+Use `require_donation_match="true"` to only allow signup for people whose email matches a donor record. Useful when you don't want random visitors creating accounts — they should only have a dashboard if they've actually donated.
+
+```text
+[donorpress_signup require_donation_match="true"]
+```
+
+The signup form then validates the email at submit time and shows "We couldn't find a donor record for this email" if no match is found.
+
+## Already-logged-in handling
+
+If a logged-in user visits the page, they see "You're already signed up" with a link to the dashboard.
+
+## Email verification
+
+By default, accounts are created without email verification — donors are logged in immediately. To require verification:
+
+1. Go to **Settings → General → Account verification** and toggle it on.
+2. New accounts will receive a verification email; they can't access the dashboard until they click the link.
+
+## Spam protection
+
+For sites under bot attack, enable a CAPTCHA or honeypot via the `donorpress/signup/spam_check` filter. Out of the box, the signup form has a basic time-trap (rejects submissions completed in under 2 seconds) and a hidden honeypot field.
+
+## Custom fields on signup
+
+To add custom fields to the signup form, use the `donorpress/signup/fields` filter. Example:
+
+```php
+add_filter( 'donorpress/signup/fields', function ( $fields ) {
+	$fields['organization'] = [
+		'label'    => 'Organization',
+		'type'     => 'text',
+		'required' => false,
+	];
+	return $fields;
+} );
+```
+
+Custom fields are stored as donor meta.
+
+## Related
+
+<Card title="Donor login" icon="right-to-bracket" href="/shortcodes/donor-login">
+	The companion login shortcode.
+</Card>

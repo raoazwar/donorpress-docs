@@ -1,0 +1,89 @@
+---
+title: "Form Settings"
+description: "Site-wide defaults for donation forms."
+---
+
+The **Forms** tab in **DonorPress → Settings** controls site-wide form defaults that apply to all forms unless overridden per-form.
+
+## Default form behavior
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Default layout | select | `Single-step` or `Multi-step` for newly-created forms. |
+| Default currency | select | Pre-selected currency for new forms. |
+| Default preset amounts | tags | Comma-separated values used to seed new forms (e.g. `10, 25, 50, 100`). |
+| Allow custom amount | toggle | Whether new forms allow custom amounts by default. |
+| Default minimum amount | number | Smallest allowed custom amount. |
+| Default maximum amount | number | Largest allowed (0 = no limit). |
+
+## Default donor fields
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Required fields | checkbox group | Which fields are required by default on new forms. First name, last name, email are always required. |
+| Collect phone | toggle | Whether new forms include the phone field by default. |
+| Collect company | toggle | Whether new forms include the company field by default. |
+| Collect address | toggle | Whether new forms include the address field by default. |
+
+## Recurring defaults
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Allow recurring by default | toggle | Whether new forms have recurring enabled. |
+| Default frequencies | multi-select | Pre-selected frequencies on new forms. |
+| Default frequency selected | select | Which frequency is pre-selected when the donor opts in. |
+
+## Styling defaults
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Default primary color | color | Pre-set on new forms. |
+| Default border radius | number (px) | Corner roundness for inputs and buttons. |
+| Default font family | select | Inherit from theme, or pick from a curated list. |
+| Default button label | text | Pre-set "Donate" button label. |
+
+## Custom CSS
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Site-wide CSS | textarea | CSS injected for **all** forms (scoped to `.donorpress-form`). Use sparingly — per-form CSS is usually clearer. |
+
+[Form styling guide →](/forms/customizing-styles)
+
+## Validation
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Email validation | select | `Format only` (looks like an email) or `Strict` (DNS check on the domain). |
+| Phone validation | select | `Off`, `Format` (rough pattern check), or `Strict` (E.164 international). |
+| Block disposable emails | toggle | Reject signups from known disposable email providers (10minutemail, etc.). |
+
+## Spam protection
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Honeypot | toggle | Hidden field that bots fill in. Submissions with a filled honeypot are silently dropped. On by default. |
+| Time trap | toggle | Reject submissions completed in under 2 seconds (likely bots). On by default. |
+| reCAPTCHA | toggle | Optional Google reCAPTCHA v3 integration. Requires a site key and secret. |
+| reCAPTCHA site key | text | From [Google reCAPTCHA admin](https://www.google.com/recaptcha/admin). |
+| reCAPTCHA secret | text | From the same place. |
+| Minimum reCAPTCHA score | number (0.0–1.0) | Submissions scoring below this are blocked. Default 0.5. |
+
+## Abandoned form recovery
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Track abandoned forms | toggle | Log forms that were started but not completed. Useful for conversion analysis. |
+| Abandoned threshold | number (minutes) | After N minutes with no completion, mark as abandoned. Default 60. |
+
+## Receipts and redirects
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Default success page | page picker | Where donors land after a successful donation. Per-form override available. |
+| Default failure page | page picker | Where donors land after a failed donation. Default: stay on the form with an error. |
+| Append donation_id to URLs | toggle | Whether to append `?donation_id=…` to the success URL. Default on (required for the receipt shortcode to work). |
+
+## Saving
+
+Settings save automatically as you type. Defaults apply to **newly-created** forms only — existing forms keep their current settings.

@@ -1,0 +1,80 @@
+---
+title: "Premium Modules"
+description: "Optional add-ons that extend DonorPress for specific use cases."
+---
+
+DonorPress is fully functional in its free form. **Modules** are optional add-ons that extend it for specific workflows — manual donations, tax receipts, advanced analytics, multi-currency, and more.
+
+<Frame>
+	<img src="/images/admin/modules-list.png" alt="DonorPress modules list" />
+</Frame>
+
+## How modules work
+
+Modules ship inside the same plugin zip — there's nothing extra to install. Each module:
+
+- Is hidden until your license unlocks it.
+- Has an explicit on/off toggle in **Settings → Modules**.
+- Adds its own settings panel under **DonorPress → Settings**.
+- Loads its code only when activated, so disabled modules have zero performance cost.
+
+## Available modules
+
+<CardGroup cols={2}>
+	<Card title="PDF Invoices" icon="file-pdf" href="/modules/pdf-invoices">
+		**Basic plan.** Auto-generate branded PDF receipts for every donation.
+	</Card>
+	<Card title="Manual Donations" icon="cash-register" href="/modules/manual-donations">
+		**Basic plan.** Record offline donations (cash, check, bank transfer).
+	</Card>
+	<Card title="Annual Receipts" icon="receipt" href="/modules/annual-receipts">
+		**Basic plan.** Year-end tax receipts donors can download as PDF.
+	</Card>
+	<Card title="Advanced Dashboard" icon="chart-line" href="/modules/advanced-dashboard">
+		**Premium plan.** KPIs, revenue charts, MRR projections, donor insights.
+	</Card>
+	<Card title="Gift Aid (UK)" icon="hand-holding-heart" href="/modules/gift-aid">
+		**Premium plan.** HMRC-compatible Gift Aid declarations and CSV exports.
+	</Card>
+	<Card title="Currency Switcher" icon="coins" href="/modules/currency-switcher">
+		**Premium plan.** Multi-currency forms with live exchange rates.
+	</Card>
+</CardGroup>
+
+## Plan tiers
+
+DonorPress has two paid tiers, plus the free core:
+
+| Tier | Modules unlocked | Best for |
+| --- | --- | --- |
+| **Free** | None — core plugin only | Hobbyist sites, MVPs, testing |
+| **Basic** | PDF Invoices, Manual Donations, Annual Receipts | Small charities, single-site nonprofits |
+| **Premium** | All of the above + Advanced Dashboard, Gift Aid, Currency Switcher | Growing nonprofits, agencies managing multiple sites |
+
+See pricing on [donorpress.org](https://donorpress.org/pricing).
+
+## Enabling a module
+
+<Steps>
+	<Step title="Open Modules">
+		Go to **DonorPress → Settings → Modules**.
+	</Step>
+	<Step title="Toggle on">
+		Find the module and toggle it on. Settings appear immediately.
+	</Step>
+	<Step title="Configure">
+		Each module documents its own settings panel — see the per-module pages above.
+	</Step>
+</Steps>
+
+## Disabling a module
+
+Toggle the module off and its code stops loading entirely. Module-specific data (settings, generated PDFs, etc.) is preserved in case you re-enable it later. To wipe module data, use **Tools → Reset module data** (per module).
+
+## Module load order
+
+Modules boot after the core plugin is fully initialised. They can hook into any DonorPress action or filter, but cannot register their own custom post types or REST namespaces (that happens earlier in the WordPress lifecycle, in the core plugin).
+
+## Building your own modules
+
+For developers: the same module API used internally is available to third parties. See [custom modules](/developers/custom-modules) for the contract and an example.

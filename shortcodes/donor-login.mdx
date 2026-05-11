@@ -1,0 +1,81 @@
+---
+title: "[donorpress_login]"
+description: "Donor login form shortcode."
+---
+
+`[donorpress_login]` renders a login form for donors. It's a lightweight alternative to the WordPress `wp-login.php` page, styled to match the rest of DonorPress.
+
+## Basic usage
+
+```text
+[donorpress_login]
+```
+
+DonorPress auto-creates a "Donor Login" page on activation that contains this shortcode. You can rename it, restyle it, or delete it and create your own.
+
+## Attributes
+
+| Attribute | Type | Default | Description |
+| --- | --- | --- | --- |
+| `redirect` | URL | Donor dashboard URL | Where to send the donor after successful login. |
+| `show_register_link` | bool | `true` | Whether to show a "Create an account" link below the form. |
+| `show_lost_password` | bool | `true` | Whether to show a "Forgot password?" link. |
+| `accent_color` | string | `#3858e9` | Brand accent color. HEX, RGB, or named CSS color. |
+
+## Examples
+
+### Default
+
+```text
+[donorpress_login]
+```
+
+### Redirect to a specific page after login
+
+```text
+[donorpress_login redirect="/thanks"]
+```
+
+### Branded with no register link
+
+```text
+[donorpress_login accent_color="#16a34a" show_register_link="false"]
+```
+
+## What the form does
+
+Behind the scenes, the form submits to WordPress's standard login handler — donors authenticate with their WordPress username/password, just like any other user. The shortcode is purely a styled wrapper, so:
+
+- Existing WordPress users can log in here.
+- Two-factor auth plugins continue to work.
+- Login attempts respect any login-throttling plugins you have.
+- Failed logins show standard WordPress error messages.
+
+## Already-logged-in handling
+
+If a logged-in user visits the page, they see a "You're already logged in. Go to your dashboard." message instead of the form.
+
+## Pairing with the signup shortcode
+
+Common pattern — a single page with both forms side by side:
+
+```html
+<div class="donor-auth-cols">
+	<div class="login-col">
+		<h3>Returning donor</h3>
+		[donorpress_login show_register_link="false"]
+	</div>
+	<div class="signup-col">
+		<h3>First time?</h3>
+		[donorpress_signup show_login_link="false"]
+	</div>
+</div>
+```
+
+Add minimal CSS to lay them out as two columns and you have a clean account page.
+
+## Related
+
+<Card title="Donor signup" icon="user-plus" href="/shortcodes/donor-signup">
+	The companion sign-up shortcode.
+</Card>

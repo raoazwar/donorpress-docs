@@ -1,0 +1,95 @@
+---
+title: "Renewal Emails"
+description: "Customising the emails donors receive on every recurring renewal."
+---
+
+Every successful renewal sends a receipt email to the donor. Failed renewals send a different email. Both are fully customisable.
+
+## The two main renewal emails
+
+| Trigger | Default subject | Template |
+| --- | --- | --- |
+| Renewal succeeded | "Thank you for your continued support" | `renewal_success` |
+| Renewal failed | "We couldn't process your donation" | `renewal_failed` |
+
+Optional emails:
+
+| Trigger | Template |
+| --- | --- |
+| Subscription paused | `subscription_paused` |
+| Subscription resumed | `subscription_resumed` |
+| Subscription cancelled | `subscription_cancelled` |
+| Subscription about to expire (bill count nearing limit) | `subscription_expiring` |
+
+## Customising
+
+In **DonorPress → Email Notifications**, click any of the templates above. You can edit:
+
+- Subject line
+- HTML body (with WYSIWYG or raw HTML)
+- Plain-text fallback
+- Reply-to address
+
+## Template tags
+
+Renewal emails support standard donation template tags plus subscription-specific ones:
+
+| Tag | Renders |
+| --- | --- |
+| `{donor_first_name}` | The donor's first name. |
+| `{donor_full_name}` | First + last name. |
+| `{donor_email}` | The donor's email. |
+| `{donation_amount}` | This renewal's amount, formatted with currency. |
+| `{donation_date}` | When this renewal was processed. |
+| `{donation_id}` | The renewal donation ID. |
+| `{receipt_link}` | URL to the receipt page. |
+| `{subscription_amount}` | The subscription's per-renewal amount. |
+| `{subscription_frequency}` | Monthly / Yearly / etc. |
+| `{subscription_renewal_count}` | How many renewals so far. |
+| `{subscription_next_renewal}` | Date of the next scheduled renewal. |
+| `{subscription_total_paid}` | Lifetime total paid through this subscription. |
+| `{cancel_link}` | URL the donor can use to request cancellation (mailto link by default). |
+
+## Failed renewal email
+
+The failed renewal email should:
+
+- Tell the donor what happened (their card was declined).
+- Explain what happens next (the gateway will retry).
+- Give them a way to update their card (link to your support email, or to Stripe's customer portal if you've set that up).
+- Reassure them their subscription isn't cancelled yet.
+
+A good template:
+
+```text
+Hi {donor_first_name},
+
+We tried to process your {subscription_frequency} donation of
+{subscription_amount} but your card was declined.
+
+We'll automatically retry over the next few days. To avoid interruption,
+please reply to this email with an updated card, or visit our donor
+dashboard to update your details.
+
+Thank you for your continued support,
+The {organization_name} team
+```
+
+## Disabling individual emails
+
+Each template has an **Active** toggle. Turn off any email you don't want sent. Common choices:
+
+- Disable "subscription paused" if you only ever pause for one-off skips that don't need to be communicated.
+- Disable "subscription resumed" for the same reason.
+
+## Sending test emails
+
+From any template editor, click **Send test** and enter your own email. The template is rendered with sample data so you can preview it.
+
+## Plain-text fallback
+
+Every email is sent as multipart (HTML + plain-text). The plain-text version uses the same template tags and is auto-derived from the HTML if you don't provide one explicitly. For best deliverability, write a tailored plain-text version too.
+
+## Mail delivery
+
+DonorPress uses WordPress's `wp_mail()`, which by default goes through your server's PHP `mail()` function. This is **not reliable** for transactional emails. Use an SMTP plugin (WP Mail SMTP, Post SMTP, etc.) configured to a transactional email service (SendGrid, Postmark, Amazon SES, etc.) for production sites.

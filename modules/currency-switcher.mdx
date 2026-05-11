@@ -1,0 +1,117 @@
+---
+title: "Currency Switcher"
+description: "Multi-currency forms with manual or live exchange rates."
+---
+
+The **Currency Switcher** module lets donors choose their preferred currency on a single donation form, and gives you reporting that aggregates across currencies.
+
+<Info>
+	Currency Switcher is a **Premium plan** module. [See all modules →](/modules/overview)
+</Info>
+
+## What it adds
+
+- A currency selector dropdown on donation forms (when the form has multi-currency enabled).
+- Per-form list of accepted currencies.
+- A base currency for unified reporting.
+- Manual or API-based exchange rate updates.
+- Reports that show donations in their native currency **and** a converted base-currency total.
+
+## When to use it
+
+- You receive donations from multiple countries and want each donor to give in their local currency.
+- You want unified revenue reporting across all currencies.
+- You want to display amounts in the donor's preferred currency without forcing them to convert mentally.
+
+If you only ever receive donations in one currency, this module isn't needed.
+
+## Settings
+
+**DonorPress → Settings → Currency Switcher**:
+
+| Setting | Description |
+| --- | --- |
+| Enable Currency Switcher | Master toggle. |
+| Base currency | The currency reports normalize to. Usually your charity's primary banking currency. |
+| Allowed currencies | The full list of currencies any form may offer. |
+| Default currency | Pre-selected on forms when no preference is detected. |
+| Detect from IP | Auto-select a currency based on the donor's geolocation. |
+| Detect from browser | Auto-select based on browser locale. |
+| Exchange rate source | `Manual` or `API`. |
+| API source | If API: choose between Open Exchange Rates, ExchangeRate API, or Frankfurter (free, no key required). |
+| API key | Required for paid sources. |
+| Refresh frequency | How often to refresh rates: hourly, daily, or weekly. |
+| Show converted total | Whether to show the equivalent base-currency amount in admin reports. |
+
+## Per-form configuration
+
+In the form builder, the **Currency** panel adds:
+
+- **Allow currency switcher** — toggle to enable on this form.
+- **Available currencies** — pick a subset of allowed currencies for this form (or use all).
+
+When enabled, donors see a small currency dropdown at the top of the form. Switching the currency rounds the preset amounts to sensible values for the new currency (e.g. switching $25 USD to GBP shows £20).
+
+## Reports
+
+In **DonorPress → Reports**, the Currency Switcher module adds:
+
+- **Multi-currency revenue** — revenue per currency in the period.
+- **Converted total** — same revenue normalized to your base currency using the exchange rates active at the time of each donation.
+- **Per-currency donor count** — unique donors per currency.
+
+The **Advanced Dashboard** module's KPI strip also gains a "Total Revenue (Base)" KPI when this module is active.
+
+## Storage
+
+Each donation stores:
+
+- `currency` — the donation currency (USD, EUR, etc.).
+- `amount` — in donation currency.
+- `base_currency` — your base currency at the time.
+- `base_amount` — converted amount.
+- `exchange_rate` — the rate used at the time of conversion.
+
+Historical conversions are preserved — if exchange rates change later, your reports don't retroactively shift.
+
+## Manual exchange rates
+
+If you choose **Manual** as the exchange rate source:
+
+1. Go to **Tools → Exchange Rates**.
+2. Enter rates for each currency relative to your base.
+3. Click **Save**.
+
+Manual rates apply immediately to new donations. Historical donations keep the rate that was active when they were created.
+
+## API exchange rates
+
+If you choose an **API** source:
+
+- Rates refresh automatically per your refresh frequency.
+- A timestamp shows when rates were last updated.
+- Failed updates trigger an admin notice and fall back to the most recent successful rates.
+- Manual override is still available via Tools → Exchange Rates if you need to lock a specific rate.
+
+## Free vs. paid API sources
+
+| Source | Cost | Notes |
+| --- | --- | --- |
+| Frankfurter | Free | European Central Bank rates. ~30 currencies. Good for most use cases. |
+| ExchangeRate-API | Free tier (1500 req/mo) / Paid | 160+ currencies. |
+| Open Exchange Rates | Paid | Most currencies. Reliable. |
+
+For most charities, Frankfurter is sufficient and free.
+
+## Subscriptions and currency
+
+A subscription is locked to the currency it was created in. The donor cannot change currency mid-subscription — they'd have to cancel and create a new one.
+
+## Refunds and currency
+
+Refunds are issued in the original donation currency. The base-currency amount in reports is recalculated based on the original exchange rate (not the current one).
+
+## Limits
+
+- Stripe supports 135+ currencies. PayPal supports 25. Other gateways vary. The Currency Switcher only offers currencies that the form's enabled gateways all support.
+- Exchange rate APIs have rate limits — picking a refresh frequency more aggressive than hourly is rarely useful.

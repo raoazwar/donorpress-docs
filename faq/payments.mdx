@@ -1,0 +1,100 @@
+---
+title: "Payments FAQ"
+description: "Common questions about gateways, refunds, fees, and payouts."
+---
+
+## Gateways
+
+<AccordionGroup>
+	<Accordion title="Which gateway should I use — Stripe or PayPal?">
+		**Use both** if you can. About 70% of donors prefer card (Stripe), 30% prefer PayPal — offering both reduces drop-off. If you can only pick one, go with Stripe (better UX, lower fees, full subscription support).
+	</Accordion>
+	<Accordion title="Can I use a gateway not listed?">
+		Yes — for developers. Implement the `GatewayInterface` and register your class. See [custom gateways](/developers/custom-gateways).
+	</Accordion>
+	<Accordion title="Can I use Square / Braintree / Authorize.net?">
+		Not out of the box. They're on the roadmap. In the meantime, the developer route above can wire any of them up.
+	</Accordion>
+	<Accordion title="Why do I have to enter both test AND live credentials?">
+		So you can switch between modes without rotating keys. Test credentials are used when site-wide Test Mode is on; live credentials when it's off.
+	</Accordion>
+</AccordionGroup>
+
+## Fees
+
+<AccordionGroup>
+	<Accordion title="Does DonorPress charge transaction fees?">
+		**No.** DonorPress doesn't take a cut. Only the gateway (Stripe, PayPal) charges its standard processing fee.
+	</Accordion>
+	<Accordion title="What are typical gateway fees?">
+		For US cards: ~2.9% + $0.30 per transaction on both Stripe and PayPal. International cards add ~1%. Bank debits and ACH are cheaper. Check your gateway's pricing page for current rates.
+	</Accordion>
+	<Accordion title="Can donors cover the gateway fees?">
+		Yes — enable the "Cover the fee" toggle in the form builder. Donors see a small checkbox: "Add 3% to cover processing fees." If checked, the donation amount is bumped up so you receive the full intended donation after fees.
+	</Accordion>
+</AccordionGroup>
+
+## Refunds
+
+<AccordionGroup>
+	<Accordion title="How long does a refund take to appear?">
+		Cards: 5-10 business days for the donor to see it on their statement. The refund is recorded in DonorPress immediately.
+	</Accordion>
+	<Accordion title="Can I refund a partial amount?">
+		Yes. Both Stripe and PayPal support partial refunds.
+	</Accordion>
+	<Accordion title="Can I refund after 6 months?">
+		Stripe: 180 days. PayPal: typically 180 days, sometimes 60. After that, both gateways refuse automatic refunds — you'd have to send a manual reverse payment.
+	</Accordion>
+	<Accordion title="Will the gateway fee be refunded too?">
+		Generally **no**. Most gateways keep the original processing fee even after a refund. Plan your refund policy accordingly.
+	</Accordion>
+	<Accordion title="What happens if I refund a recurring renewal?">
+		Just that one renewal is refunded. The subscription stays active and continues renewing. To stop future renewals, cancel the subscription separately.
+	</Accordion>
+</AccordionGroup>
+
+## Payouts
+
+<AccordionGroup>
+	<Accordion title="When do I get paid?">
+		Determined by the gateway, not DonorPress. Stripe pays out daily by default (with a 7-day rolling delay for new accounts). PayPal funds are available immediately, but you trigger transfers to your bank manually.
+	</Accordion>
+	<Accordion title="Why does my bank deposit not match my DonorPress total?">
+		Three reasons: (1) gateway fees, (2) refunds processed in the same period, (3) timing — payouts settle 1-2 days after the donations. Reconcile at the gateway level for an accurate match.
+	</Accordion>
+	<Accordion title="Can I see fees in DonorPress?">
+		Not currently. DonorPress shows gross revenue. Gateway fees are visible in your gateway dashboard. A future release will surface fee data.
+	</Accordion>
+</AccordionGroup>
+
+## Currencies
+
+<AccordionGroup>
+	<Accordion title="Can I accept donations in multiple currencies?">
+		Yes — either by creating one form per currency, or by using the [Currency Switcher module](/modules/currency-switcher) for multi-currency on a single form.
+	</Accordion>
+	<Accordion title="Do donors get charged in their local currency or mine?">
+		In whatever currency the form is set to. The donor's bank may apply a foreign-exchange conversion fee on their end.
+	</Accordion>
+	<Accordion title="Can I display amounts in the donor's local currency without charging in it?">
+		Yes — that's a "display only" mode. Out of scope for DonorPress core but possible via a custom JS integration with a geo-IP API.
+	</Accordion>
+</AccordionGroup>
+
+## Other questions
+
+<CardGroup cols={2}>
+	<Card title="Forms FAQ" icon="rectangle-list" href="/faq/forms">
+		Form builder questions, embedding, conversion.
+	</Card>
+	<Card title="Donors FAQ" icon="users" href="/faq/donors">
+		Donor records, merging, dashboard.
+	</Card>
+	<Card title="Troubleshooting" icon="wrench" href="/faq/troubleshooting">
+		Common errors and how to diagnose them.
+	</Card>
+	<Card title="General FAQ" icon="circle-question" href="/faq/general">
+		Installation, licensing, and basics.
+	</Card>
+</CardGroup>

@@ -1,0 +1,109 @@
+---
+title: "Email Notifications"
+description: "Every email DonorPress sends, and how to control them."
+---
+
+DonorPress sends transactional emails to donors and admins on key events. Every email is templated and can be customised, disabled, or replaced.
+
+<Frame>
+	<img src="/images/admin/emails-list.png" alt="DonorPress email notifications admin" />
+</Frame>
+
+## What gets sent
+
+| Trigger | Recipient | Default |
+| --- | --- | --- |
+| Donation completed | Donor | Enabled |
+| New donation received | Site admin | Enabled |
+| Donation refunded | Donor | Enabled |
+| Subscription created | Donor | Enabled |
+| Subscription renewal succeeded | Donor | Enabled |
+| Subscription renewal failed | Donor | Enabled |
+| Subscription cancelled | Donor | Enabled |
+| Subscription paused | Donor | Disabled |
+| Subscription resumed | Donor | Disabled |
+| Donor signup confirmation | Donor | Enabled |
+| Manual donation receipt | Donor | Conditional (if "Send receipt" was ticked) |
+| Annual receipt available | Donor | Disabled (opt-in) |
+
+## Where they're managed
+
+**DonorPress → Email Notifications**:
+
+- One row per email template.
+- Each row shows: recipient role, status, last-modified date.
+- Click any row to edit the template.
+
+## Editing a template
+
+The template editor has:
+
+- **Subject** — supports template tags like `{donor_first_name}`.
+- **HTML body** — WYSIWYG editor with a "raw HTML" mode.
+- **Plain-text body** — auto-derived from HTML by default; override for best deliverability.
+- **Reply-to address** — defaults to your organization email.
+- **Active toggle** — disable individual emails without losing the template.
+
+[Templates reference →](/emails/templates)
+
+## Template tags
+
+Insert dynamic values like donor name, amount, or receipt links using `{tag_name}` syntax.
+
+[Full template tags list →](/emails/template-tags)
+
+## Sending test emails
+
+From any template editor, click **Send test** and provide your own email address. The template is rendered with sample data so you can verify formatting and template tag output.
+
+## Mail delivery
+
+DonorPress uses WordPress's `wp_mail()` function — it doesn't send mail directly. The default `wp_mail()` goes through your server's PHP `mail()` function, which is **unreliable** for transactional email.
+
+For production sites, use an SMTP plugin (WP Mail SMTP, Post SMTP, FluentSMTP) configured with a transactional email service:
+
+- **Postmark** — best deliverability for transactional mail.
+- **SendGrid** — popular, generous free tier (100 emails/day).
+- **Amazon SES** — cheapest at scale.
+- **Mailgun** — solid all-rounder.
+
+Without a proper SMTP provider, expect 30-50% of your receipts to land in spam folders.
+
+## Bounce handling
+
+DonorPress logs failed sends in **Tools → Email Log** but doesn't process bounces. For bounce handling and unsubscribe tracking, your SMTP provider's webhooks should be wired up to invalidate stale email addresses.
+
+## CC / BCC
+
+Each template has optional CC and BCC fields. Common uses:
+
+- BCC the executive director on every donation receipt for visibility.
+- CC the donor's case worker on receipts for sponsorship donations.
+
+CC / BCC accept multiple comma-separated addresses.
+
+## Disabling all DonorPress emails
+
+If you handle email externally (via a CRM webhook, for example), turn off every template's **Active** toggle. DonorPress will record the events but not send mail.
+
+For a quick global off-switch, set:
+
+```php
+add_filter( 'donorpress/email/send', '__return_false' );
+```
+
+in your theme's `functions.php`.
+
+## Read next
+
+<CardGroup cols={2}>
+	<Card title="Templates" icon="envelopes-bulk" href="/emails/templates">
+		Per-template configuration reference.
+	</Card>
+	<Card title="Template tags" icon="hashtag" href="/emails/template-tags">
+		Every variable you can insert.
+	</Card>
+	<Card title="Customizing emails" icon="paintbrush" href="/emails/customizing-emails">
+		HTML, branding, and inline styling.
+	</Card>
+</CardGroup>

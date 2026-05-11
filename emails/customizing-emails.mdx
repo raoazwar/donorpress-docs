@@ -1,0 +1,128 @@
+---
+title: "Customizing Emails"
+description: "Branding, HTML structure, and inline styling for donation emails."
+---
+
+DonorPress emails are HTML by default with a plain-text fallback. They're built with email-client compatibility in mind — but you'll still want to customize them to match your brand.
+
+## The default template
+
+Every DonorPress email is wrapped in a shared HTML shell:
+
+```
+┌─────────────────────────┐
+│ Header (logo + name)    │
+├─────────────────────────┤
+│                         │
+│ Per-template content    │
+│                         │
+├─────────────────────────┤
+│ Footer (compliance)     │
+└─────────────────────────┘
+```
+
+You customize the shell once (Settings → Email Notifications → Email Wrapper), and every template inherits it.
+
+## Wrapper settings
+
+**DonorPress → Settings → Emails**:
+
+| Setting | Description |
+| --- | --- |
+| Logo | Header image. PNG / JPG, max 200px wide. |
+| Logo URL | Where the logo links to (usually your homepage). |
+| Header background | Background color of the header band. |
+| Header text color | Text inside the header. |
+| Body background | Background color outside the email card. |
+| Card background | Background color of the email content card. |
+| Body text color | Default body text color. |
+| Link color | Color of links in the body. |
+| Button color | Background color of CTA buttons in the body. |
+| Button text color | Text color on CTA buttons. |
+| Footer text | Compliance / unsubscribe text. Supports template tags. |
+| Footer text color | Footer text color. |
+
+## Per-template HTML
+
+Click any template in **Email Notifications** to open the editor:
+
+- The **WYSIWYG** mode is the easiest for most edits — bold, italic, links, headings, lists.
+- The **HTML** mode lets you write raw HTML when you need fine control.
+
+Both modes accept [template tags](/emails/template-tags).
+
+### Inline CSS
+
+Email clients (especially Outlook) strip `<style>` blocks. Inline CSS via `style="..."` attributes is the only reliable way to style emails.
+
+DonorPress automatically inlines styles from a single `<style>` block at the top of your template at send time, so you can write:
+
+```html
+<style>
+	.cta { background: #3858e9; padding: 12px 24px; color: white; border-radius: 6px; }
+</style>
+
+<a href="{receipt_link}" class="cta">View receipt</a>
+```
+
+…and the inliner will rewrite it to:
+
+```html
+<a href="{receipt_link}" style="background: #3858e9; padding: 12px 24px; color: white; border-radius: 6px;">View receipt</a>
+```
+
+## Plain-text fallback
+
+Every email is sent as multipart MIME (HTML + plain text). The plain-text version:
+
+- Is auto-derived from your HTML by default (HTML stripped, links flattened to `text (url)`).
+- Can be overridden in the **Plain Text** tab of the template editor.
+
+For best deliverability and accessibility, write a tailored plain-text version. Spam filters score well-formed multipart emails higher.
+
+## Best practices
+
+<AccordionGroup>
+	<Accordion title="Use a single column layout">
+		Multi-column layouts break in Outlook. Stick to a single 600px-wide column for body content.
+	</Accordion>
+	<Accordion title="Don't use background images">
+		Most email clients strip them. Use solid colors or repeat images via `background-color`.
+	</Accordion>
+	<Accordion title="Avoid web fonts">
+		Use system font stacks: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`. Web fonts often don't load in email clients.
+	</Accordion>
+	<Accordion title="Test on multiple clients">
+		Use Litmus, Email on Acid, or Mailtrap to preview across Gmail, Outlook, Apple Mail, etc.
+	</Accordion>
+	<Accordion title="Keep file size under 100KB">
+		Gmail clips emails over 102KB. Trim images and minimize inline CSS.
+	</Accordion>
+	<Accordion title="Always include unsubscribe">
+		For renewal emails (technically marketing-adjacent), include an unsubscribe link in the footer to comply with CAN-SPAM / GDPR.
+	</Accordion>
+</AccordionGroup>
+
+## Custom HTML wrapper
+
+For full control over the email shell, override the wrapper template:
+
+1. Copy `wp-content/plugins/donorpress/templates/emails/wrapper.php` to your theme at `wp-content/themes/your-theme/donorpress/emails/wrapper.php`.
+2. Edit freely.
+3. The template receives `$content` (the rendered template body) and `$settings`.
+
+[Template overrides →](/developers/template-overrides)
+
+## Sending test emails
+
+Every template has a **Send test** button. The template renders with sample donor / donation data so you can see real output. Always test before going live with a customised template.
+
+## Logos & images
+
+Embed images via absolute URLs:
+
+```html
+<img src="{site_url}/wp-content/uploads/2025/logo.png" alt="Charity logo" width="160" height="40">
+```
+
+Hosted images load reliably across clients. Don't embed images as base64 (slows mail clients and triggers spam scoring).

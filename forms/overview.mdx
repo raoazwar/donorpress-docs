@@ -1,0 +1,85 @@
+---
+title: "Forms Overview"
+description: "Donation forms are the heart of DonorPress. Here's how they work."
+---
+
+A **form** in DonorPress is a reusable donation experience: amount selector, donor fields, payment methods, and (optionally) recurring options. You build one in the admin and embed it anywhere using a shortcode.
+
+<Frame>
+	<img src="/images/admin/forms-list.png" alt="DonorPress forms list" />
+</Frame>
+
+## What lives on a form
+
+| Section | What it controls |
+| --- | --- |
+| **Amounts** | Preset donation amounts, plus an optional "custom amount" field. |
+| **Donor fields** | First name, last name, email, plus optional fields like phone, company, address. |
+| **Payment methods** | Which gateways the form offers (Stripe, PayPal, etc.). |
+| **Recurring options** | Whether donors can opt into a recurring donation, and at what frequency. |
+| **Receipt** | Where the donor goes after a successful payment. |
+| **Styling** | Colors, layout, and copy — including a "Donate" button label. |
+
+## Single-step vs. multi-step
+
+DonorPress supports two layouts:
+
+<CardGroup cols={2}>
+	<Card title="Single-step" icon="rectangle">
+		Everything on one screen. Best for low-friction asks where you want donors to see all fields at once.
+	</Card>
+	<Card title="Multi-step" icon="rectangle-vertical-history">
+		Amount → details → payment, split across screens. Higher conversion for longer forms.
+	</Card>
+</CardGroup>
+
+You can switch between the two at any time without losing your form configuration.
+
+## How a form gets onto your site
+
+Three options:
+
+1. **Shortcode** — `[donorpress_form id="123"]` on any page or post.
+2. **Block** — drop the "Donation Form" block in the block editor and pick the form.
+3. **Elementor widget** — for sites built with Elementor, drag the "DonorPress Form" widget anywhere.
+
+[Embedding details →](/forms/embedding-forms)
+
+## Display modes
+
+Each embed has two display modes:
+
+- **Inline** — the form renders right where the shortcode/block is.
+- **Modal** — a "Donate" button appears; clicking it opens the form in a centered modal.
+
+The modal mode is great for sticky donation buttons in your header, or for landing pages that want one prominent CTA.
+
+## Conversion tips
+
+A few things we've learned from running thousands of donation pages:
+
+<AccordionGroup>
+	<Accordion title="Default to a non-trivial amount">
+		Setting the default amount to your second-cheapest preset (instead of "custom") raises average donation by 15-25% on most sites.
+	</Accordion>
+	<Accordion title="Offer recurring up front">
+		Showing "Make this monthly" as a checkbox above the payment button (rather than after) doubles recurring opt-in on most forms.
+	</Accordion>
+	<Accordion title="Keep donor fields short">
+		Every additional field cuts conversion. Phone and company are best left optional or off entirely unless you need them.
+	</Accordion>
+	<Accordion title="Use a campaign">
+		Forms attached to a [campaign](/campaigns/creating-campaigns) with a visible goal bar consistently outperform standalone forms.
+	</Accordion>
+</AccordionGroup>
+
+## Next steps
+
+<CardGroup cols={2}>
+	<Card title="Create your first form" icon="plus" href="/forms/creating-a-form">
+		A click-by-click walkthrough.
+	</Card>
+	<Card title="Embed it" icon="code" href="/forms/embedding-forms">
+		Shortcode, block, and Elementor widget options.
+	</Card>
+</CardGroup>

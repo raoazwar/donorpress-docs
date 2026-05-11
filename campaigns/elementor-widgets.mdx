@@ -1,0 +1,87 @@
+---
+title: "Elementor Widgets"
+description: "Drag-and-drop campaign and form widgets for Elementor."
+---
+
+If your site is built with Elementor, DonorPress provides native widgets that integrate cleanly with Elementor's design system.
+
+## Available widgets
+
+Find them in the Elementor widget panel under the **DonorPress** category:
+
+| Widget | Equivalent shortcode |
+| --- | --- |
+| **Donation Form** | `[donorpress_form]` |
+| **Donor Dashboard** | `[donorpress_dashboard]` |
+| **Campaign List** | `[donorpress_campaign_list]` |
+| **Campaign Card** | `[donorpress_campaign_card]` |
+| **Annual Receipts** | `[donorpress_annual_receipts]` |
+
+## Why use widgets over shortcodes?
+
+Three benefits:
+
+1. **Visual configuration** — drop-downs, toggles, and color pickers instead of remembering attribute names.
+2. **Live preview in the Elementor editor** — see exactly what donors will see.
+3. **Full styling controls** — Elementor's typography, spacing, border, and effects controls work on every DonorPress widget.
+
+## Widget content controls
+
+Each widget exposes its corresponding shortcode attributes as Elementor controls. For example, the **Campaign List** widget has:
+
+- Campaign filter (category, tag, status)
+- Layout (columns, count)
+- Order (orderby, order)
+- Show / hide toggles (progress bar, excerpt, donate button)
+
+## Style controls
+
+In addition to content controls, every widget exposes Elementor's full **Style** tab:
+
+- Typography (font family, size, weight, line height)
+- Colors (heading, body, button, background)
+- Spacing (margin, padding for each element)
+- Border (width, color, radius)
+- Effects (shadow, hover transitions)
+
+Style overrides set in Elementor take priority over the form/campaign defaults.
+
+## Style 1 (Campaign Card)
+
+The Campaign Card widget ships with one pre-built **style preset**: a clean, modern card with image on top and CTA at the bottom. You can:
+
+- Use it as-is (no styling needed).
+- Override individual properties via Elementor controls.
+- Apply Elementor's global colors / fonts so the card matches your theme automatically.
+
+More style presets ship in upcoming releases.
+
+## Responsive design
+
+All widgets are fully responsive. Elementor's per-device controls work:
+
+- Desktop / tablet / mobile column counts.
+- Per-device font sizes.
+- Show / hide on mobile or desktop.
+
+## Pro features
+
+The widgets work in Elementor Free. For Elementor Pro features (theme builder, popup builder, custom fonts), DonorPress widgets compose normally — you can drop a Donation Form into a popup, use it inside a custom header, etc.
+
+## Performance
+
+Widgets only load DonorPress assets on pages where they're used. There's no plugin-wide JS payload added to your site by enabling the widgets.
+
+## Troubleshooting
+
+<AccordionGroup>
+	<Accordion title="DonorPress widgets don't appear in the Elementor panel">
+		Make sure both DonorPress and Elementor are activated. Then in Elementor, **Settings → Features → Improved Asset Loading** must be ON (this is the default).
+	</Accordion>
+	<Accordion title="Live preview shows a loading spinner forever">
+		Usually means an admin REST endpoint is returning an error. Open browser devtools → Network tab → look for failing `/wp-json/donorpress/v2/...` requests.
+	</Accordion>
+	<Accordion title="Campaign list looks broken on mobile">
+		Reduce the column count for mobile in the widget's Layout panel. Three columns rarely works on phones — use 1.
+	</Accordion>
+</AccordionGroup>

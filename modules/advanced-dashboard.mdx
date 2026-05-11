@@ -1,0 +1,127 @@
+---
+title: "Advanced Dashboard"
+description: "Deep analytics: KPIs, charts, MRR projections, donor insights."
+---
+
+The **Advanced Dashboard** module replaces the standard DonorPress dashboard with a comprehensive analytics view — KPIs, charts, breakdowns, and projections.
+
+<Info>
+	Advanced Dashboard is a **Premium plan** module. [See all modules →](/modules/overview)
+</Info>
+
+## What's on the dashboard
+
+When enabled, **DonorPress → Dashboard** becomes a multi-section analytics page:
+
+### 1. KPI strip
+
+Six headline numbers across the top:
+
+| KPI | Description |
+| --- | --- |
+| Total Revenue | Sum of completed donations in the selected period. |
+| Donations | Count of completed donations. |
+| New Donors | Donors whose first donation falls in the period. |
+| Active Subscriptions | Subscriptions in Active status at the end of the period. |
+| MRR | Monthly recurring revenue, normalised across frequencies. |
+| Avg Donation | Mean of completed donations. |
+
+Each KPI shows the current period plus the percent change vs. the previous period.
+
+### 2. Revenue line chart
+
+Daily revenue over the selected period, with the previous period overlaid as a grey line for comparison.
+
+Switch the chart between:
+
+- **Total revenue** — all donations.
+- **One-time** — non-recurring donations.
+- **Recurring** — subscription renewals only.
+- **By gateway** — stacked by Stripe / PayPal / etc.
+
+### 3. Gateway breakdown
+
+A donut chart showing what percentage of revenue came through each gateway. Useful for verifying gateway diversification.
+
+### 4. Day × hour heatmap
+
+A grid showing what day of week and hour of day donations cluster in. Useful for timing email campaigns and email-receipt optimisation.
+
+### 5. Top campaigns leaderboard
+
+The top 10 campaigns by revenue in the period. Click any row to drill into the campaign detail.
+
+### 6. Form performance table
+
+Per-form metrics:
+
+- Views (form impressions)
+- Submissions
+- Completion rate
+- Conversion rate
+- Average donation
+- Total raised
+
+Lets you spot under-performing forms quickly.
+
+### 7. Donor insights
+
+- New vs. returning donor split.
+- Donor LTV (lifetime value) histogram.
+- Top donors by lifetime giving.
+- Lapsed donors (no donation in the last 365 days).
+
+### 8. Subscription health & MRR projection
+
+For sites with recurring donations:
+
+- MRR over time (line chart).
+- Churn rate (cancelled subscriptions / total active).
+- Failing-renewal rate.
+- 12-month MRR projection based on current trends.
+
+## Period selection
+
+Every section respects a global period filter at the top of the dashboard:
+
+- Last 7 days
+- Last 30 days
+- This month
+- Last month
+- This year
+- Last year
+- Custom range
+
+Comparisons use the **previous equivalent period** (e.g. "last 30 days" compared to the 30 days before that).
+
+## Settings
+
+**DonorPress → Settings → Advanced Dashboard**:
+
+| Setting | Description |
+| --- | --- |
+| Default period | Which period the dashboard opens to. |
+| Show in admin menu only | Whether the advanced dashboard replaces the standard one or appears as a separate menu item. |
+| Excluded statuses | Which donation statuses to exclude from totals (default: Failed, Cancelled, Abandoned). |
+| Include test mode | Whether test-mode data appears in reports. |
+| Currency normalisation | If you accept multi-currency, optionally normalise to a base currency in reports. Requires the [Currency Switcher module](/modules/currency-switcher). |
+
+## Exporting
+
+Every chart and table has an **Export** button:
+
+- Charts export as PNG.
+- Tables export as CSV.
+- Full dashboard can be exported as PDF (everything in one document, useful for board reports).
+
+## Permissions
+
+Dashboard access is controlled by the same `manage_options` capability as the rest of DonorPress admin. There's no separate "view-only" role yet — that's on the roadmap.
+
+## Performance
+
+The advanced dashboard runs ~10 SQL queries on each load. For sites with millions of donations, consider:
+
+- Reducing the default period to 30 days.
+- Enabling the **dashboard cache** setting (5-minute cache).
+- Or running the dashboard on a read replica via the `donorpress/database/use_replica` filter.

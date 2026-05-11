@@ -1,0 +1,107 @@
+---
+title: "Customizing Styles"
+description: "Theme your donation form to match your brand."
+---
+
+DonorPress forms ship with neutral, accessible styling that works on most themes. You can customize them three ways: built-in style settings, custom CSS, or full template overrides.
+
+## Built-in style settings
+
+In the form builder, the **Style** panel has:
+
+| Setting | Type | Description |
+| --- | --- | --- |
+| Primary color | color | Buttons, accent borders, focus rings, selected preset amount. |
+| Background color | color | Form background. |
+| Border radius | number (px) | Corner roundness for inputs and buttons. 0 = sharp corners; 12 = soft rounded; 24 = pill. |
+| Font family | select | Inherit from your theme, or pick from a curated list (system, sans, serif, monospace). |
+| Button label | text | The "Donate" button text. |
+| Button alignment | select | Left / center / right alignment. |
+
+These cover the 80% case — most sites need nothing else.
+
+## Custom CSS
+
+The **Custom CSS** field in the Style panel injects per-form CSS scoped to `.donorpress-form-{id}`. Useful when you need to:
+
+- Tweak spacing or typography beyond the built-in settings.
+- Match a specific design system (Tailwind, Bootstrap, etc.).
+- Override a single element (e.g. just the donate button).
+
+Example:
+
+```css
+/* Bigger amount tiles */
+.donorpress-form-42 .dp-amount-tile {
+	min-height: 80px;
+	font-size: 18px;
+}
+
+/* Brand button */
+.donorpress-form-42 .dp-submit-btn {
+	background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+	box-shadow: 0 4px 12px rgba(247, 147, 30, 0.3);
+}
+```
+
+## Site-wide custom CSS
+
+For styles that should apply to **all** forms, use **Settings → Forms → Custom CSS**. Same scoping rules but applies to `.donorpress-form` (without an ID).
+
+## CSS class reference
+
+The most-targeted classes:
+
+| Class | Element |
+| --- | --- |
+| `.donorpress-form` | Outer wrapper. |
+| `.donorpress-form-{id}` | ID-scoped wrapper. |
+| `.dp-form-step` | One step in a multi-step form. |
+| `.dp-amount-tile` | A preset amount button. |
+| `.dp-amount-tile--selected` | The currently-selected preset amount. |
+| `.dp-custom-amount-input` | The "other amount" input. |
+| `.dp-recurring-toggle` | The "Make this monthly" checkbox row. |
+| `.dp-frequency-select` | The frequency dropdown for recurring. |
+| `.dp-field` | A donor field row. |
+| `.dp-field-label` | The label for a donor field. |
+| `.dp-field-input` | The input element inside a donor field. |
+| `.dp-payment-method` | One payment method row. |
+| `.dp-submit-btn` | The "Donate" / "Continue" button. |
+| `.dp-form-error` | Validation error text. |
+
+All form CSS uses `dp-` prefixes to avoid conflicts with theme classes.
+
+## Theme overrides
+
+For deep customization (e.g. a fully bespoke layout), copy the form template from `wp-content/plugins/donorpress/templates/` into your theme at `wp-content/themes/your-theme/donorpress/` and edit it there.
+
+[Template overrides →](/developers/template-overrides)
+
+## Dark mode
+
+Form colors don't auto-invert in dark mode — that would conflict with your brand colors. If you need a dark variant, use custom CSS with `prefers-color-scheme`:
+
+```css
+@media (prefers-color-scheme: dark) {
+	.donorpress-form-42 {
+		background: #111827;
+		color: #f9fafb;
+	}
+	.donorpress-form-42 .dp-field-input {
+		background: #1f2937;
+		border-color: #374151;
+	}
+}
+```
+
+## Mobile
+
+Forms are responsive out of the box. The breakpoints are at 480px (single-column donor fields) and 380px (single-column amount tiles). Customize via:
+
+```css
+@media (max-width: 480px) {
+	.donorpress-form-42 .dp-amount-tile {
+		min-height: 60px;
+	}
+}
+```

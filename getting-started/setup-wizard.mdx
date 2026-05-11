@@ -1,0 +1,54 @@
+---
+title: "Setup Wizard"
+description: "Configure DonorPress in five guided steps."
+---
+
+After activating DonorPress for the first time, the setup wizard launches automatically. It walks you through the essentials so you can take your first donation without hunting through settings.
+
+<Tip>
+	You can revisit the wizard any time from **DonorPress → Tools → Setup Wizard**.
+</Tip>
+
+## Welcome screen
+
+The very first screen of the wizard is a celebratory welcome — a dark mesh-gradient hero with brand-color accents, a brief confetti burst, and three glass-style stat pills:
+
+- **Database ready** — confirms tables were created on activation.
+- **60-second setup** — sets expectations for the rest of the flow.
+- **Secure by default** — reminder that no real charges happen in test mode.
+
+The confetti animation respects `prefers-reduced-motion` and is automatically suppressed for users who have enabled that accessibility setting. The screen only fires on the very first activation; after the wizard has been completed (or skipped) once, the redirect is never triggered again.
+
+## What the wizard configures
+
+<Steps>
+	<Step title="Organization details">
+		Your charity / business name, country, and the email address that will appear on donation receipts.
+	</Step>
+	<Step title="Currency">
+		Your default currency. Donations are stored in this currency unless the [Currency Switcher module](/modules/currency-switcher) is active.
+	</Step>
+	<Step title="First payment gateway">
+		Pick Stripe or PayPal and paste your test API keys. You can add more gateways later from **Settings → Payment Gateways**.
+	</Step>
+	<Step title="Receipt page">
+		The wizard creates a "Donation Confirmation" page automatically. Donors are redirected here after a successful payment.
+	</Step>
+	<Step title="First donation form">
+		The wizard scaffolds a starter form with three preset amounts so you have something live in under five minutes.
+	</Step>
+</Steps>
+
+## Skipping or revisiting steps
+
+Each step has a **Skip for now** link in the lower-right. Skipped steps remain accessible from the main settings later — nothing is locked.
+
+If you skip the gateway step, the resulting form will still render, but submitting it shows a friendly "no payment methods enabled" message instead of charging anything.
+
+## What the wizard does *not* do
+
+- It doesn't configure email notifications. See [Email Notifications](/emails/overview) for that.
+- It doesn't enable any premium modules. Visit **Settings → Modules** to opt in.
+- It doesn't switch DonorPress to live mode. You stay in test mode until you explicitly flip the switch.
+
+[Continue to the quick start →](/getting-started/quick-start)

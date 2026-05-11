@@ -1,0 +1,135 @@
+---
+title: "Email Templates"
+description: "Per-template reference for every email DonorPress sends."
+---
+
+Each email DonorPress sends is backed by a template you can edit. This page documents what each template is for, when it fires, and the recommended structure.
+
+## Donation completed
+
+| Property | Value |
+| --- | --- |
+| Template ID | `donation_completed` |
+| Trigger | A donation transitions to status **Complete**. |
+| Recipient | The donor. |
+| Default subject | `Thank you for your donation, {donor_first_name}` |
+
+The most important email DonorPress sends. Should always include:
+
+- A thank you message.
+- Donation details: amount, date, receipt number.
+- Tax-receipt acknowledgement (if applicable in your jurisdiction).
+- A link to download the PDF receipt (if [PDF Invoices](/modules/pdf-invoices) is active).
+- A link to their [donor dashboard](/donors/donor-dashboard).
+
+## New donation (admin)
+
+| Property | Value |
+| --- | --- |
+| Template ID | `donation_admin_notification` |
+| Trigger | Any donation completes. |
+| Recipient | Site admin email (or override). |
+| Default subject | `New donation received: {donation_amount}` |
+
+Internal notification. Keep it brief — admins glance at these and act quickly.
+
+## Refund issued
+
+| Property | Value |
+| --- | --- |
+| Template ID | `donation_refunded` |
+| Trigger | A donation is refunded (full or partial). |
+| Recipient | The donor. |
+| Default subject | `Your donation has been refunded` |
+
+Should explain:
+
+- What was refunded (amount, original donation date).
+- Whether the donor needs to do anything (usually no).
+- Expected timeframe for the refund to appear (5-10 business days for cards).
+
+## Subscription created
+
+| Property | Value |
+| --- | --- |
+| Template ID | `subscription_created` |
+| Trigger | A new recurring subscription is set up. |
+| Recipient | The donor. |
+| Default subject | `Your recurring donation is set up` |
+
+Should include:
+
+- Confirmation of the recurring schedule.
+- Next renewal date.
+- How to cancel (instructions or a link).
+
+## Renewal succeeded
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `subscription_renewal_success` | A recurring renewal completes. | The donor. |
+
+Sent on every successful renewal — typically monthly. Keep it brief but warm.
+
+## Renewal failed
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `subscription_renewal_failed` | A recurring renewal fails. | The donor. |
+
+[Detailed guidance →](/subscriptions/renewal-emails)
+
+## Subscription cancelled
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `subscription_cancelled` | A subscription moves to status **Cancelled**. | The donor. |
+
+Should include:
+
+- Confirmation of cancellation.
+- Final donation date.
+- A "thank you" rather than a "please come back" — guilt-tripping cancellations is bad practice.
+
+## Subscription paused / resumed
+
+| Template ID | Trigger | Default state |
+| --- | --- | --- |
+| `subscription_paused` | Subscription paused. | Disabled |
+| `subscription_resumed` | Subscription resumed. | Disabled |
+
+These are off by default because most pauses are admin-initiated for short-term reasons (donor on vacation, etc.) and don't need notifying.
+
+## Donor signup confirmation
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `donor_signup` | A new donor account is created via `[donorpress_signup]`. | The donor. |
+
+Welcome the new donor and link them to the donor dashboard.
+
+## Manual donation receipt
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `manual_donation_receipt` | A manual donation is recorded with "Send receipt" ticked. | The donor. |
+
+Identical structure to the standard donation receipt, but acknowledges the offline payment method.
+
+## Annual receipt available (opt-in)
+
+| Template ID | Trigger | Recipient |
+| --- | --- | --- |
+| `annual_receipt_ready` | The annual receipt becomes available for download. | The donor. |
+
+Off by default. Enable when you want to proactively notify donors that their tax receipt is ready, rather than waiting for them to find it in their dashboard.
+
+## Common settings (every template)
+
+- **Subject** — supports [template tags](/emails/template-tags).
+- **From name** — defaults to your organization name from Settings → General.
+- **From address** — defaults to your organization email; can be overridden.
+- **Reply-to** — defaults to From address.
+- **CC / BCC** — comma-separated email addresses.
+- **Active** — toggle to disable without deleting the template.
+- **PDF attachment** — for receipt emails: whether to attach the PDF receipt (requires the [PDF Invoices module](/modules/pdf-invoices)).

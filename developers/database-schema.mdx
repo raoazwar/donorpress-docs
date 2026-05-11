@@ -1,0 +1,168 @@
+---
+title: "Database Schema"
+description: "Every DonorPress custom table, column by column."
+---
+
+DonorPress creates seven custom tables on activation. They're prefixed with `wp_donorpress_` (or your WP table prefix).
+
+## `wp_donorpress_donors`
+
+One row per donor. Identity key: `email`.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | Internal donor ID. |
+| `email` | VARCHAR(190) UNIQUE | Identity key. |
+| `first_name` | VARCHAR(100) | Optional. |
+| `last_name` | VARCHAR(100) | Optional. |
+| `phone` | VARCHAR(50) | Optional. |
+| `company` | VARCHAR(150) | Optional. |
+| `total_donated` | DECIMAL(15,2), DEFAULT 0 | Lifetime total of completed donations. |
+| `donation_count` | INT UNSIGNED, DEFAULT 0 | Lifetime count of completed donations. |
+| `largest_donation` | DECIMAL(15,2), DEFAULT 0 | Single largest donation. |
+| `avg_donation` | DECIMAL(15,2), DEFAULT 0 | Average donation. |
+| `is_anonymous` | TINYINT(1), DEFAULT 0 | Public anonymity flag. |
+| `user_id` | BIGINT UNSIGNED, NULL | Linked WordPress user ID. |
+| `date_created` | DATETIME | First seen. |
+| `date_modified` | DATETIME | Last update. |
+
+Indexes: PK on `id`, UNIQUE on `email`, INDEX on `user_id`.
+
+## `wp_donorpress_donations`
+
+One row per donation (one-time charges + subscription renewals).
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `donor_id` | BIGINT UNSIGNED, FK → donors.id | 0 if donor was deleted. |
+| `form_id` | BIGINT UNSIGNED | Post ID of the form used. |
+| `campaign_id` | BIGINT UNSIGNED | Post ID of the campaign (0 if none). |
+| `subscription_id` | BIGINT UNSIGNED | If part of a recurring plan. 0 for one-time. |
+| `amount` | DECIMAL(15,2) | Donation amount. |
+| `currency` | CHAR(3) | ISO 4217 (USD, EUR, etc.). |
+| `status` | VARCHAR(20) | pending / complete / failed / refunded / cancelled / abandoned. |
+| `gateway` | VARCHAR(50) | stripe / paypal / manual / test / etc. |
+| `gateway_transaction_id` | VARCHAR(190) | The gateway's ID for this charge. |
+| `payment_method` | VARCHAR(50) | card / paypal_balance / cash / check / etc. |
+| `refunded_amount` | DECIMAL(15,2), DEFAULT 0 | For partial refunds. |
+| `is_anonymous` | TINYINT(1), DEFAULT 0 | Per-donation anonymity. |
+| `note` | TEXT | Optional donor note. |
+| `ip_address` | VARCHAR(45) | IPv4 or IPv6. |
+| `user_agent` | TEXT | Browser UA at time of donation. |
+| `created_at` | DATETIME | |
+| `updated_at` | DATETIME | |
+
+Indexes: PK on `id`, INDEX on `donor_id`, `form_id`, `campaign_id`, `subscription_id`, `status`, `created_at`.
+
+## `wp_donorpress_subscriptions`
+
+One row per recurring subscription.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `donor_id` | BIGINT UNSIGNED, FK → donors.id | |
+| `form_id` | BIGINT UNSIGNED | |
+| `campaign_id` | BIGINT UNSIGNED | |
+| `amount` | DECIMAL(15,2) | Per-renewal amount. |
+| `currency` | CHAR(3) | |
+| `period` | VARCHAR(20) | daily / weekly / monthly / quarterly / yearly. |
+| `bill_count` | INT UNSIGNED | Total renewals to perform (0 = until cancelled). |
+| `bills_processed` | INT UNSIGNED, DEFAULT 0 | Renewals so far. |
+| `status` | VARCHAR(20) | active / paused / cancelled / failing / expired / completed. |
+| `gateway` | VARCHAR(50) | |
+| `gateway_subscription_id` | VARCHAR(190) | The gateway's subscription/billing-agreement ID. |
+| `renewal_date` | DATETIME | Next scheduled renewal. |
+| `created_at` | DATETIME | |
+| `updated_at` | DATETIME | |
+| `cancelled_at` | DATETIME, NULL | |
+
+Indexes: PK on `id`, INDEX on `donor_id`, `status`, `renewal_date`.
+
+## `wp_donorpress_transactions`
+
+A ledger of every gateway interaction (charges, refunds, captures, voids). Useful for audit trails.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `donation_id` | BIGINT UNSIGNED, FK → donations.id | |
+| `type` | VARCHAR(20) | charge / refund / void / capture. |
+| `amount` | DECIMAL(15,2) | |
+| `currency` | CHAR(3) | |
+| `gateway` | VARCHAR(50) | |
+| `gateway_transaction_id` | VARCHAR(190) | |
+| `status` | VARCHAR(20) | succeeded / failed / pending. |
+| `response_data` | LONGTEXT | JSON-encoded raw gateway response. |
+| `created_at` | DATETIME | |
+
+Indexes: PK on `id`, INDEX on `donation_id`, `gateway_transaction_id`.
+
+## `wp_donorpress_notes`
+
+Internal notes attached to donors or donations.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `parent_type` | VARCHAR(20) | donor / donation / subscription. |
+| `parent_id` | BIGINT UNSIGNED | |
+| `note` | TEXT | |
+| `author_id` | BIGINT UNSIGNED | WP user who created the note (0 = system). |
+| `created_at` | DATETIME | |
+
+Indexes: PK on `id`, INDEX on `parent_type` + `parent_id`.
+
+## `wp_donorpress_meta`
+
+Generic key/value meta for extensibility. Used by modules and custom integrations.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `parent_type` | VARCHAR(20) | donor / donation / subscription. |
+| `parent_id` | BIGINT UNSIGNED | |
+| `meta_key` | VARCHAR(190) | |
+| `meta_value` | LONGTEXT | |
+
+Indexes: PK on `id`, INDEX on `parent_type` + `parent_id`, INDEX on `meta_key`.
+
+## `wp_donorpress_form_submissions`
+
+Form-attempt log. Every form submission lands here regardless of payment success.
+
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | BIGINT UNSIGNED, AUTO_INCREMENT, PK | |
+| `form_id` | BIGINT UNSIGNED | |
+| `donation_id` | BIGINT UNSIGNED, NULL | Set if the submission produced a donation. |
+| `email` | VARCHAR(190) | The submitted email. |
+| `amount` | DECIMAL(15,2) | The submitted amount. |
+| `currency` | CHAR(3) | |
+| `gateway` | VARCHAR(50) | The gateway selected. |
+| `outcome` | VARCHAR(20) | success / failed / abandoned. |
+| `error_message` | TEXT | If outcome=failed. |
+| `created_at` | DATETIME | |
+
+Indexes: PK on `id`, INDEX on `form_id`, `outcome`, `created_at`.
+
+## Migrations
+
+The migrator (`src/Database/Migrator.php`) tracks schema version in the `donorpress_db_version` option. On every plugin update:
+
+1. Compare stored version to current.
+2. Run any pending migrations via `dbDelta()`.
+3. Update the stored version.
+
+If you ever need to force a re-run, use **Settings → Advanced → Run migrations**.
+
+## Custom post types (not custom tables)
+
+These use the standard `wp_posts` table and post-meta:
+
+- `donorpress_form` — donation form configurations.
+- `donorpress_campaign` — campaigns.
+- `donorpress_email` — email notification templates.
+
+Use the WordPress functions (`get_post`, `get_post_meta`) to interact with them, not the custom-table query builder.
